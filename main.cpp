@@ -9,7 +9,10 @@
 bool init();
 bool loadMedia();
 void close();
-bool process_key(SDL_Event&, game_controls&);
+bool process_key(SDL_Event&, ship&);
+void init_ship(ship& ship_data);
+void init_enemy(enemy& enemy_data);
+void enemy_move(enemy& enemy_data);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
@@ -27,16 +30,10 @@ int main(int argc, char* args[]) {
 
   SDL_Event e;
   bool quit = false;
-  int x_pos = (SCREEN_WIDTH - gShipTextures[0].getWidth()) / 2;
-  int y_pos = (SCREEN_HEIGHT - gShipTextures[0].getHeight()) / 2;
-  int width = gShipTextures[0].getWidth() / 2;
-  int height = gShipTextures[0].getHeight() / 2;
-  SDL_Point center = { width, height };
-  game_controls ship_data = { 
-    0, 0.0, 0.0, 
-    width, height, 
-    SDL_FLIP_NONE, &center
-  };
+  ship ship_data;
+  enemy meteor_data;
+  init_ship(ship_data);
+  init_enemy(meteor_data);
 
   while (!quit) {
     while (SDL_PollEvent(&e) != 0) {
@@ -47,15 +44,17 @@ int main(int argc, char* args[]) {
     SDL_RenderClear(gRenderer);
 
     //Draw ship
-    gShipTextures[ship_data.frame].render(
-      x_pos, y_pos - ship_data.shift_texture,
-      nullptr, ship_data
+    gShipTextures[ship_data.image].render(
+      ship_data.x_pos, ship_data.y_pos - ship_data.shift_ship,
+      nullptr, ship_data.rd
     );
 
     //Draw enemy
     gEnemyTextures[0].render(
-      400, 400, nullptr
+      meteor_data.x_pos, meteor_data.y_pos,
+      nullptr, meteor_data.rd
     );
+    enemy_move(meteor_data);
 
     //Draw grid lines
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0xFF);
@@ -77,31 +76,31 @@ int main(int argc, char* args[]) {
   return 0;
 }
 
-bool process_key(SDL_Event& e, game_controls& ar) {
+bool process_key(SDL_Event& e, ship& sd) {
   static const int MOVE_FORWARD = 30;
   static const double MOVE_ANGULAR = 15;
   if (e.type == SDL_QUIT) return true;
   if (e.type == SDL_KEYDOWN) {
     //Change move
     switch(e.key.keysym.sym) {
-      case SDLK_a: ar.angle -= MOVE_ANGULAR;
+      case SDLK_a: sd.rd.angle -= MOVE_ANGULAR;
         break;
-      case SDLK_d: ar.angle += MOVE_ANGULAR;
+      case SDLK_d: sd.rd.angle += MOVE_ANGULAR;
         break;
       case SDLK_w: 
-        ar.shift_texture += MOVE_FORWARD; 
-        ar.center->y += MOVE_FORWARD;
+        sd.shift_ship += MOVE_FORWARD; 
+        sd.rd.center.y += MOVE_FORWARD;
         break;
       case SDLK_s: 
-        ar.shift_texture -= MOVE_FORWARD; 
-        ar.center->y -= MOVE_FORWARD;
+        sd.shift_ship -= MOVE_FORWARD; 
+        sd.rd.center.y -= MOVE_FORWARD;
         break;
     }
 
     //Change frame
     switch(e.key.keysym.sym) {
-      case SDLK_w: ar.frame = 1; break;
-      default:     ar.frame = 0;
+      case SDLK_w: sd.image = 1; break;
+      default:     sd.image = 0;
     }
   }
   return false;
@@ -186,4 +185,37 @@ void close() {
 
   IMG_Quit();
   SDL_Quit();
+}
+
+void init_ship(ship& ship_data) {
+  ship_data.w = gShipTextures[0].getWidth();
+  ship_data.h = gShipTextures[0].getHeight();
+  ship_data.x_pos = (SCREEN_WIDTH - ship_data.w) / 2;
+  ship_data.y_pos = (SCREEN_HEIGHT - ship_data.h) / 2;
+  ship_data.image = 0;
+  ship_data.shift_ship = 0;
+  ship_data.rd.angle = 0;
+  ship_data.rd.center = {ship_data.w / 2, ship_data.h / 2};
+  ship_data.rd.flip = SDL_FLIP_NONE;
+}
+
+void init_enemy(enemy& enemy_data) {
+  enemy_data.w = gEnemyTextures[0].getWidth();
+  enemy_data.h = gEnemyTextures[0].getHeight();
+  enemy_data.x_pos = -256;
+  enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.w) / 2;
+  enemy_data.shift_enemy = 8;
+  enemy_data.frame_rate = 16;
+  enemy_data.current_frame = 0;
+  enemy_data.rd.angle = 0;
+  enemy_data.rd.center = {0, 0};
+  enemy_data.rd.flip = SDL_FLIP_NONE;
+}
+
+
+void enemy_move(enemy& ed) {
+  if (ed.current_frame % ed.frame_rate == 0) {
+    ed.x_pos += ed.shift_enemy;
+  }
+  ++ed.current_frame;
 }

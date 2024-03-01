@@ -58,7 +58,7 @@ void LTexture::setAlpha(Uint8 alpha) {
 
 void LTexture::render(
   int x, int y, SDL_Rect* clip,
-  const game_controls& arrow_rotation
+  const render_data& rd
 ) {
   //Set fullsize texture
   SDL_Rect renderQuad = { x, y, width_, height_ };
@@ -70,9 +70,9 @@ void LTexture::render(
   SDL_RenderCopyEx(
     gRenderer, texture_, 
     clip, &renderQuad, 
-    arrow_rotation.angle, 
-    arrow_rotation.center, 
-    arrow_rotation.flip
+    rd.angle, 
+    &rd.center, 
+    rd.flip
   );
 }
 
