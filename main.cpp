@@ -11,7 +11,7 @@ bool loadMedia();
 void close();
 bool process_key(SDL_Event&, ship&);
 void init_ship(ship& ship_data);
-void init_enemy(enemy& enemy_data);
+void init_enemy(enemy& enemy_data, double angle);
 void enemy_move(enemy& enemy_data);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
@@ -31,9 +31,11 @@ int main(int argc, char* args[]) {
   SDL_Event e;
   bool quit = false;
   ship ship_data;
-  enemy meteor_data;
   init_ship(ship_data);
-  init_enemy(meteor_data);
+  enemy meteor_arr[12];
+  for (int i = 0; i < 12; ++i) {
+    init_enemy(meteor_arr[i], 30 * i);
+  }
 
   while (!quit) {
     while (SDL_PollEvent(&e) != 0) {
@@ -50,11 +52,15 @@ int main(int argc, char* args[]) {
     );
 
     //Draw enemy
-    gEnemyTextures[0].render(
-      meteor_data.x_pos, meteor_data.y_pos,
-      nullptr, meteor_data.rd
-    );
-    enemy_move(meteor_data);
+    for (int i = 0; i < 12; ++i) {
+      if (meteor_arr[i].draw) {
+        gEnemyTextures[0].render(
+          meteor_arr[i].x_pos, meteor_arr[i].y_pos,
+          nullptr, meteor_arr[i].rd
+        );
+      }
+      enemy_move(meteor_arr[i]);
+    }
 
     //Draw grid lines
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0xFF);
@@ -199,23 +205,31 @@ void init_ship(ship& ship_data) {
   ship_data.rd.flip = SDL_FLIP_NONE;
 }
 
-void init_enemy(enemy& enemy_data) {
+void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.w = gEnemyTextures[0].getWidth();
   enemy_data.h = gEnemyTextures[0].getHeight();
-  enemy_data.x_pos = -256;
+  enemy_data.x_pos = 0;
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.w) / 2;
-  enemy_data.shift_enemy = 8;
-  enemy_data.frame_rate = 16;
+  enemy_data.shift_enemy = 1;
+  enemy_data.frame_rate = 1;
   enemy_data.current_frame = 0;
-  enemy_data.rd.angle = 0;
-  enemy_data.rd.center = {0, 0};
+  enemy_data.rd.angle = angle;
+  enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
   enemy_data.rd.flip = SDL_FLIP_NONE;
+  enemy_data.draw = true;
 }
 
 
 void enemy_move(enemy& ed) {
+  static const int planet_hitbox = 256;
+  if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos) <= planet_hitbox &&
+    std::abs(SCREEN_HEIGHT / 2 - ed.y_pos) <= planet_hitbox) {
+    ed.draw = false; 
+    return;
+  }
   if (ed.current_frame % ed.frame_rate == 0) {
     ed.x_pos += ed.shift_enemy;
+    ed.rd.center.x -= ed.shift_enemy;
   }
   ++ed.current_frame;
 }

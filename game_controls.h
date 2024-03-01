@@ -28,6 +28,7 @@ struct enemy {
   int frame_rate;
   int current_frame;
   render_data rd; 
+  bool draw;
 };
 
 
