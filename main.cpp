@@ -17,6 +17,7 @@ SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
 LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
+LTexture gBackground;
 
 int main(int argc, char* args[]) {
   if (!init()) {
@@ -45,6 +46,8 @@ int main(int argc, char* args[]) {
     SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(gRenderer);
 
+    //Background
+    gBackground.render(0, 0);
     //Draw ship
     gShipTextures[ship_data.image].render(
       ship_data.x_pos, ship_data.y_pos - ship_data.shift_ship,
@@ -63,6 +66,7 @@ int main(int argc, char* args[]) {
     }
 
     //Draw grid lines
+    /*
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0xFF);
     SDL_RenderDrawLine(
       gRenderer,
@@ -74,6 +78,7 @@ int main(int argc, char* args[]) {
       SCREEN_WIDTH / 2, 0,
       SCREEN_WIDTH / 2, SCREEN_HEIGHT
     );
+    */
 
     //Process final render
     SDL_RenderPresent(gRenderer);
@@ -173,6 +178,10 @@ bool loadMedia() {
       return false;
     }
   }
+  if (!gBackground.loadFromFile("pics/planet1Big.png")) {
+    std::cout << "Failed to load planet!\n";
+    return false;
+  }
   return true;
 }
 
@@ -183,6 +192,7 @@ void close() {
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
     gEnemyTextures[i].free();
   }
+  gBackground.free();
 
   SDL_DestroyRenderer(gRenderer);
   SDL_DestroyWindow(gWindow);
