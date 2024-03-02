@@ -8,7 +8,7 @@
 #include "LTexture.h"
 #include "game_controls.h"
 
-enum { DEFAULT, MOVE, SHOOT };
+enum SHIP { DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD };
 
 bool init();
 bool loadMedia();
@@ -93,7 +93,7 @@ int main(int argc, char* args[]) {
 }
 
 bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
-  static const int MOVE_FORWARD = 30;
+  static const int MOVE_LEN = 30;
   static const double MOVE_ANGULAR = 15;
   if (e.type == SDL_QUIT) return true;
   if (e.type == SDL_KEYDOWN) {
@@ -104,12 +104,12 @@ bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
       case SDLK_d: sd.rd.angle += MOVE_ANGULAR;
         break;
       case SDLK_w: 
-        sd.shift_ship += MOVE_FORWARD; 
-        sd.rd.center.y += MOVE_FORWARD;
+        sd.shift_ship += MOVE_LEN; 
+        sd.rd.center.y += MOVE_LEN;
         break;
       case SDLK_s: 
-        sd.shift_ship -= MOVE_FORWARD; 
-        sd.rd.center.y -= MOVE_FORWARD;
+        sd.shift_ship -= MOVE_LEN; 
+        sd.rd.center.y -= MOVE_LEN;
         break;
       case SDLK_SPACE: 
         shoot(sd.rd.angle, enemy_arr);
@@ -118,9 +118,10 @@ bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
 
     //Change frame
     switch(e.key.keysym.sym) {
-      case SDLK_w: sd.image = 1; break;
-      case SDLK_SPACE: sd.image = 2; break;
-      default:     sd.image = 0;
+      case SDLK_w: sd.image = SHIP::MOVE_FORWARD; break;
+      case SDLK_s: sd.image = SHIP::MOVE_BACKWARD; break;
+      case SDLK_SPACE: sd.image = SHIP::SHOOT; break;
+      default:     sd.image = SHIP::DEFAULT;
     }
   }
   return false;
@@ -171,7 +172,8 @@ bool loadMedia() {
   static const char* file_paths_ship[NUM_SHIP_TEXTURES] = {
     "pics/ship1Big.png",
     "pics/ship1moveBig.png",
-    "pics/ship_shoot1Big.png"
+    "pics/ship_shoot1Big.png",
+    "pics/ship_back1Big.png"
   };
   static const char* file_paths_enemy[NUM_ENEMY_TEXTURES] = {
     "pics/meteor1Big.png"
@@ -199,7 +201,7 @@ void close() {
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
     gShipTextures[i].free();
   }
-  for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
+  for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     gEnemyTextures[i].free();
   }
   gBackground.free();
@@ -218,7 +220,7 @@ void init_ship(ship& ship_data) {
   ship_data.h = gShipTextures[0].getHeight();
   ship_data.x_pos = (SCREEN_WIDTH - ship_data.w) / 2;
   ship_data.y_pos = (SCREEN_HEIGHT - ship_data.h) / 2;
-  ship_data.image = 0;
+  ship_data.image = DEFAULT;
   ship_data.shift_ship = 0;
   ship_data.rd.angle = 0;
   ship_data.rd.center = {ship_data.w / 2, ship_data.h / 2};
