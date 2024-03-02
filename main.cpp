@@ -20,6 +20,7 @@ bool enemy_move(enemy& enemy_data);
 int eu_mod(int num, int mod);
 void shoot(double angle, enemy enemy_arr[]);
 void render_ship(const ship& sd);
+void detect_collision(ship& ship_data, enemy meteor_arr[]);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
@@ -46,7 +47,7 @@ int main(int argc, char* args[]) {
     init_enemy(meteor_arr[i], 15 * i);
   }
 
-  while (!quit) {
+  while (!quit && ship_data.lifes) {
     while (SDL_PollEvent(&e) != 0) {
       quit = process_key(e, ship_data, meteor_arr);
     }
@@ -69,6 +70,8 @@ int main(int argc, char* args[]) {
         );
       }
     }
+    detect_collision(ship_data, meteor_arr);
+    //std::cout << "Lifes: " << ship_data.lifes << '\n';
 
     //Draw grid lines
     /*
@@ -225,17 +228,18 @@ void init_ship(ship& ship_data) {
   ship_data.rd.angle = 0;
   ship_data.rd.center = {ship_data.w / 2, ship_data.h / 2};
   ship_data.rd.flip = SDL_FLIP_NONE;
+  ship_data.lifes = 3;
 }
 
 void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.w = gEnemyTextures[0].getWidth();
   enemy_data.h = gEnemyTextures[0].getHeight();
-  enemy_data.x_pos = -400;
+  enemy_data.x_pos = SPAWN_ENEMY_X;
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
   //enemy_data.x_pos = (SCREEN_WIDTH - enemy_data.w) / 2;
   //enemy_data.y_pos = -400;
-  enemy_data.shift_enemy = rand() % 3 + 1;
-  enemy_data.frame_rate = rand() % 3 + 1;
+  enemy_data.shift_enemy = rand() % 2 + 1;
+  enemy_data.frame_rate = rand() % 8 + 1;
   enemy_data.current_frame = 0;
   enemy_data.rd.angle = angle;
   enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
@@ -246,7 +250,7 @@ void init_enemy(enemy& enemy_data, double angle) {
 
 bool enemy_move(enemy& ed) {
   static const int planet_hitbox = 256;
-  static const int RAND_SPAWN = 800;
+  static const int RAND_SPAWN = 400;
   if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= planet_hitbox &&
     std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= planet_hitbox) {
     init_enemy(ed, ed.rd.angle); //reinit enemy
@@ -265,8 +269,6 @@ bool enemy_move(enemy& ed) {
 }
 
 void shoot(double angle, enemy enemy_arr[]) {
-  static const int DEGREES_IN_CIRCLE = 360;
-  static const int COORDS_SYNC = 90;
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     if (enemy_arr[i].draw && 
       (eu_mod(static_cast<int>(angle) + COORDS_SYNC, DEGREES_IN_CIRCLE)) == enemy_arr[i].rd.angle) {
@@ -292,4 +294,32 @@ void render_ship(const ship& sd) {
     sd.x_pos, y_pos,
     nullptr, rd
   );
+}
+
+void detect_collision(ship& sd, enemy ma[]) {
+  int y = sd.y_pos - sd.shift_ship;
+  int wh_diff = SCREEN_WIDTH - SCREEN_HEIGHT;
+  int spawn_diff = -SPAWN_ENEMY_X;
+  int coords_sync = spawn_diff - wh_diff;
+  int angle_sync = sd.rd.angle + COORDS_SYNC;
+
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
+    if (y <= SCREEN_HEIGHT / 2) {
+      if (eu_mod(angle_sync, 360) == eu_mod(ma[i].rd.angle, 360)) {
+        if (std::abs(y - (ma[i].x_pos + coords_sync)) <= SHIP_HITBOX) {
+          init_enemy(ma[i], ma[i].rd.angle);
+          --sd.lifes;
+        }
+      }
+    } else {
+      if (eu_mod(angle_sync, 360) != eu_mod(ma[i].rd.angle, 360) &&
+          eu_mod(angle_sync, 180) == eu_mod(ma[i].rd.angle, 180)) {
+        if (std::abs(y + 2*sd.shift_ship - (ma[i].x_pos + coords_sync)) <=
+            SHIP_HITBOX - 30) {
+          init_enemy(ma[i], ma[i].rd.angle);
+          --sd.lifes;
+        }
+      }
+    }
+  }
 }
