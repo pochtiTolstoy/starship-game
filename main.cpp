@@ -1,7 +1,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <stdio.h>
+#include <iostream>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 #include "constants.h"
 #include "LTexture.h"
 #include "game_controls.h"
@@ -12,7 +14,7 @@ void close();
 bool process_key(SDL_Event&, ship&);
 void init_ship(ship& ship_data);
 void init_enemy(enemy& enemy_data, double angle);
-void enemy_move(enemy& enemy_data);
+bool enemy_move(enemy& enemy_data);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
@@ -20,6 +22,7 @@ LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
 LTexture gBackground;
 
 int main(int argc, char* args[]) {
+  srand(time(0));
   if (!init()) {
     std::cout << "Failed to init!\n";
     exit(EXIT_FAILURE);
@@ -56,13 +59,12 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < 12; ++i) {
-      if (meteor_arr[i].draw) {
+      if (enemy_move(meteor_arr[i])) {
         gEnemyTextures[0].render(
           meteor_arr[i].x_pos, meteor_arr[i].y_pos,
           nullptr, meteor_arr[i].rd
         );
       }
-      enemy_move(meteor_arr[i]);
     }
 
     //Draw grid lines
@@ -218,28 +220,34 @@ void init_ship(ship& ship_data) {
 void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.w = gEnemyTextures[0].getWidth();
   enemy_data.h = gEnemyTextures[0].getHeight();
-  enemy_data.x_pos = 0;
+  enemy_data.x_pos = -400;
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.w) / 2;
-  enemy_data.shift_enemy = 1;
-  enemy_data.frame_rate = 1;
+  enemy_data.shift_enemy = rand() % 2 + 1;
+  enemy_data.frame_rate = rand() % 2 + 1;
   enemy_data.current_frame = 0;
   enemy_data.rd.angle = angle;
   enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
   enemy_data.rd.flip = SDL_FLIP_NONE;
-  enemy_data.draw = true;
+  enemy_data.draw = false;
 }
 
 
-void enemy_move(enemy& ed) {
+bool enemy_move(enemy& ed) {
   static const int planet_hitbox = 256;
-  if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos) <= planet_hitbox &&
-    std::abs(SCREEN_HEIGHT / 2 - ed.y_pos) <= planet_hitbox) {
-    ed.draw = false; 
-    return;
+  static const int RAND_SPAWN = 300;
+  if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= planet_hitbox &&
+    std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= planet_hitbox) {
+    init_enemy(ed, ed.rd.angle); //reinit enemy
+    return false;
   }
-  if (ed.current_frame % ed.frame_rate == 0) {
+  if (ed.draw == false && rand() % RAND_SPAWN == 0) {
+    ed.draw = true;
+    return false;
+  }
+  if (ed.draw == true && ed.current_frame % ed.frame_rate == 0) {
     ed.x_pos += ed.shift_enemy;
     ed.rd.center.x -= ed.shift_enemy;
   }
   ++ed.current_frame;
+  return true;
 }
