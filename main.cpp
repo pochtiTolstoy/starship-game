@@ -8,6 +8,8 @@
 #include "LTexture.h"
 #include "game_controls.h"
 
+enum { DEFAULT, MOVE, SHOOT };
+
 bool init();
 bool loadMedia();
 void close();
@@ -17,6 +19,7 @@ void init_enemy(enemy& enemy_data, double angle);
 bool enemy_move(enemy& enemy_data);
 int eu_mod(int num, int mod);
 void shoot(double angle, enemy enemy_arr[]);
+void render_ship(const ship& sd);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
@@ -40,7 +43,7 @@ int main(int argc, char* args[]) {
   init_ship(ship_data);
   enemy meteor_arr[NUM_ENEMY_ON_MAP];
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    init_enemy(meteor_arr[i], 30 * i);
+    init_enemy(meteor_arr[i], 15 * i);
   }
 
   while (!quit) {
@@ -53,11 +56,9 @@ int main(int argc, char* args[]) {
 
     //Background
     gBackground.render(0, 0);
+
     //Draw ship
-    gShipTextures[ship_data.image].render(
-      ship_data.x_pos, ship_data.y_pos - ship_data.shift_ship,
-      nullptr, ship_data.rd
-    );
+    render_ship(ship_data);
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
@@ -93,7 +94,7 @@ int main(int argc, char* args[]) {
 
 bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
   static const int MOVE_FORWARD = 30;
-  static const double MOVE_ANGULAR = 30;
+  static const double MOVE_ANGULAR = 15;
   if (e.type == SDL_QUIT) return true;
   if (e.type == SDL_KEYDOWN) {
     //Change move
@@ -231,8 +232,8 @@ void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
   //enemy_data.x_pos = (SCREEN_WIDTH - enemy_data.w) / 2;
   //enemy_data.y_pos = -400;
-  enemy_data.shift_enemy = rand() % 2 + 1;
-  enemy_data.frame_rate = rand() % 2 + 1;
+  enemy_data.shift_enemy = rand() % 3 + 1;
+  enemy_data.frame_rate = rand() % 3 + 1;
   enemy_data.current_frame = 0;
   enemy_data.rd.angle = angle;
   enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
@@ -243,7 +244,7 @@ void init_enemy(enemy& enemy_data, double angle) {
 
 bool enemy_move(enemy& ed) {
   static const int planet_hitbox = 256;
-  static const int RAND_SPAWN = 300;
+  static const int RAND_SPAWN = 800;
   if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= planet_hitbox &&
     std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= planet_hitbox) {
     init_enemy(ed, ed.rd.angle); //reinit enemy
@@ -276,4 +277,17 @@ int eu_mod(int num, int mod) {
   int r = num % mod;
   if (r < 0) r += mod;
   return r;
+}
+
+void render_ship(const ship& sd) {
+  int y_pos = sd.y_pos - sd.shift_ship;
+  render_data rd = sd.rd;
+  if (sd.image == SHOOT) {
+    y_pos -= (gShipTextures[SHOOT].getHeight() - sd.h);
+    rd.center.y = gShipTextures[SHOOT].getHeight() - sd.h / 2 + sd.shift_ship;
+  }
+  gShipTextures[sd.image].render(
+    sd.x_pos, y_pos,
+    nullptr, rd
+  );
 }
