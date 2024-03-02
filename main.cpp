@@ -11,10 +11,12 @@
 bool init();
 bool loadMedia();
 void close();
-bool process_key(SDL_Event&, ship&);
+bool process_key(SDL_Event&, ship&, enemy enemy_arr[]);
 void init_ship(ship& ship_data);
 void init_enemy(enemy& enemy_data, double angle);
 bool enemy_move(enemy& enemy_data);
+int eu_mod(int num, int mod);
+void shoot(double angle, enemy enemy_arr[]);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
@@ -36,14 +38,14 @@ int main(int argc, char* args[]) {
   bool quit = false;
   ship ship_data;
   init_ship(ship_data);
-  enemy meteor_arr[12];
-  for (int i = 0; i < 12; ++i) {
+  enemy meteor_arr[NUM_ENEMY_ON_MAP];
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     init_enemy(meteor_arr[i], 30 * i);
   }
 
   while (!quit) {
     while (SDL_PollEvent(&e) != 0) {
-      quit = process_key(e, ship_data);
+      quit = process_key(e, ship_data, meteor_arr);
     }
     //Set Render
     SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -58,7 +60,7 @@ int main(int argc, char* args[]) {
     );
 
     //Draw enemy
-    for (int i = 0; i < 12; ++i) {
+    for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
       if (enemy_move(meteor_arr[i])) {
         gEnemyTextures[0].render(
           meteor_arr[i].x_pos, meteor_arr[i].y_pos,
@@ -89,9 +91,9 @@ int main(int argc, char* args[]) {
   return 0;
 }
 
-bool process_key(SDL_Event& e, ship& sd) {
+bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
   static const int MOVE_FORWARD = 30;
-  static const double MOVE_ANGULAR = 15;
+  static const double MOVE_ANGULAR = 30;
   if (e.type == SDL_QUIT) return true;
   if (e.type == SDL_KEYDOWN) {
     //Change move
@@ -108,11 +110,15 @@ bool process_key(SDL_Event& e, ship& sd) {
         sd.shift_ship -= MOVE_FORWARD; 
         sd.rd.center.y -= MOVE_FORWARD;
         break;
+      case SDLK_SPACE: 
+        shoot(sd.rd.angle, enemy_arr);
+        break;
     }
 
     //Change frame
     switch(e.key.keysym.sym) {
       case SDLK_w: sd.image = 1; break;
+      case SDLK_SPACE: sd.image = 2; break;
       default:     sd.image = 0;
     }
   }
@@ -163,7 +169,8 @@ bool init() {
 bool loadMedia() {
   static const char* file_paths_ship[NUM_SHIP_TEXTURES] = {
     "pics/ship1Big.png",
-    "pics/ship1moveBig.png"
+    "pics/ship1moveBig.png",
+    "pics/ship_shoot1Big.png"
   };
   static const char* file_paths_enemy[NUM_ENEMY_TEXTURES] = {
     "pics/meteor1Big.png"
@@ -221,7 +228,9 @@ void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.w = gEnemyTextures[0].getWidth();
   enemy_data.h = gEnemyTextures[0].getHeight();
   enemy_data.x_pos = -400;
-  enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.w) / 2;
+  enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
+  //enemy_data.x_pos = (SCREEN_WIDTH - enemy_data.w) / 2;
+  //enemy_data.y_pos = -400;
   enemy_data.shift_enemy = rand() % 2 + 1;
   enemy_data.frame_rate = rand() % 2 + 1;
   enemy_data.current_frame = 0;
@@ -250,4 +259,21 @@ bool enemy_move(enemy& ed) {
   }
   ++ed.current_frame;
   return true;
+}
+
+void shoot(double angle, enemy enemy_arr[]) {
+  static const int DEGREES_IN_CIRCLE = 360;
+  static const int COORDS_SYNC = 90;
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
+    if (enemy_arr[i].draw && 
+      (eu_mod(static_cast<int>(angle) + COORDS_SYNC, DEGREES_IN_CIRCLE)) == enemy_arr[i].rd.angle) {
+      init_enemy(enemy_arr[i], enemy_arr[i].rd.angle);
+    }
+  }
+}
+
+int eu_mod(int num, int mod) {
+  int r = num % mod;
+  if (r < 0) r += mod;
+  return r;
 }
