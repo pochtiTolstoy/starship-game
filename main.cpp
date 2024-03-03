@@ -8,7 +8,7 @@
 #include "LTexture.h"
 #include "game_controls.h"
 
-enum SHIP { DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD };
+enum SHIP { DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD, RELOAD };
 
 bool init();
 bool loadMedia();
@@ -18,10 +18,11 @@ void init_ship(ship& ship_data);
 void init_enemy(enemy& enemy_data, double angle);
 bool enemy_move(enemy& enemy_data, planet& pl);
 int eu_mod(int num, int mod);
-void shoot(double angle, enemy enemy_arr[]);
+void shoot(ship& sd, enemy enemy_arr[]);
 void render_ship(const ship& sd);
 void detect_collision(ship& ship_data, enemy meteor_arr[]);
 void init_planet(planet&);
+int shoot_animation(const ship&);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
@@ -104,6 +105,15 @@ int main(int argc, char* args[]) {
       );
     }
 
+    for (int i = ship_data.curr_bullets; i < ship_data.max_bullets; ++i) {
+      gUITextures[3].render(
+        SCREEN_WIDTH / 2 + (i - ship_data.max_bullets / 2) *
+        gUITextures[3].getWidth(),
+        (SCREEN_HEIGHT -  gUITextures[3].getHeight()) / 2 +
+          SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
+      );
+    }
+
     //Draw ship
     render_ship(ship_data);
 
@@ -146,6 +156,14 @@ bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
   static const double MOVE_ANGULAR = 15;
   if (e.type == SDL_QUIT) return true;
   if (e.type == SDL_KEYDOWN) {
+    //Change frame
+    switch(e.key.keysym.sym) {
+      case SDLK_w: sd.image = SHIP::MOVE_FORWARD; break;
+      case SDLK_s: sd.image = SHIP::MOVE_BACKWARD; break;
+      case SDLK_SPACE: sd.image = shoot_animation(sd); break;
+      default:     sd.image = SHIP::DEFAULT;
+    }
+
     //Change move
     switch(e.key.keysym.sym) {
       case SDLK_a: sd.rd.angle -= MOVE_ANGULAR;
@@ -161,17 +179,10 @@ bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
         sd.rd.center.y -= MOVE_LEN;
         break;
       case SDLK_SPACE: 
-        shoot(sd.rd.angle, enemy_arr);
+        shoot(sd, enemy_arr);
         break;
     }
 
-    //Change frame
-    switch(e.key.keysym.sym) {
-      case SDLK_w: sd.image = SHIP::MOVE_FORWARD; break;
-      case SDLK_s: sd.image = SHIP::MOVE_BACKWARD; break;
-      case SDLK_SPACE: sd.image = SHIP::SHOOT; break;
-      default:     sd.image = SHIP::DEFAULT;
-    }
   }
   return false;
 }
@@ -230,7 +241,8 @@ bool loadMedia() {
   static const char* file_paths_ui[NUM_UI_TEXTURES] = {
     "pics/heartBig.png",
     "pics/heartBlackBig.png",
-    "pics/ui_shootBig.png"
+    "pics/ui_shootBig.png",
+    "pics/ui_shootBlackBig.png"
   };
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
     if (!gShipTextures[i].loadFromFile(file_paths_ship[i])) {
@@ -337,10 +349,12 @@ bool enemy_move(enemy& ed, planet& p) {
   return true;
 }
 
-void shoot(double angle, enemy enemy_arr[]) {
+void shoot(ship& sd, enemy enemy_arr[]) {
+  if (sd.curr_bullets <= 0) return;
+  --sd.curr_bullets;
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     if (enemy_arr[i].draw && 
-      (eu_mod(static_cast<int>(angle) + COORDS_SYNC, DEGREES_IN_CIRCLE)) == enemy_arr[i].rd.angle) {
+      (eu_mod(static_cast<int>(sd.rd.angle) + COORDS_SYNC, DEGREES_IN_CIRCLE)) == enemy_arr[i].rd.angle) {
       init_enemy(enemy_arr[i], enemy_arr[i].rd.angle);
     }
   }
@@ -393,3 +407,6 @@ void detect_collision(ship& sd, enemy ma[]) {
   }
 }
 
+int shoot_animation(const ship& sd) {
+  return (sd.curr_bullets <= 0) ? DEFAULT : SHOOT;
+}
