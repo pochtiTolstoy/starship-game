@@ -23,6 +23,7 @@ struct ship {
   int curr_bullets;
   int cooldown;
   int cooldown_timer;
+  int kills;
 };
 
 struct enemy {
@@ -35,6 +36,7 @@ struct enemy {
   int current_frame;
   render_data rd; 
   bool draw;
+  bool first_spawn;
 };
 
 struct planet {
