@@ -19,6 +19,8 @@ struct ship {
   render_data rd;
   int curr_lifes;
   int max_lifes;
+  int max_bullets;
+  int curr_bullets;
 };
 
 struct enemy {

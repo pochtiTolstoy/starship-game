@@ -67,29 +67,40 @@ int main(int argc, char* args[]) {
     //Hearts planet
     for (int i = 0; i < pl.curr_lifes; ++i) {
       gUITextures[0].render(
-        SCREEN_WIDTH / 2 + (i - 2) * gUITextures[0].getWidth(),
+        SCREEN_WIDTH / 2 + (i - pl.max_lifes / 2) * gUITextures[0].getWidth(),
         (SCREEN_HEIGHT - gUITextures[0].getHeight()) / 2 + SHIFT_HEART_PLANET_Y
       );
     }
     for (int i = pl.curr_lifes; i < pl.max_lifes; ++i) {
       gUITextures[1].render(
-        SCREEN_WIDTH / 2 + (i - 2) * gUITextures[1].getWidth(),
+        SCREEN_WIDTH / 2 + (i - pl.max_lifes / 2) * gUITextures[1].getWidth(),
         (SCREEN_HEIGHT - gUITextures[1].getHeight()) / 2 + SHIFT_HEART_PLANET_Y
       );
     }
+
     //Hearts ship
     for (int i = 0; i < ship_data.curr_lifes; ++i) {
       gUITextures[0].render(
-        SCREEN_WIDTH / 2 + (i - 1) * gUITextures[0].getWidth(),
+        SCREEN_WIDTH / 2 + (i - ship_data.max_lifes / 2) * gUITextures[0].getWidth(),
         (SCREEN_HEIGHT - gUITextures[0].getHeight()) / 2 + 
           SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
       );
     }
     for (int i = ship_data.curr_lifes; i < ship_data.max_lifes; ++i) {
       gUITextures[1].render(
-        SCREEN_WIDTH / 2 + (i - 1) * gUITextures[1].getWidth(),
+        SCREEN_WIDTH / 2 + (i - ship_data.max_lifes / 2) * gUITextures[1].getWidth(),
         (SCREEN_HEIGHT - gUITextures[1].getHeight()) / 2 + 
           SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
+      );
+    }
+
+    //Bullets
+    for (int i = 0; i < ship_data.curr_bullets; ++i) {
+      gUITextures[2].render(
+        SCREEN_WIDTH / 2 + (i - ship_data.max_bullets / 2) *
+        gUITextures[2].getWidth(),
+        (SCREEN_HEIGHT -  gUITextures[2].getHeight()) / 2 +
+          SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
       );
     }
 
@@ -109,6 +120,7 @@ int main(int argc, char* args[]) {
     //std::cout << "Lifes: " << ship_data.lifes << '\n';
 
     //Draw grid lines
+    /*
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0xFF);
     SDL_RenderDrawLine(
       gRenderer,
@@ -120,6 +132,7 @@ int main(int argc, char* args[]) {
       SCREEN_WIDTH / 2, 0,
       SCREEN_WIDTH / 2, SCREEN_HEIGHT
     );
+    */
 
     //Process final render
     SDL_RenderPresent(gRenderer);
@@ -216,7 +229,8 @@ bool loadMedia() {
   };
   static const char* file_paths_ui[NUM_UI_TEXTURES] = {
     "pics/heartBig.png",
-    "pics/heartBlackBig.png"
+    "pics/heartBlackBig.png",
+    "pics/ui_shootBig.png"
   };
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
     if (!gShipTextures[i].loadFromFile(file_paths_ship[i])) {
@@ -264,18 +278,20 @@ void close() {
   SDL_Quit();
 }
 
-void init_ship(ship& ship_data) {
-  ship_data.w = gShipTextures[0].getWidth();
-  ship_data.h = gShipTextures[0].getHeight();
-  ship_data.x_pos = (SCREEN_WIDTH - ship_data.w) / 2;
-  ship_data.y_pos = (SCREEN_HEIGHT - ship_data.h) / 2;
-  ship_data.image = DEFAULT;
-  ship_data.shift_ship = 0;
-  ship_data.rd.angle = 0;
-  ship_data.rd.center = {ship_data.w / 2, ship_data.h / 2};
-  ship_data.rd.flip = SDL_FLIP_NONE;
-  ship_data.max_lifes = 2;
-  ship_data.curr_lifes = 2;
+void init_ship(ship& sd) {
+  sd.w = gShipTextures[0].getWidth();
+  sd.h = gShipTextures[0].getHeight();
+  sd.x_pos = (SCREEN_WIDTH - sd.w) / 2;
+  sd.y_pos = (SCREEN_HEIGHT - sd.h) / 2;
+  sd.image = DEFAULT;
+  sd.shift_ship = 0;
+  sd.rd.angle = 0;
+  sd.rd.center = {sd.w / 2, sd.h / 2};
+  sd.rd.flip = SDL_FLIP_NONE;
+  sd.max_lifes = 2;
+  sd.curr_lifes = 2;
+  sd.max_bullets = 4; 
+  sd.curr_bullets = 4; 
 }
 
 void init_enemy(enemy& enemy_data, double angle) {
