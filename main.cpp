@@ -26,6 +26,7 @@ SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
 LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
+LTexture gUITextures[NUM_UI_TEXTURES];
 LTexture gBackground;
 
 int main(int argc, char* args[]) {
@@ -47,11 +48,12 @@ int main(int argc, char* args[]) {
 
   init_ship(ship_data);
   init_planet(pl);
+
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     init_enemy(meteor_arr[i], 15 * i);
   }
 
-  while (!quit && ship_data.lifes && pl.lifes) {
+  while (!quit && ship_data.curr_lifes && pl.curr_lifes) {
     while (SDL_PollEvent(&e) != 0) {
       quit = process_key(e, ship_data, meteor_arr);
     }
@@ -61,6 +63,35 @@ int main(int argc, char* args[]) {
 
     //Background
     gBackground.render(0, 0);
+
+    //Hearts planet
+    for (int i = 0; i < pl.curr_lifes; ++i) {
+      gUITextures[0].render(
+        SCREEN_WIDTH / 2 + (i - 2) * gUITextures[0].getWidth(),
+        (SCREEN_HEIGHT - gUITextures[0].getHeight()) / 2 + SHIFT_HEART_PLANET_Y
+      );
+    }
+    for (int i = pl.curr_lifes; i < pl.max_lifes; ++i) {
+      gUITextures[1].render(
+        SCREEN_WIDTH / 2 + (i - 2) * gUITextures[1].getWidth(),
+        (SCREEN_HEIGHT - gUITextures[1].getHeight()) / 2 + SHIFT_HEART_PLANET_Y
+      );
+    }
+    //Hearts ship
+    for (int i = 0; i < ship_data.curr_lifes; ++i) {
+      gUITextures[0].render(
+        SCREEN_WIDTH / 2 + (i - 1) * gUITextures[0].getWidth(),
+        (SCREEN_HEIGHT - gUITextures[0].getHeight()) / 2 + 
+          SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
+      );
+    }
+    for (int i = ship_data.curr_lifes; i < ship_data.max_lifes; ++i) {
+      gUITextures[1].render(
+        SCREEN_WIDTH / 2 + (i - 1) * gUITextures[1].getWidth(),
+        (SCREEN_HEIGHT - gUITextures[1].getHeight()) / 2 + 
+          SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
+      );
+    }
 
     //Draw ship
     render_ship(ship_data);
@@ -78,7 +109,6 @@ int main(int argc, char* args[]) {
     //std::cout << "Lifes: " << ship_data.lifes << '\n';
 
     //Draw grid lines
-    /*
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0xFF);
     SDL_RenderDrawLine(
       gRenderer,
@@ -90,7 +120,6 @@ int main(int argc, char* args[]) {
       SCREEN_WIDTH / 2, 0,
       SCREEN_WIDTH / 2, SCREEN_HEIGHT
     );
-    */
 
     //Process final render
     SDL_RenderPresent(gRenderer);
@@ -185,6 +214,10 @@ bool loadMedia() {
   static const char* file_paths_enemy[NUM_ENEMY_TEXTURES] = {
     "pics/meteor1Big.png"
   };
+  static const char* file_paths_ui[NUM_UI_TEXTURES] = {
+    "pics/heartBig.png",
+    "pics/heartBlackBig.png"
+  };
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
     if (!gShipTextures[i].loadFromFile(file_paths_ship[i])) {
       std::cout << "Failed to load ship texture!\n";
@@ -194,6 +227,12 @@ bool loadMedia() {
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     if (!gEnemyTextures[i].loadFromFile(file_paths_enemy[i])) {
       std::cout << "Failed to load enemy texture!\n";
+      return false;
+    }
+  }
+  for (int i = 0; i < NUM_UI_TEXTURES; ++i) {
+    if (!gUITextures[i].loadFromFile(file_paths_ui[i])) {
+      std::cout << "Filed to load UI textures!\n";
       return false;
     }
   }
@@ -210,6 +249,9 @@ void close() {
   }
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     gEnemyTextures[i].free();
+  }
+  for (int i = 0; i < NUM_UI_TEXTURES; ++i) {
+    gUITextures[i].free();
   }
   gBackground.free();
 
@@ -232,7 +274,8 @@ void init_ship(ship& ship_data) {
   ship_data.rd.angle = 0;
   ship_data.rd.center = {ship_data.w / 2, ship_data.h / 2};
   ship_data.rd.flip = SDL_FLIP_NONE;
-  ship_data.lifes = 3;
+  ship_data.max_lifes = 2;
+  ship_data.curr_lifes = 2;
 }
 
 void init_enemy(enemy& enemy_data, double angle) {
@@ -242,7 +285,7 @@ void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
   //enemy_data.x_pos = (SCREEN_WIDTH - enemy_data.w) / 2;
   //enemy_data.y_pos = -400;
-  enemy_data.shift_enemy = rand() % 2 + 1;
+  enemy_data.shift_enemy = rand() % 4 + 1;
   enemy_data.frame_rate = rand() % 8 + 1;
   enemy_data.current_frame = 0;
   enemy_data.rd.angle = angle;
@@ -251,14 +294,19 @@ void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.draw = false;
 }
 
+void init_planet(planet& p) {
+  p.max_lifes = 4;
+  p.curr_lifes = 4;
+}
+
 
 bool enemy_move(enemy& ed, planet& p) {
   static const int planet_hitbox = 256;
-  static const int RAND_SPAWN = 400;
+  static const int RAND_SPAWN = 350;
   if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= planet_hitbox &&
     std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= planet_hitbox) {
     init_enemy(ed, ed.rd.angle); //reinit enemy
-    --p.lifes;
+    --p.curr_lifes;
     return false;
   }
   if (ed.draw == false && rand() % RAND_SPAWN == 0) {
@@ -313,7 +361,7 @@ void detect_collision(ship& sd, enemy ma[]) {
       if (eu_mod(angle_sync, 360) == eu_mod(ma[i].rd.angle, 360)) {
         if (std::abs(y - (ma[i].x_pos + coords_sync)) <= SHIP_HITBOX) {
           init_enemy(ma[i], ma[i].rd.angle);
-          --sd.lifes;
+          --sd.curr_lifes;
         }
       }
     } else {
@@ -322,13 +370,10 @@ void detect_collision(ship& sd, enemy ma[]) {
         if (std::abs(y + 2*sd.shift_ship - (ma[i].x_pos + coords_sync)) <=
             SHIP_HITBOX - 30) {
           init_enemy(ma[i], ma[i].rd.angle);
-          --sd.lifes;
+          --sd.curr_lifes;
         }
       }
     }
   }
 }
 
-void init_planet(planet& p) {
-  p.lifes = 5;
-}

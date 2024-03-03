@@ -17,7 +17,8 @@ struct ship {
 	int image;
 	int shift_ship;
   render_data rd;
-  int lifes;
+  int curr_lifes;
+  int max_lifes;
 };
 
 struct enemy {
@@ -33,7 +34,8 @@ struct enemy {
 };
 
 struct planet {
-  int lifes;
+  int max_lifes;
+  int curr_lifes;
 };
 
 
