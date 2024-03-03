@@ -32,5 +32,9 @@ struct enemy {
   bool draw;
 };
 
+struct planet {
+  int lifes;
+};
+
 
 #endif /* GAME_CONTROLS_H_ */

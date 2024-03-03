@@ -16,11 +16,12 @@ void close();
 bool process_key(SDL_Event&, ship&, enemy enemy_arr[]);
 void init_ship(ship& ship_data);
 void init_enemy(enemy& enemy_data, double angle);
-bool enemy_move(enemy& enemy_data);
+bool enemy_move(enemy& enemy_data, planet& pl);
 int eu_mod(int num, int mod);
 void shoot(double angle, enemy enemy_arr[]);
 void render_ship(const ship& sd);
 void detect_collision(ship& ship_data, enemy meteor_arr[]);
+void init_planet(planet&);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
@@ -41,13 +42,16 @@ int main(int argc, char* args[]) {
   SDL_Event e;
   bool quit = false;
   ship ship_data;
-  init_ship(ship_data);
+  planet pl;
   enemy meteor_arr[NUM_ENEMY_ON_MAP];
+
+  init_ship(ship_data);
+  init_planet(pl);
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     init_enemy(meteor_arr[i], 15 * i);
   }
 
-  while (!quit && ship_data.lifes) {
+  while (!quit && ship_data.lifes && pl.lifes) {
     while (SDL_PollEvent(&e) != 0) {
       quit = process_key(e, ship_data, meteor_arr);
     }
@@ -63,7 +67,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (enemy_move(meteor_arr[i])) {
+      if (enemy_move(meteor_arr[i], pl)) {
         gEnemyTextures[0].render(
           meteor_arr[i].x_pos, meteor_arr[i].y_pos,
           nullptr, meteor_arr[i].rd
@@ -248,12 +252,13 @@ void init_enemy(enemy& enemy_data, double angle) {
 }
 
 
-bool enemy_move(enemy& ed) {
+bool enemy_move(enemy& ed, planet& p) {
   static const int planet_hitbox = 256;
   static const int RAND_SPAWN = 400;
   if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= planet_hitbox &&
     std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= planet_hitbox) {
     init_enemy(ed, ed.rd.angle); //reinit enemy
+    --p.lifes;
     return false;
   }
   if (ed.draw == false && rand() % RAND_SPAWN == 0) {
@@ -322,4 +327,8 @@ void detect_collision(ship& sd, enemy ma[]) {
       }
     }
   }
+}
+
+void init_planet(planet& p) {
+  p.lifes = 5;
 }
