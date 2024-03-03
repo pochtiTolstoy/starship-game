@@ -181,6 +181,9 @@ bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
         sd.shift_ship -= MOVE_LEN; 
         sd.rd.center.y -= MOVE_LEN;
         break;
+      case SDLK_e:
+        sd.rd.angle += DEGREES_IN_HALF_CIRCLE;
+        break;
       case SDLK_SPACE: 
         shoot(sd, enemy_arr);
         break;
@@ -320,7 +323,7 @@ void init_enemy(enemy& enemy_data, double angle) {
   //enemy_data.x_pos = (SCREEN_WIDTH - enemy_data.w) / 2;
   //enemy_data.y_pos = -400;
   enemy_data.shift_enemy = rand() % 3 + 1;
-  enemy_data.frame_rate = rand() % 6 + 1;
+  enemy_data.frame_rate = rand() % 8 + 1;
   enemy_data.current_frame = 0;
   enemy_data.rd.angle = angle;
   enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
