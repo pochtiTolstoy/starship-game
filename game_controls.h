@@ -21,6 +21,8 @@ struct ship {
   int max_lifes;
   int max_bullets;
   int curr_bullets;
+  int cooldown;
+  int cooldown_timer;
 };
 
 struct enemy {

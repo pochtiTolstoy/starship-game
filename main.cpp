@@ -22,6 +22,7 @@ void shoot(ship& sd, enemy enemy_arr[]);
 void render_ship(const ship& sd);
 void detect_collision(ship& ship_data, enemy meteor_arr[]);
 void init_planet(planet&);
+void calc_cooldown(ship&);
 int shoot_animation(const ship&);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
@@ -146,6 +147,7 @@ int main(int argc, char* args[]) {
 
     //Process final render
     SDL_RenderPresent(gRenderer);
+    calc_cooldown(ship_data);
   }
   close();
   return 0;
@@ -304,6 +306,8 @@ void init_ship(ship& sd) {
   sd.curr_lifes = 2;
   sd.max_bullets = 4; 
   sd.curr_bullets = 4; 
+  sd.cooldown = 100;
+  sd.cooldown_timer = 0;
 }
 
 void init_enemy(enemy& enemy_data, double angle) {
@@ -409,4 +413,13 @@ void detect_collision(ship& sd, enemy ma[]) {
 
 int shoot_animation(const ship& sd) {
   return (sd.curr_bullets <= 0) ? DEFAULT : SHOOT;
+}
+
+void calc_cooldown(ship& sd) { 
+  if (sd.curr_bullets > 0) return;
+  ++sd.cooldown_timer;
+  if (sd.cooldown_timer >= sd.cooldown) {
+    sd.cooldown_timer = 0;
+    sd.curr_bullets = sd.max_bullets;
+  }
 }
