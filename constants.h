@@ -15,11 +15,11 @@ const int SHIP_HITBOX = 128;
 const int HEALTH_HITBOX = 64;
 const int SHIFT_HEART_PLANET_Y = 185;
 const int SHIFT_HEART_SHIP_Y = 30;
-const int KILLS_TO_WIN = 200;
 const double MOVE_ANGULAR = 15;
 
 //Safe to change
-const int RAND_SPAWN = 5000;
-const int RAND_SPAWN_FIRST = 500;
+const int RAND_SPAWN = 600;
+const int RAND_SPAWN_FIRST = 200;
+const int KILLS_TO_WIN = 80;
 
 #endif /* CONSTANTS_H_ */

@@ -346,7 +346,7 @@ void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.x_pos = SPAWN_ENEMY_X;
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
   enemy_data.shift_enemy = rand() % 4 + 1;
-  enemy_data.frame_rate = rand() % 7 + 1;
+  enemy_data.frame_rate = rand() % 6 + 1;
   enemy_data.current_frame = 0;
   enemy_data.rd.angle = angle;
   enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
@@ -365,8 +365,10 @@ void reinit_enemy(enemy& enemy_data) {
 }
 
 void init_obj_health(obj_health& oh) {
-  oh.w = gUITextures[4].getWidth();
-  oh.h = gUITextures[4].getHeight();
+  //oh.w = gUITextures[4].getWidth();
+  //oh.h = gUITextures[4].getHeight();
+  oh.w = gUITextures[0].getWidth();
+  oh.h = gUITextures[0].getHeight();
   oh.x_pos = SPAWN_ENEMY_X;
   oh.y_pos = (SCREEN_HEIGHT - oh.h) / 2;
   oh.rd.angle = 0;
@@ -400,7 +402,7 @@ void calc_spawn_health(obj_health& oh) {
 
 void render_obj_health(obj_health& oh) {
   if (!oh.draw) return;
-  gUITextures[4].render(
+  gUITextures[0].render(
     oh.x_pos, oh.y_pos,
     nullptr, oh.rd
   );
@@ -498,12 +500,12 @@ void detect_collision_health(ship& sd, obj_health& oh, planet& pl) {
   int spawn_diff = 0;
   int coords_sync = spawn_diff - wh_diff;
   int angle_sync = sd.rd.angle + COORDS_SYNC;
-  int mid_ship_y = y + sd.w / 2 - 20;
+  int mid_ship_y = y + sd.h / 2 - 40;
   int mid_health_x = oh.x_pos + oh.w / 2;
   if (y <= SCREEN_HEIGHT / 2) {
     if (eu_mod(angle_sync, 360) == eu_mod(oh.rd.angle, 360)) {
       std::cout << "diff: " << std::abs(mid_ship_y - mid_health_x - coords_sync) << '\n';
-      if (std::abs(mid_ship_y - mid_health_x - coords_sync) <= 40) {
+      if (std::abs(mid_ship_y - mid_health_x - coords_sync) <= 25) {
         init_obj_health(oh);
         add_life(pl, sd);
       }
@@ -513,7 +515,8 @@ void detect_collision_health(ship& sd, obj_health& oh, planet& pl) {
   if (eu_mod(angle_sync, 360) != eu_mod(oh.rd.angle, 360) &&
     eu_mod(angle_sync, 180) == eu_mod(oh.rd.angle, 180)) {
     std::cout << "diff: " << std::abs(mid_ship_y + 2 * sd.shift_ship - mid_health_x - coords_sync) << '\n';
-    if (std::abs(mid_ship_y + 2 * sd.shift_ship - mid_health_x - coords_sync) <= 40) {
+    if (std::abs(y + sd.h / 2 + 2 * sd.shift_ship - mid_health_x - coords_sync)
+    <= 30) {
       init_obj_health(oh);
       add_life(pl, sd);
     }
