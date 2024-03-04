@@ -411,7 +411,7 @@ bool enemy_move(enemy& ed, planet& p) {
   if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= planet_hitbox &&
     std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= planet_hitbox) {
     reinit_enemy(ed); //reinit enemy
-    //--p.curr_lifes;
+    --p.curr_lifes;
     return false;
   }
   int spawn_chance = ed.first_spawn ? RAND_SPAWN_FIRST : RAND_SPAWN;
@@ -507,6 +507,15 @@ void detect_collision_health(ship& sd, obj_health& oh, planet& pl) {
         init_obj_health(oh);
         add_life(pl, sd);
       }
+    }
+    return;
+  }
+  if (eu_mod(angle_sync, 360) != eu_mod(oh.rd.angle, 360) &&
+    eu_mod(angle_sync, 180) == eu_mod(oh.rd.angle, 180)) {
+    std::cout << "diff: " << std::abs(mid_ship_y + 2 * sd.shift_ship - mid_health_x - coords_sync) << '\n';
+    if (std::abs(mid_ship_y + 2 * sd.shift_ship - mid_health_x - coords_sync) <= 40) {
+      init_obj_health(oh);
+      add_life(pl, sd);
     }
   }
 }
