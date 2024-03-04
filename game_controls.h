@@ -9,6 +9,12 @@ struct render_data {
   SDL_RendererFlip flip;
 };
 
+struct color {
+  int R;
+  int G;
+  int B;
+};
+
 struct ship {
   int w;
   int h;
@@ -42,6 +48,15 @@ struct enemy {
 struct planet {
   int max_lifes;
   int curr_lifes;
+};
+
+struct obj_health {
+  int w;
+  int h;
+  int x_pos;
+  int y_pos;
+  render_data rd;
+  bool draw;
 };
 
 

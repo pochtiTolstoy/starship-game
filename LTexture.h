@@ -13,18 +13,24 @@ static const render_data rd = {
   .flip = SDL_FLIP_NONE
 };
 
+static const color cl = {
+  .R = 255,
+  .G = 255,
+  .B = 255
+};
+
 class LTexture {
 public:
   LTexture();
   ~LTexture();
-  bool loadFromFile(std::string path);
+  bool loadFromFile(std::string path, const color& c = cl);
   void free();
   void setColor(Uint8 red, Uint8 green, Uint8 blue);
   void setBlendMode(SDL_BlendMode blending);
   void setAlpha(Uint8 alpha);
   void render(
     int x, int y, SDL_Rect* clip = nullptr,
-    const render_data& = rd
+    const render_data& r = rd
   );
   int getWidth();
   int getHeight();

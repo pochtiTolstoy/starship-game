@@ -8,7 +8,7 @@ LTexture::LTexture()
 
 LTexture::~LTexture() { free(); }
 
-bool LTexture::loadFromFile(std::string path) {
+bool LTexture::loadFromFile(std::string path, const color& c) {
   free();
   SDL_Texture* newTexture = nullptr;
   SDL_Surface* loadedSurface = IMG_Load(path.c_str());
@@ -18,7 +18,7 @@ bool LTexture::loadFromFile(std::string path) {
     return false;
   }
   SDL_SetColorKey(loadedSurface, SDL_TRUE,
-    SDL_MapRGB(loadedSurface->format, 255, 255, 255)
+    SDL_MapRGB(loadedSurface->format, c.R, c.G, c.B)
   );
   newTexture = SDL_CreateTextureFromSurface(
     gRenderer, loadedSurface

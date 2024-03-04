@@ -21,10 +21,15 @@ bool enemy_move(enemy& enemy_data, planet& pl);
 int eu_mod(int num, int mod);
 void shoot(ship& sd, enemy enemy_arr[]);
 void render_ship(const ship& sd);
+void render_obj_health(obj_health& oh);
 void detect_collision(ship& ship_data, enemy meteor_arr[]);
 void init_planet(planet&);
 void calc_cooldown(ship&);
+void calc_spawn_health(obj_health& oh);
+void init_color(color& cl, int R, int G, int B);
 int shoot_animation(const ship&);
+void spawn_health();
+void init_obj_health(obj_health& oh);
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 LTexture gShipTextures[NUM_SHIP_TEXTURES];
@@ -47,10 +52,12 @@ int main(int argc, char* args[]) {
   bool quit = false;
   ship sd;
   planet pl;
+  obj_health oh;
   enemy meteor_arr[NUM_ENEMY_ON_MAP];
 
   init_ship(sd);
   init_planet(pl);
+  init_obj_health(oh);
 
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     init_enemy(meteor_arr[i], 15 * i);
@@ -116,6 +123,9 @@ int main(int argc, char* args[]) {
       );
     }
 
+    //Draw obj_health
+    render_obj_health(oh);
+
     //Draw ship
     render_ship(sd);
 
@@ -128,7 +138,7 @@ int main(int argc, char* args[]) {
         );
       }
     }
-    detect_collision(sd, meteor_arr);
+
     //std::cout << "Lifes: " << ship_data.lifes << '\n';
 
     //Draw grid lines
@@ -148,7 +158,9 @@ int main(int argc, char* args[]) {
 
     //Process final render
     SDL_RenderPresent(gRenderer);
+    detect_collision(sd, meteor_arr);
     calc_cooldown(sd);
+    calc_spawn_health(oh);
   }
   close();
   return 0;
@@ -164,7 +176,14 @@ bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
       case SDLK_w: sd.image = SHIP::MOVE_FORWARD; break;
       case SDLK_s: sd.image = SHIP::MOVE_BACKWARD; break;
       case SDLK_SPACE: sd.image = shoot_animation(sd); break;
-      default:     sd.image = SHIP::DEFAULT;
+      case SDLK_a: 
+        sd.image = (sd.image == RELOAD) ? RELOAD : DEFAULT;
+        break;
+      case SDLK_d:
+        sd.image = (sd.image == RELOAD) ? RELOAD : DEFAULT;
+        break;
+      default:
+        sd.image = SHIP::DEFAULT;
     }
 
     //Change move
@@ -188,7 +207,6 @@ bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
         shoot(sd, enemy_arr);
         break;
     }
-
   }
   return false;
 }
@@ -239,7 +257,8 @@ bool loadMedia() {
     "pics/ship1Big.png",
     "pics/ship1moveBig.png",
     "pics/ship_shoot1Big.png",
-    "pics/ship_back1Big.png"
+    "pics/ship_back1Big.png",
+    "pics/ship_reloadBig.png"
   };
   static const char* file_paths_enemy[NUM_ENEMY_TEXTURES] = {
     "pics/meteor1Big.png"
@@ -248,10 +267,14 @@ bool loadMedia() {
     "pics/heartBig.png",
     "pics/heartBlackBig.png",
     "pics/ui_shootBig.png",
-    "pics/ui_shootBlackBig.png"
+    "pics/ui_shootBlackBig.png",
+    "pics/obj_healthBig.png"
   };
+  color cl;
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
-    if (!gShipTextures[i].loadFromFile(file_paths_ship[i])) {
+    if (i == RELOAD) init_color(cl, 0, 0, 0);
+    else init_color(cl, 255, 255, 255);
+    if (!gShipTextures[i].loadFromFile(file_paths_ship[i], cl)) {
       std::cout << "Failed to load ship texture!\n";
       return false;
     }
@@ -320,10 +343,8 @@ void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.h = gEnemyTextures[0].getHeight();
   enemy_data.x_pos = SPAWN_ENEMY_X;
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
-  //enemy_data.x_pos = (SCREEN_WIDTH - enemy_data.w) / 2;
-  //enemy_data.y_pos = -400;
-  enemy_data.shift_enemy = rand() % 3 + 1;
-  enemy_data.frame_rate = rand() % 8 + 1;
+  enemy_data.shift_enemy = rand() % 4 + 1;
+  enemy_data.frame_rate = rand() % 7 + 1;
   enemy_data.current_frame = 0;
   enemy_data.rd.angle = angle;
   enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
@@ -341,11 +362,37 @@ void reinit_enemy(enemy& enemy_data) {
   enemy_data.first_spawn = false;
 }
 
+void init_obj_health(obj_health& oh) {
+  oh.w = gUITextures[4].getWidth();
+  oh.h = gUITextures[4].getHeight();
+  oh.x_pos = SPAWN_ENEMY_X;
+  oh.y_pos = (SCREEN_HEIGHT - oh.h) / 2;
+  oh.rd.angle = 0;
+  oh.rd.center = {SCREEN_WIDTH / 2 - oh.x_pos, oh.h / 2};
+  oh.rd.flip = SDL_FLIP_NONE;
+  oh.draw = false;
+}
+
 void init_planet(planet& p) {
   p.max_lifes = 4;
   p.curr_lifes = 4;
 }
 
+void calc_spawn_health(obj_health& oh) {
+  if (!oh.draw && rand() % 100 == 0) {
+    // turn off after collision with ship
+    oh.draw = true;
+    oh.x_pos = 400; 
+  }
+}
+
+void render_obj_health(obj_health& oh) {
+  if (!oh.draw) return;
+  gUITextures[4].render(
+    oh.x_pos, oh.y_pos,
+    nullptr, rd
+  );
+}
 
 bool enemy_move(enemy& ed, planet& p) {
   static const int planet_hitbox = 240;
@@ -388,12 +435,16 @@ int eu_mod(int num, int mod) {
 
 void render_ship(const ship& sd) {
   int y_pos = sd.y_pos - sd.shift_ship;
+  int image = sd.image;
   render_data rd = sd.rd;
-  if (sd.image == SHOOT) {
-    y_pos -= (gShipTextures[SHOOT].getHeight() - sd.h);
-    rd.center.y = gShipTextures[SHOOT].getHeight() - sd.h / 2 + sd.shift_ship;
+  if (image == RELOAD && sd.curr_bullets >= 1) {
+    image = DEFAULT;
   }
-  gShipTextures[sd.image].render(
+  if (image == SHOOT || sd.image == RELOAD) {
+    y_pos -= (gShipTextures[image].getHeight() - sd.h);
+    rd.center.y = gShipTextures[image].getHeight() - sd.h / 2 + sd.shift_ship;
+  }
+  gShipTextures[image].render(
     sd.x_pos, y_pos,
     nullptr, rd
   );
@@ -428,7 +479,7 @@ void detect_collision(ship& sd, enemy ma[]) {
 }
 
 int shoot_animation(const ship& sd) {
-  return (sd.curr_bullets <= 0) ? DEFAULT : SHOOT;
+  return (sd.curr_bullets <= 0) ? RELOAD : SHOOT;
 }
 
 void calc_cooldown(ship& sd) { 
@@ -439,3 +490,10 @@ void calc_cooldown(ship& sd) {
     sd.curr_bullets = sd.max_bullets;
   }
 }
+
+void init_color(color& cl, int R, int G, int B) {
+  cl.R = R;
+  cl.G = G;
+  cl.B = B;
+}
+
