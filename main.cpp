@@ -23,6 +23,8 @@ void shoot(ship& sd, enemy enemy_arr[]);
 void render_ship(const ship& sd);
 void render_obj_health(obj_health& oh);
 void detect_collision(ship& ship_data, enemy meteor_arr[]);
+void detect_collision_health(ship& sd, obj_health& oh, planet& pl);
+void add_life(planet& pl, ship& sd);
 void init_planet(planet&);
 void calc_cooldown(ship&);
 void calc_spawn_health(obj_health& oh);
@@ -161,6 +163,7 @@ int main(int argc, char* args[]) {
     detect_collision(sd, meteor_arr);
     calc_cooldown(sd);
     calc_spawn_health(oh);
+    detect_collision_health(sd, oh, pl);
   }
   close();
   return 0;
@@ -168,7 +171,6 @@ int main(int argc, char* args[]) {
 
 bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
   static const int MOVE_LEN = 30;
-  static const double MOVE_ANGULAR = 15;
   if (e.type == SDL_QUIT) return true;
   if (e.type == SDL_KEYDOWN) {
     //Change frame
@@ -382,7 +384,17 @@ void calc_spawn_health(obj_health& oh) {
   if (!oh.draw && rand() % 100 == 0) {
     // turn off after collision with ship
     oh.draw = true;
-    oh.x_pos = 400; 
+    oh.rd.angle = (rand() % 24) * 15;
+    if ((oh.rd.angle >= 45 && oh.rd.angle <= 90 + 45) ||
+         (oh.rd.angle >= 180 + 45 && oh.rd.angle <= 270 + 45)) {
+      oh.x_pos = rand() % 200 + 20 + (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
+      std::cout << "angle around 90" << '\n';
+    } else {
+      oh.x_pos = rand() % 500 + 50; 
+    }
+    oh.rd.center = {SCREEN_WIDTH / 2 - oh.x_pos, oh.h / 2};
+    std::cout << "x: " << oh.x_pos << '\n';
+    std::cout << "angle: " << oh.rd.angle << '\n';
   }
 }
 
@@ -390,7 +402,7 @@ void render_obj_health(obj_health& oh) {
   if (!oh.draw) return;
   gUITextures[4].render(
     oh.x_pos, oh.y_pos,
-    nullptr, rd
+    nullptr, oh.rd
   );
 }
 
@@ -399,7 +411,7 @@ bool enemy_move(enemy& ed, planet& p) {
   if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= planet_hitbox &&
     std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= planet_hitbox) {
     reinit_enemy(ed); //reinit enemy
-    --p.curr_lifes;
+    //--p.curr_lifes;
     return false;
   }
   int spawn_chance = ed.first_spawn ? RAND_SPAWN_FIRST : RAND_SPAWN;
@@ -452,6 +464,7 @@ void render_ship(const ship& sd) {
 
 void detect_collision(ship& sd, enemy ma[]) {
   int y = sd.y_pos - sd.shift_ship;
+  //Wrong, should be 1/2
   int wh_diff = SCREEN_WIDTH - SCREEN_HEIGHT;
   int spawn_diff = -SPAWN_ENEMY_X;
   int coords_sync = spawn_diff - wh_diff;
@@ -476,6 +489,31 @@ void detect_collision(ship& sd, enemy ma[]) {
       }
     }
   }
+}
+
+void detect_collision_health(ship& sd, obj_health& oh, planet& pl) {
+  if (!oh.draw) return;
+  int y = sd.y_pos - sd.shift_ship;
+  int wh_diff = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
+  int spawn_diff = 0;
+  int coords_sync = spawn_diff - wh_diff;
+  int angle_sync = sd.rd.angle + COORDS_SYNC;
+  int mid_ship_y = y + sd.w / 2 - 20;
+  int mid_health_x = oh.x_pos + oh.w / 2;
+  if (y <= SCREEN_HEIGHT / 2) {
+    if (eu_mod(angle_sync, 360) == eu_mod(oh.rd.angle, 360)) {
+      std::cout << "diff: " << std::abs(mid_ship_y - mid_health_x - coords_sync) << '\n';
+      if (std::abs(mid_ship_y - mid_health_x - coords_sync) <= 40) {
+        init_obj_health(oh);
+        add_life(pl, sd);
+      }
+    }
+  }
+}
+
+void add_life(planet& pl, ship& sd) {
+  if (pl.curr_lifes < pl.max_lifes) ++pl.curr_lifes;
+  else if (sd.curr_lifes < sd.max_lifes) ++sd.curr_lifes;
 }
 
 int shoot_animation(const ship& sd) {

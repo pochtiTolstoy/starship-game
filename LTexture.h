@@ -7,7 +7,7 @@
 #include <SDL2/SDL_image.h>
 #include "game_controls.h"
 
-static const render_data rd = {
+static const render_data RD = {
   .angle = 0.0,
   .center = {0, 0},
   .flip = SDL_FLIP_NONE
@@ -30,7 +30,7 @@ public:
   void setAlpha(Uint8 alpha);
   void render(
     int x, int y, SDL_Rect* clip = nullptr,
-    const render_data& r = rd
+    const render_data& r = RD
   );
   int getWidth();
   int getHeight();
