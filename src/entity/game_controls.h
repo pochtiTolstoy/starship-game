@@ -1,19 +1,12 @@
 #ifndef GAME_CONTROLS_H_
 #define GAME_CONTROLS_H_
 
-#include <SDL2/SDL.h>
-#include <string>
+#include "../libs.h"
 
 struct render_data {
   double angle;
   SDL_Point center;
   SDL_RendererFlip flip;
-};
-
-struct color {
-  int R;
-  int G;
-  int B;
 };
 
 struct ship {
@@ -66,6 +59,5 @@ struct ui_killbar {
 	std::string text;
 	SDL_Color color;
 };
-
 
 #endif /* GAME_CONTROLS_H_ */

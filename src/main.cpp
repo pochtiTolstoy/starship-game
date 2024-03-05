@@ -1,13 +1,6 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <iostream>
-#include <string>
-#include <cstdlib>
-#include <ctime>
 #include "constants.h"
-#include "LTexture.h"
-#include "game_controls.h"
+#include "texture/LTexture.h"
+#include "entity/game_controls.h"
 
 enum SHIP { DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD, RELOAD };
 
@@ -294,7 +287,7 @@ bool loadMedia() {
       return false;
     }
   }
-  if (!gBackground.loadFromFile("pics/planet1Big.png")) {
+  if (!gBackground.loadFromFile("res/pics/planet1Big.png")) {
     std::cout << "Failed to load planet!\n";
     return false;
   }
