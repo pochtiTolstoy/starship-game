@@ -30,7 +30,7 @@ void add_life(planet& pl, ship& sd);
 void init_planet(planet&);
 void calc_cooldown(ship&);
 void calc_spawn_health(obj_health& oh);
-void init_color(color& cl, int R, int G, int B);
+void init_color(SDL_Color& cl, int R, int G, int B);
 int shoot_animation(const ship&);
 void spawn_health();
 void init_obj_health(obj_health& oh);
@@ -147,9 +147,6 @@ int main(int argc, char* args[]) {
         );
       }
     }
-
-    //std::cout << "Lifes: " << ship_data.lifes << '\n';
-
     //Draw grid lines
     /*
     SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0xFF);
@@ -167,12 +164,6 @@ int main(int argc, char* args[]) {
 
     //Render text
     render_killbar(uk, sd);
-    /*
-    gTextTexture.render(
-      (SCREEN_WIDTH - gTextTexture.getWidth()) / 2,
-      SCREEN_HEIGHT - gTextTexture.getHeight()
-    );
-    */
 
     //Process final render
     SDL_RenderPresent(gRenderer);
@@ -280,30 +271,12 @@ bool init() {
 }
 
 bool loadMedia() {
-  static const char* file_paths_ship[NUM_SHIP_TEXTURES] = {
-    "pics/ship1Big.png",
-    "pics/ship1moveBig.png",
-    "pics/ship_shoot1Big.png",
-    "pics/ship_back1Big.png",
-    "pics/ship_reloadBig.png"
-  };
-  static const char* file_paths_enemy[NUM_ENEMY_TEXTURES] = {
-    "pics/meteor1Big.png"
-  };
-  static const char* file_paths_ui[NUM_UI_TEXTURES] = {
-    "pics/heartBig.png",
-    "pics/heartBlackBig.png",
-    "pics/ui_shootBig.png",
-    "pics/ui_shootBlackBig.png",
-    "pics/obj_healthBig.png"
-  };
-  static const char* file_path_font = 
-    "res/Mx437_Acer710_Mono.ttf";
-
-  color cl;
+  SDL_Color cl;
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
-    if (i == RELOAD) init_color(cl, 0, 0, 0);
-    else init_color(cl, 255, 255, 255);
+    switch (i) {
+      case RELOAD: init_color(cl, 0, 0, 0);       break;
+      default:     init_color(cl, 255, 255, 255); break;
+    }
     if (!gShipTextures[i].loadFromFile(file_paths_ship[i], cl)) {
       std::cout << "Failed to load ship texture!\n";
       return false;
@@ -386,8 +359,8 @@ void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.h = gEnemyTextures[0].getHeight();
   enemy_data.x_pos = SPAWN_ENEMY_X;
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
-  enemy_data.shift_enemy = rand() % 3 + 1;
-  enemy_data.frame_rate = rand() % 6 + 1;
+  enemy_data.shift_enemy = rand() % ENEMY_SPEED_LEVELS + 1;
+  enemy_data.frame_rate = rand() % ENEMY_FRAMERATE_LEVELS + 1;
   enemy_data.current_frame = 0;
   enemy_data.rd.angle = angle;
   enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
@@ -406,8 +379,6 @@ void reinit_enemy(enemy& enemy_data) {
 }
 
 void init_obj_health(obj_health& oh) {
-  //oh.w = gUITextures[4].getWidth();
-  //oh.h = gUITextures[4].getHeight();
   oh.w = gUITextures[0].getWidth();
   oh.h = gUITextures[0].getHeight();
   oh.x_pos = SPAWN_ENEMY_X;
@@ -582,20 +553,18 @@ void calc_cooldown(ship& sd) {
   }
 }
 
-void init_color(color& cl, int R, int G, int B) {
-  cl.R = R;
-  cl.G = G;
-  cl.B = B;
+void init_color(SDL_Color& cl, int r, int g, int b) {
+  cl.r = r;
+  cl.g = g;
+  cl.b = b;
 }
 
 void init_killbar(ui_killbar& uk) {
   uk.max_kills = KILLS_TO_WIN;
   uk.curr_kills = 0;
   uk.text = "Kills: 0/" + std::to_string(uk.max_kills);
-  uk.color = {0, 0, 0};
-  gTextTexture.loadFromRenderedText(
-    uk.text, uk.color
-  );
+  uk.color = { 0, 0, 0 };
+  gTextTexture.loadFromRenderedText(uk.text, uk.color);
 }
 
 void render_killbar(ui_killbar& uk, const ship& sd) {
@@ -603,9 +572,7 @@ void render_killbar(ui_killbar& uk, const ship& sd) {
     uk.curr_kills = sd.kills;
     uk.text = "Kills: " + std::to_string(uk.curr_kills) +
       "/" + std::to_string(KILLS_TO_WIN);
-    gTextTexture.loadFromRenderedText(
-      uk.text, uk.color
-    );
+    gTextTexture.loadFromRenderedText(uk.text, uk.color);
   }
   gTextTexture.render(
     (SCREEN_WIDTH - gTextTexture.getWidth()) / 2,

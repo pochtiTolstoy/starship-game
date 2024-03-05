@@ -14,17 +14,13 @@ static const render_data RD = {
   .flip = SDL_FLIP_NONE
 };
 
-static const color cl = {
-  .R = 255,
-  .G = 255,
-  .B = 255
-};
+static const SDL_Color cl = { 255, 255, 255 };
 
 class LTexture {
 public:
   LTexture();
   ~LTexture();
-  bool loadFromFile(std::string path, const color& c = cl);
+  bool loadFromFile(std::string path, const SDL_Color& c = cl);
   bool loadFromRenderedText(std::string, SDL_Color);
   void free();
   void setColor(Uint8 red, Uint8 green, Uint8 blue);
