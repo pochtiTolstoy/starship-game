@@ -2,6 +2,7 @@
 
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;
+extern TTF_Font* gFont;
 
 LTexture::LTexture()
   : texture_(nullptr), width_(0), height_(0) {}
@@ -34,6 +35,33 @@ bool LTexture::loadFromFile(std::string path, const color& c) {
   SDL_FreeSurface(loadedSurface);
   texture_ = newTexture;
   return true;
+}
+
+bool LTexture::loadFromRenderedText(
+  std::string texture_text, SDL_Color text_color
+) {
+  free();
+  SDL_Surface* text_surface = TTF_RenderText_Solid(
+    gFont, texture_text.c_str(), text_color
+  );
+  if (nullptr == text_surface) {
+    std::cout << "Unable to render text surface! "
+      "SDL_ttf Error: " << TTF_GetError() << '\n';
+    return false;
+  }
+  texture_ = SDL_CreateTextureFromSurface(
+    gRenderer, text_surface
+  );
+  if (nullptr == texture_) {
+    std::cout << "Unable to create texture from "
+      "rendered text! SDL Error: " << SDL_GetError() << '\n';
+    SDL_FreeSurface(text_surface);
+    return false;
+  }
+  width_ = text_surface->w;
+  height_ = text_surface->h;
+  SDL_FreeSurface(text_surface);
+  return texture_ != nullptr;
 }
 
 void LTexture::free() {

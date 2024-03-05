@@ -18,8 +18,8 @@ const int SHIFT_HEART_SHIP_Y = 30;
 const double MOVE_ANGULAR = 15;
 
 //Safe to change
-const int RAND_SPAWN = 600;
-const int RAND_SPAWN_FIRST = 200;
-const int KILLS_TO_WIN = 80;
+const int RAND_SPAWN = 1000;
+const int RAND_SPAWN_FIRST = 1000;
+const int KILLS_TO_WIN = 60;
 
 #endif /* CONSTANTS_H_ */

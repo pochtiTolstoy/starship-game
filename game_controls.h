@@ -2,6 +2,7 @@
 #define GAME_CONTROLS_H_
 
 #include <SDL2/SDL.h>
+#include <string>
 
 struct render_data {
   double angle;
@@ -57,6 +58,13 @@ struct obj_health {
   int y_pos;
   render_data rd;
   bool draw;
+};
+
+struct ui_killbar {
+	int max_kills;
+	int curr_kills;
+	std::string text;
+	SDL_Color color;
 };
 
 
