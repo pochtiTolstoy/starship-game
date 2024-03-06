@@ -24,6 +24,7 @@ void init_planet(planet&);
 void calc_cooldown(ship&);
 void calc_spawn_health(obj_health& oh);
 void init_color(SDL_Color& cl, int R, int G, int B);
+bool game_is_running(const ship&, const planet&);
 int shoot_animation(const ship&);
 void spawn_health();
 void init_obj_health(obj_health& oh);
@@ -52,6 +53,8 @@ int main(int argc, char* args[]) {
 
   SDL_Event e;
   bool quit = false;
+
+  //Ship sd;
   ship sd;
   planet pl;
   obj_health oh;
@@ -67,7 +70,8 @@ int main(int argc, char* args[]) {
     init_enemy(meteor_arr[i], 15 * i);
   }
 
-  while (!quit && sd.curr_lifes && pl.curr_lifes && sd.kills < KILLS_TO_WIN) {
+  //Game loop
+  while (!quit && game_is_running(sd, pl)) {
     while (SDL_PollEvent(&e) != 0) {
       quit = process_key(e, sd, meteor_arr);
     }
@@ -573,4 +577,8 @@ void render_killbar(ui_killbar& uk, const ship& sd) {
     (SCREEN_WIDTH - gTextTexture.get_width()) / 2,
     SCREEN_HEIGHT - gTextTexture.get_height()
   );
+}
+
+bool game_is_running(const ship& sd, const planet& pl) {
+  return sd.curr_lifes && (sd.kills < KILLS_TO_WIN) && pl.curr_lifes;
 }
