@@ -12,7 +12,7 @@ public:
   Ship(int max_lifes = 2, int max_bullets = 6, int cooldown = 100);
   ~Ship();
   void render();
-  void render2();
+  bool is_fighting() const;
 
 private:
   //Helper methods

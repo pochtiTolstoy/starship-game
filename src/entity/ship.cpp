@@ -26,21 +26,13 @@ Ship::~Ship() {
 
 //Public methods
 void Ship::render() {
-  std::cout << "image_: " << image_ << '\n';
-  if (is_reloaded()) { 
-    image_ = STATES::DEFAULT; 
-    std::cout << "Inside is_reloaded()\n";
-  }
-  if (is_image_high()) { 
-    render_high_image(); 
-  }
-  else render_image();
-}
-
-void Ship::render2() {
   if (is_reloaded()) image_ = STATES::DEFAULT;
   if (is_image_high()) render_high_image();
   else render_image();
+}
+
+bool Ship::is_fighting() const {
+  return curr_lifes_ && kills_ < KILLS_TO_WIN;
 }
 
 //======================Helper methods===========================
