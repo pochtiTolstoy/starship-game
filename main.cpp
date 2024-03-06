@@ -529,8 +529,7 @@ void detect_collision_health(ship& sd, obj_health& oh, planet& pl) {
   }
   if (eu_mod(angle_sync, 360) != eu_mod(oh.rd.angle, 360) &&
     eu_mod(angle_sync, 180) == eu_mod(oh.rd.angle, 180)) {
-    std::cout << "diff: " << std::abs(mid_ship_y + 2 * (sd.y_pos + sd.h / 2) - mid_health_x - coords_sync) << '\n';
-    if (std::abs(sd.y_pos + sd.h / 2 + 2 * (sd.y_pos + sd.h / 2) - mid_health_x - coords_sync)
+    if (std::abs(-sd.y_pos - sd.h / 2 + SCREEN_HEIGHT - mid_health_x - coords_sync)
     <= 30) {
       init_obj_health(oh);
       add_life(pl, sd);
