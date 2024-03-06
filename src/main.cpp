@@ -26,9 +26,12 @@ int shoot_animation(const Ship&);
 void spawn_health();
 void init_obj_health(obj_health& oh);
 void init_killbar(ui_killbar&);
+
+//Things to get rid of
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 TTF_Font* gFont = nullptr;
+
 LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
 LTexture gUITextures[NUM_UI_TEXTURES];
 LTexture gBackground;
@@ -36,6 +39,7 @@ LTexture gTextTexture;
 
 int main(int argc, char* args[]) {
   srand(time(0));
+  //Render_pipe RP;
   if (!init()) {
     std::cout << "Failed to init!\n";
     close();
