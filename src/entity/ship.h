@@ -5,6 +5,8 @@
 #include "../constants.h"
 #include "../texture/LTexture.h"
 
+using render_rotation_data r_data;
+
 class Ship {
 public:
   Ship();
@@ -12,8 +14,14 @@ public:
   void render() const;
 private:
   //Helper methods
+  void render_image() const;
+  void render_high_image() const;
   const SDL_Color& get_cut_color(int image) const;
   bool is_reloaded() const;
+  int calc_high_y() const;
+  const r_data& calc_rotation_high() const;
+  int get_height(int image = image_) const;
+  int get_width(int image = image_) const;
 
   //Render linear data
   int width_;
@@ -23,7 +31,7 @@ private:
   int shift_ship_;
 
   //Render rotation data
-  render_rotation_data render_;
+  r_data render_;
 
   //Stats
   int curr_lifes_;
