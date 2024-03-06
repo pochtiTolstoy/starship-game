@@ -1,20 +1,7 @@
 #ifndef GAME_CONTROLS_H_
 #define GAME_CONTROLS_H_
 
-#include <SDL2/SDL.h>
-#include <string>
-
-struct render_data {
-  double angle;
-  SDL_Point center;
-  SDL_RendererFlip flip;
-};
-
-struct color {
-  int R;
-  int G;
-  int B;
-};
+#include "../util.h"
 
 struct ship {
   int w;
@@ -22,9 +9,9 @@ struct ship {
 	int x_pos;
 	int y_pos;
 	int image;
-  render_data rd;
   int curr_lifes;
   int max_lifes;
+  render_rotation_data rd;
   int max_bullets;
   int curr_bullets;
   int cooldown;
@@ -40,7 +27,7 @@ struct enemy {
   int shift_enemy;
   int frame_rate;
   int current_frame;
-  render_data rd; 
+  render_rotation_data rd; 
   bool draw;
   bool first_spawn;
 };
@@ -55,7 +42,7 @@ struct obj_health {
   int h;
   int x_pos;
   int y_pos;
-  render_data rd;
+  render_rotation_data rd;
   bool draw;
 };
 
@@ -65,6 +52,5 @@ struct ui_killbar {
 	std::string text;
 	SDL_Color color;
 };
-
 
 #endif /* GAME_CONTROLS_H_ */

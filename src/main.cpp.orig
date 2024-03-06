@@ -1,13 +1,6 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <iostream>
-#include <string>
-#include <cstdlib>
-#include <ctime>
 #include "constants.h"
-#include "LTexture.h"
-#include "game_controls.h"
+#include "texture/LTexture.h"
+#include "entity/game_controls.h"
 
 enum SHIP { DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD, RELOAD };
 
@@ -31,6 +24,7 @@ void init_planet(planet&);
 void calc_cooldown(ship&);
 void calc_spawn_health(obj_health& oh);
 void init_color(SDL_Color& cl, int R, int G, int B);
+bool game_is_running(const ship&, const planet&);
 int shoot_animation(const ship&);
 void spawn_health();
 void init_obj_health(obj_health& oh);
@@ -48,15 +42,19 @@ int main(int argc, char* args[]) {
   srand(time(0));
   if (!init()) {
     std::cout << "Failed to init!\n";
+    close();
     exit(EXIT_FAILURE);
   }
   if (!loadMedia()) {
     std::cout << "Failed to load media!\n";
+    close();
     exit(EXIT_FAILURE);
   }
 
   SDL_Event e;
   bool quit = false;
+
+  //Ship sd;
   ship sd;
   planet pl;
   obj_health oh;
@@ -72,7 +70,8 @@ int main(int argc, char* args[]) {
     init_enemy(meteor_arr[i], 15 * i);
   }
 
-  while (!quit && sd.curr_lifes && pl.curr_lifes && sd.kills < KILLS_TO_WIN) {
+  //Game loop
+  while (!quit && game_is_running(sd, pl)) {
     while (SDL_PollEvent(&e) != 0) {
       quit = process_key(e, sd, meteor_arr);
     }
@@ -86,29 +85,29 @@ int main(int argc, char* args[]) {
     //Hearts planet
     for (int i = 0; i < pl.curr_lifes; ++i) {
       gUITextures[0].render(
-        SCREEN_WIDTH / 2 + (i - pl.max_lifes / 2) * gUITextures[0].getWidth(),
-        (SCREEN_HEIGHT - gUITextures[0].getHeight()) / 2 + SHIFT_HEART_PLANET_Y
+        SCREEN_WIDTH / 2 + (i - pl.max_lifes / 2) * gUITextures[0].get_width(),
+        (SCREEN_HEIGHT - gUITextures[0].get_height()) / 2 + SHIFT_HEART_PLANET_Y
       );
     }
     for (int i = pl.curr_lifes; i < pl.max_lifes; ++i) {
       gUITextures[1].render(
-        SCREEN_WIDTH / 2 + (i - pl.max_lifes / 2) * gUITextures[1].getWidth(),
-        (SCREEN_HEIGHT - gUITextures[1].getHeight()) / 2 + SHIFT_HEART_PLANET_Y
+        SCREEN_WIDTH / 2 + (i - pl.max_lifes / 2) * gUITextures[1].get_width(),
+        (SCREEN_HEIGHT - gUITextures[1].get_height()) / 2 + SHIFT_HEART_PLANET_Y
       );
     }
 
     //Hearts ship
     for (int i = 0; i < sd.curr_lifes; ++i) {
       gUITextures[0].render(
-        SCREEN_WIDTH / 2 + (i - sd.max_lifes / 2) * gUITextures[0].getWidth(),
-        (SCREEN_HEIGHT - gUITextures[0].getHeight()) / 2 + 
+        SCREEN_WIDTH / 2 + (i - sd.max_lifes / 2) * gUITextures[0].get_width(),
+        (SCREEN_HEIGHT - gUITextures[0].get_height()) / 2 + 
           SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
       );
     }
     for (int i = sd.curr_lifes; i < sd.max_lifes; ++i) {
       gUITextures[1].render(
-        SCREEN_WIDTH / 2 + (i - sd.max_lifes / 2) * gUITextures[1].getWidth(),
-        (SCREEN_HEIGHT - gUITextures[1].getHeight()) / 2 + 
+        SCREEN_WIDTH / 2 + (i - sd.max_lifes / 2) * gUITextures[1].get_width(),
+        (SCREEN_HEIGHT - gUITextures[1].get_height()) / 2 + 
           SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
       );
     }
@@ -117,8 +116,8 @@ int main(int argc, char* args[]) {
     for (int i = 0; i < sd.curr_bullets; ++i) {
       gUITextures[2].render(
         SCREEN_WIDTH / 2 + (i - sd.max_bullets / 2) *
-        gUITextures[2].getWidth(),
-        (SCREEN_HEIGHT -  gUITextures[2].getHeight()) / 2 +
+        gUITextures[2].get_width(),
+        (SCREEN_HEIGHT -  gUITextures[2].get_height()) / 2 +
           SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
       );
     }
@@ -126,8 +125,8 @@ int main(int argc, char* args[]) {
     for (int i = sd.curr_bullets; i < sd.max_bullets; ++i) {
       gUITextures[3].render(
         SCREEN_WIDTH / 2 + (i - sd.max_bullets / 2) *
-        gUITextures[3].getWidth(),
-        (SCREEN_HEIGHT -  gUITextures[3].getHeight()) / 2 +
+        gUITextures[3].get_width(),
+        (SCREEN_HEIGHT -  gUITextures[3].get_height()) / 2 +
           SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
       );
     }
@@ -277,30 +276,30 @@ bool loadMedia() {
       case RELOAD: init_color(cl, 0, 0, 0);       break;
       default:     init_color(cl, 255, 255, 255); break;
     }
-    if (!gShipTextures[i].loadFromFile(file_paths_ship[i], cl)) {
+    if (!gShipTextures[i].loadFromFile(FILE_PATHS_SHIP[i], cl)) {
       std::cout << "Failed to load ship texture!\n";
       return false;
     }
   }
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
-    if (!gEnemyTextures[i].loadFromFile(file_paths_enemy[i])) {
+    if (!gEnemyTextures[i].loadFromFile(FILE_PATHS_ENEMY[i])) {
       std::cout << "Failed to load enemy texture!\n";
       return false;
     }
   }
   for (int i = 0; i < NUM_UI_TEXTURES; ++i) {
-    if (!gUITextures[i].loadFromFile(file_paths_ui[i])) {
+    if (!gUITextures[i].loadFromFile(FILE_PATHS_UI[i])) {
       std::cout << "Filed to load UI textures!\n";
       return false;
     }
   }
-  if (!gBackground.loadFromFile("pics/planet1Big.png")) {
+  if (!gBackground.loadFromFile(FILE_PATH_BACKGROUND)) {
     std::cout << "Failed to load planet!\n";
     return false;
   }
 
   //Open the font
-  gFont = TTF_OpenFont(file_path_font, 35);
+  gFont = TTF_OpenFont(FILE_PATH_FONT, 35);
   if (nullptr == gFont) {
     std::cout << "Failed to load font! SDL_ttf Error: "
       << TTF_GetError() << '\n';
@@ -336,8 +335,8 @@ void close() {
 }
 
 void init_ship(ship& sd) {
-  sd.w = gShipTextures[0].getWidth();
-  sd.h = gShipTextures[0].getHeight();
+  sd.w = gShipTextures[0].get_width();
+  sd.h = gShipTextures[0].get_height();
   sd.x_pos = (SCREEN_WIDTH - sd.w) / 2;
   sd.y_pos = (SCREEN_HEIGHT - sd.h) / 2;
   sd.image = DEFAULT;
@@ -354,8 +353,8 @@ void init_ship(ship& sd) {
 }
 
 void init_enemy(enemy& enemy_data, double angle) {
-  enemy_data.w = gEnemyTextures[0].getWidth();
-  enemy_data.h = gEnemyTextures[0].getHeight();
+  enemy_data.w = gEnemyTextures[0].get_width();
+  enemy_data.h = gEnemyTextures[0].get_height();
   enemy_data.x_pos = SPAWN_ENEMY_X;
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
   enemy_data.shift_enemy = rand() % ENEMY_SPEED_LEVELS + 1;
@@ -378,8 +377,8 @@ void reinit_enemy(enemy& enemy_data) {
 }
 
 void init_obj_health(obj_health& oh) {
-  oh.w = gUITextures[0].getWidth();
-  oh.h = gUITextures[0].getHeight();
+  oh.w = gUITextures[0].get_width();
+  oh.h = gUITextures[0].get_height();
   oh.x_pos = SPAWN_ENEMY_X;
   oh.y_pos = (SCREEN_HEIGHT - oh.h) / 2;
   oh.rd.angle = 0;
@@ -461,13 +460,20 @@ int eu_mod(int num, int mod) {
 void render_ship(const ship& sd) {
   int y_pos = sd.y_pos;
   int image = sd.image;
-  render_data rd = sd.rd;
+  render_rotation_data rd = sd.rd;
+  //BAD
   if (image == RELOAD && sd.curr_bullets >= 1) {
     image = DEFAULT;
   }
+<<<<<<< HEAD:main.cpp
   if (image == SHOOT || sd.image == RELOAD) {
     y_pos = sd.y_pos - (gShipTextures[image].getHeight() - sd.h);
     rd.center.y += (gShipTextures[image].getHeight() - sd.h);
+=======
+  if (image == SHOOT || image == RELOAD) {
+    y_pos -= (gShipTextures[image].get_height() - sd.h);
+    rd.center.y = gShipTextures[image].get_height() - sd.h / 2 + sd.shift_ship;
+>>>>>>> refactoring:src/main.cpp
   }
   gShipTextures[image].render(
     sd.x_pos, y_pos,
@@ -571,7 +577,11 @@ void render_killbar(ui_killbar& uk, const ship& sd) {
     gTextTexture.loadFromRenderedText(uk.text, uk.color);
   }
   gTextTexture.render(
-    (SCREEN_WIDTH - gTextTexture.getWidth()) / 2,
-    SCREEN_HEIGHT - gTextTexture.getHeight()
+    (SCREEN_WIDTH - gTextTexture.get_width()) / 2,
+    SCREEN_HEIGHT - gTextTexture.get_height()
   );
+}
+
+bool game_is_running(const ship& sd, const planet& pl) {
+  return sd.curr_lifes && (sd.kills < KILLS_TO_WIN) && pl.curr_lifes;
 }
