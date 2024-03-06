@@ -1,23 +1,7 @@
 #ifndef GAME_CONTROLS_H_
 #define GAME_CONTROLS_H_
 
-#include "../util.h"
-
-struct ship {
-  int w;
-  int h;
-	int x_pos;
-	int y_pos;
-	int image;
-  int curr_lifes;
-  int max_lifes;
-  render_rotation_data rd;
-  int max_bullets;
-  int curr_bullets;
-  int cooldown;
-  int cooldown_timer;
-  int kills;
-};
+#include "../util/util.h"
 
 struct enemy {
   int w;

@@ -89,7 +89,7 @@ void LTexture::render(
   int y, 
   SDL_Rect* clip,
   const render_rotation_data& rd
-) {
+) const {
   //Set fullsize texture
   SDL_Rect renderQuad = { x, y, width_, height_ };
   //Set slice of texture
@@ -106,6 +106,6 @@ void LTexture::render(
   );
 }
 
-int LTexture::get_width() { return width_; }
+int LTexture::get_width() const { return width_; }
 
-int LTexture::get_height() { return height_; }
+int LTexture::get_height() const { return height_; }

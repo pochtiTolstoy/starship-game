@@ -1,7 +1,7 @@
 #ifndef LTEXTURE_H_
 #define LTEXTURE_H_
 
-#include "../util.h"
+#include "../util/util.h"
 
 static const render_rotation_data RD = {
   .angle = 0.0,
@@ -15,8 +15,8 @@ class LTexture {
 public:
   LTexture();
   ~LTexture();
-  int get_width();
-  int get_height();
+  int get_width() const;
+  int get_height() const;
   bool loadFromRenderedText(std::string text, SDL_Color);
   bool loadFromFile(std::string path, const SDL_Color& c = CL);
   void render(
@@ -24,7 +24,7 @@ public:
     int y, 
     SDL_Rect* clip = nullptr, 
     const render_rotation_data& r = RD
-  );
+  ) const;
   void setColor(Uint8 red, Uint8 green, Uint8 blue);
   void setBlendMode(SDL_BlendMode blending);
   void setAlpha(Uint8 alpha);
