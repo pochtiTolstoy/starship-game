@@ -9,9 +9,11 @@ class Ship {
 public:
   Ship();
   ~Ship();
+  void render() const;
 private:
   //Helper methods
-  const SDL_Color& get_cut_color(int image);
+  const SDL_Color& get_cut_color(int image) const;
+  bool is_reloaded() const;
 
   //Render linear data
   int width_;

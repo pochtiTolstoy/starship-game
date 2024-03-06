@@ -34,10 +34,40 @@ Ship::~Ship() {
   }
 }
 
+//Public methods
+void render() const {
+  //BAD: shift_ship
+  int y_pos = y_pos_ - shift_ship_;
+  if (is_reloaded()) image_ = SHIP_STATES::DEFAULT;
+  if (is_image_high()) render_high_image(y_pos);
+  else render_image(y_pos);
+}
+
 //Helper methods
-const SDL_Color& Ship::get_cut_color(int image) {
+const SDL_Color& Ship::get_cut_color(int image) const {
   switch (image)  {
     case SHIP_STATES::RELOAD: return { 0x00, 0x00, 0x00 }; break;
     default                   return { 0xFF, 0xFF, 0xFF }; break;
   }
+}
+
+bool is_reloaded() const {
+  return image_ == SHIP_STATES::RELOAD && curr_bullets_ > 0;
+}
+
+/**
+ * Answers if current image of ship 
+ * is higher than DEFAULT image height parameter
+ */
+bool is_image_high() {
+  return gShipTextures_[SHIP_STATES::DEFAULT].get_height() <
+         gShipTextures_[image_].get_height();
+}
+
+void render_high_image() const {
+  static int y_pos = y_pos_  
+}
+
+void render_image() const {
+  gShipTextures_[image_].render(x_pos_, y_pos_, nullptr, render_);
 }

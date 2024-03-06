@@ -462,10 +462,11 @@ void render_ship(const ship& sd) {
   int y_pos = sd.y_pos - sd.shift_ship;
   int image = sd.image;
   render_rotation_data rd = sd.rd;
+  //BAD
   if (image == RELOAD && sd.curr_bullets >= 1) {
     image = DEFAULT;
   }
-  if (image == SHOOT || sd.image == RELOAD) {
+  if (image == SHOOT || image == RELOAD) {
     y_pos -= (gShipTextures[image].get_height() - sd.h);
     rd.center.y = gShipTextures[image].get_height() - sd.h / 2 + sd.shift_ship;
   }
