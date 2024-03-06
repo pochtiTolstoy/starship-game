@@ -22,7 +22,7 @@ struct ship {
 	int x_pos;
 	int y_pos;
 	int image;
-	int shift_ship;
+	//int shift_ship;
   render_data rd;
   int curr_lifes;
   int max_lifes;
