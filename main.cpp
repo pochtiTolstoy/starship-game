@@ -204,12 +204,10 @@ bool process_key(SDL_Event& e, ship& sd, enemy enemy_arr[]) {
       case SDLK_d: sd.rd.angle += MOVE_ANGULAR;
         break;
       case SDLK_w: 
-        //sd.shift_ship += MOVE_LEN; 
         sd.y_pos -= MOVE_LEN;
         sd.rd.center.y += MOVE_LEN;
         break;
       case SDLK_s: 
-        //sd.shift_ship -= MOVE_LEN; 
         sd.y_pos += MOVE_LEN;
         sd.rd.center.y -= MOVE_LEN;
         break;
@@ -343,7 +341,6 @@ void init_ship(ship& sd) {
   sd.x_pos = (SCREEN_WIDTH - sd.w) / 2;
   sd.y_pos = (SCREEN_HEIGHT - sd.h) / 2;
   sd.image = DEFAULT;
-  //sd.shift_ship = 0;
   sd.rd.angle = 0;
   sd.rd.center = {sd.w / 2, sd.h / 2};
   sd.rd.flip = SDL_FLIP_NONE;
@@ -462,7 +459,6 @@ int eu_mod(int num, int mod) {
 }
 
 void render_ship(const ship& sd) {
-  //int y_pos = sd.y_pos - sd.shift_ship;
   int y_pos = sd.y_pos;
   int image = sd.image;
   render_data rd = sd.rd;
@@ -480,7 +476,6 @@ void render_ship(const ship& sd) {
 }
 
 void detect_collision(ship& sd, enemy ma[]) {
-  //int y = sd.y_pos - sd.shift_ship;
   //Wrong, should be 1/2
   int wh_diff = SCREEN_WIDTH - SCREEN_HEIGHT;
   int spawn_diff = -SPAWN_ENEMY_X;
@@ -510,7 +505,6 @@ void detect_collision(ship& sd, enemy ma[]) {
 
 void detect_collision_health(ship& sd, obj_health& oh, planet& pl) {
   if (!oh.draw) return;
-  //int y = sd.y_pos - sd.shift_ship;
   int wh_diff = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
   int spawn_diff = 0;
   int coords_sync = spawn_diff - wh_diff;
