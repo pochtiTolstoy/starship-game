@@ -85,8 +85,10 @@ void LTexture::setAlpha(Uint8 alpha) {
 }
 
 void LTexture::render(
-  int x, int y, SDL_Rect* clip,
-  const render_data& rd
+  int x, 
+  int y, 
+  SDL_Rect* clip,
+  const render_rotation_data& rd
 ) {
   //Set fullsize texture
   SDL_Rect renderQuad = { x, y, width_, height_ };
@@ -104,6 +106,6 @@ void LTexture::render(
   );
 }
 
-int LTexture::getWidth() { return width_; }
+int LTexture::get_width() { return width_; }
 
-int LTexture::getHeight() { return height_; }
+int LTexture::get_height() { return height_; }

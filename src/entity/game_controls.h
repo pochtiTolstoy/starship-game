@@ -1,13 +1,15 @@
 #ifndef GAME_CONTROLS_H_
 #define GAME_CONTROLS_H_
 
-#include "../libs.h"
+#include "../util.h"
 
+/*
 struct render_data {
   double angle;
   SDL_Point center;
   SDL_RendererFlip flip;
 };
+*/
 
 struct ship {
   int w;
@@ -16,7 +18,7 @@ struct ship {
 	int y_pos;
 	int image;
 	int shift_ship;
-  render_data rd;
+  render_rotation_data rd;
   int curr_lifes;
   int max_lifes;
   int max_bullets;
@@ -34,7 +36,7 @@ struct enemy {
   int shift_enemy;
   int frame_rate;
   int current_frame;
-  render_data rd; 
+  render_rotation_data rd; 
   bool draw;
   bool first_spawn;
 };
@@ -49,7 +51,7 @@ struct obj_health {
   int h;
   int x_pos;
   int y_pos;
-  render_data rd;
+  render_rotation_data rd;
   bool draw;
 };
 

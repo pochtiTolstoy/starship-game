@@ -29,7 +29,7 @@ const int ENEMY_FRAMERATE_LEVELS = 6;
 
 /* === File paths === */
 
-const char* file_paths_ship[NUM_SHIP_TEXTURES] = {
+const char* FILE_PATHS_SHIP[NUM_SHIP_TEXTURES] = {
 	"res/pics/ship1Big.png",
 	"res/pics/ship1moveBig.png",
 	"res/pics/ship_shoot1Big.png",
@@ -37,11 +37,11 @@ const char* file_paths_ship[NUM_SHIP_TEXTURES] = {
 	"res/pics/ship_reloadBig.png"
 };
 
-const char* file_paths_enemy[NUM_ENEMY_TEXTURES] = {
+const char* FILE_PATHS_ENEMY[NUM_ENEMY_TEXTURES] = {
 	"res/pics/meteor1Big.png"
 };
 
-const char* file_paths_ui[NUM_UI_TEXTURES] = {
+const char* FILE_PATHS_UI[NUM_UI_TEXTURES] = {
 	"res/pics/heartBig.png",
 	"res/pics/heartBlackBig.png",
 	"res/pics/ui_shootBig.png",
@@ -49,6 +49,7 @@ const char* file_paths_ui[NUM_UI_TEXTURES] = {
 	"res/pics/obj_healthBig.png"
 };
 
-const char* file_path_font = "res/Mx437_Acer710_Mono.ttf";
+const char* FILE_PATH_BACKGROUND = "res/pics/planet1Big.png";
+const char* FILE_PATH_FONT = "res/Mx437_Acer710_Mono.ttf";
 
 #endif /* CONSTANTS_H_ */
