@@ -3,22 +3,27 @@
 
 #include "../util/util.h"
 #include "../util/constants.h"
+#include "../util/render_pipe.h"
 #include "../texture/LTexture.h"
 
 using r_data = render_rotation_data;
 
 class Ship {
 public:
-  Ship(int max_lifes = 2, int max_bullets = 6, int cooldown = 100);
+  Ship() = delete;
+  Ship(
+    Render_pipe& rp, 
+    int max_lifes = 2, int max_bullets = 6, int cooldown = 100
+  );
   ~Ship();
-  void render();
+  void render(Render_pipe&);
   bool is_fighting() const;
 
 private:
   //Helper methods
-  void render_image() const;
-  void render_high_image() const;
-  void init_images();
+  void render_image(Render_pipe&) const;
+  void render_high_image(Render_pipe&) const;
+  void init_images(Render_pipe&);
   const SDL_Color& get_cut_color(int image) const;
   r_data calc_rotation_high() const;
   int calc_high_y() const;

@@ -1,13 +1,13 @@
 #include "ship.h"
 
 //Default constructor
-Ship::Ship(int max_lifes, int max_bullets, int cooldown)
+Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown)
   : image_(STATES::DEFAULT), kills_(0),
     max_lifes_(max_lifes),        curr_lifes_(max_lifes),
     max_bullets_(max_bullets),    curr_bullets_(max_bullets),
     cooldown_(cooldown),          cooldown_timer_(0)
 {
-  init_images();
+  init_images(rp);
   width_  = get_image_width(STATES::DEFAULT);
   height_ = get_image_height(STATES::DEFAULT);
   x_pos_  = (SCREEN_WIDTH  - width_ ) / 2;
@@ -25,10 +25,10 @@ Ship::~Ship() {
 }
 
 //Public methods
-void Ship::render() {
+void Ship::render(Render_pipe& rp) {
   if (is_reloaded()) image_ = STATES::DEFAULT;
-  if (is_image_high()) render_high_image();
-  else render_image();
+  if (is_image_high()) render_high_image(rp);
+  else render_image(rp);
 }
 
 bool Ship::is_fighting() const {
@@ -57,23 +57,25 @@ bool Ship::is_image_high() const {
   return get_image_height(STATES::DEFAULT) < get_image_height(image_);
 }
 
-void Ship::render_image() const {
+void Ship::render_image(Render_pipe& rp) const {
   gShipTextures_[image_].render(
+    rp,
     x_pos_, y_pos_, nullptr, render_
   );
 }
 
-void Ship::render_high_image() const {
+void Ship::render_high_image(Render_pipe& rp) const {
   gShipTextures_[image_].render(
+    rp,
     x_pos_, calc_high_y(), nullptr, calc_rotation_high()
   );
 }
 
-void Ship::init_images() {
+void Ship::init_images(Render_pipe& rp) {
   SDL_Color cut_color;
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
     cut_color = get_cut_color(i);
-    if (!gShipTextures_[i].loadFromFile(FILE_PATHS_SHIP[i], cut_color)) {
+    if (!gShipTextures_[i].loadFromFile(rp, FILE_PATHS_SHIP[i], cut_color)) {
       std::cerr << "Failed to load ship texture!\n"; 
       exit(EXIT_FAILURE);
       // write try catch or something instead of exit

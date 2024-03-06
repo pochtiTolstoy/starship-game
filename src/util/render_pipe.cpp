@@ -2,14 +2,24 @@
 
 Render_pipe::Render_pipe()
   :gWindow_(nullptr), gRenderer_(nullptr), gFont_(nullptr) {}
-  
+
+Render_pipe::~Render_pipe() {
+  TTF_CloseFont(gFont_);
+  SDL_DestroyRenderer(gRenderer_);
+  SDL_DestroyWindow(gWindow_);
+  TTF_Quit();
+  IMG_Quit();
+  SDL_Quit();
+}
+
+//Public
 bool Render_pipe::init() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cout << "SDL could not init! SDL error: "
       << SDL_GetError() << '\n';
     return false;
   }
-  if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY), "1") {
+  if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
     std::cout << "Warning: Linear texture filtering not enabled!\n";
   }
   gWindow_ = SDL_CreateWindow(
@@ -20,7 +30,7 @@ bool Render_pipe::init() {
     SCREEN_HEIGHT,
     SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN
   );
-  if (nullptr == gWindow_) {
+  if (gWindow_ == nullptr) {
     std::cout << "Window could not be created! SDL Error: "
       << SDL_GetError() << '\n';
     return false; 
@@ -29,7 +39,7 @@ bool Render_pipe::init() {
     gWindow_, -1, SDL_RENDERER_ACCELERATED |
     SDL_RENDERER_PRESENTVSYNC
   );
-  if (nullptr == gRenderer_) {
+  if (gRenderer_ == nullptr) {
     std::cout << "Renderer could not be crated! SDL Error: "
       << SDL_GetError() << '\n';
     return false;
@@ -48,5 +58,24 @@ bool Render_pipe::init() {
       << TTF_GetError() << '\n';
     return false;
   }
+  gFont_ = TTF_OpenFont(FILE_PATH_FONT, 35);
+  if (nullptr == gFont_) {
+    std::cout << "Failed to load font! SDL_ttf Error: "
+      << TTF_GetError() << '\n';
+    return false;
+  }
   return true;
+}
+
+//Getters
+SDL_Window* Render_pipe::get_window() const {
+  return gWindow_;
+}
+  
+SDL_Renderer* Render_pipe::get_renderer() const {
+  return gRenderer_;
+}
+
+TTF_Font* Render_pipe::get_font() const {
+  return gFont_;
 }

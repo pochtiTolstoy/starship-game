@@ -1,15 +1,18 @@
 #include "LTexture.h"
 
-extern SDL_Window* gWindow;
-extern SDL_Renderer* gRenderer;
-extern TTF_Font* gFont;
-
 LTexture::LTexture()
   : texture_(nullptr), width_(0), height_(0) {}
 
-LTexture::~LTexture() { free(); }
+LTexture::~LTexture() { 
+  std::cout << "LTexture destructor\n";
+  free(); 
+}
 
-bool LTexture::loadFromFile(std::string path, const SDL_Color& c) {
+bool LTexture::loadFromFile(
+  Render_pipe& rp,
+  std::string path, 
+  const SDL_Color& c
+) {
   free();
   SDL_Texture* newTexture = nullptr;
   SDL_Surface* loadedSurface = IMG_Load(path.c_str());
@@ -21,8 +24,9 @@ bool LTexture::loadFromFile(std::string path, const SDL_Color& c) {
   SDL_SetColorKey(loadedSurface, SDL_TRUE,
     SDL_MapRGB(loadedSurface->format, c.r, c.g, c.b)
   );
+  //!!
   newTexture = SDL_CreateTextureFromSurface(
-    gRenderer, loadedSurface
+    rp.get_renderer(), loadedSurface
   );
   if (nullptr == newTexture) {
     std::cout << "Unable to create texture from " << path
@@ -38,19 +42,22 @@ bool LTexture::loadFromFile(std::string path, const SDL_Color& c) {
 }
 
 bool LTexture::loadFromRenderedText(
-  std::string texture_text, SDL_Color text_color
+  Render_pipe& rp,
+  std::string texture_text, 
+  SDL_Color text_color
 ) {
   free();
   SDL_Surface* text_surface = TTF_RenderText_Solid(
-    gFont, texture_text.c_str(), text_color
+    rp.get_font(), texture_text.c_str(), text_color
   );
   if (nullptr == text_surface) {
     std::cout << "Unable to render text surface! "
       "SDL_ttf Error: " << TTF_GetError() << '\n';
     return false;
   }
+  //!!
   texture_ = SDL_CreateTextureFromSurface(
-    gRenderer, text_surface
+    rp.get_renderer(), text_surface
   );
   if (nullptr == texture_) {
     std::cout << "Unable to create texture from "
@@ -85,10 +92,10 @@ void LTexture::setAlpha(Uint8 alpha) {
 }
 
 void LTexture::render(
-  int x, 
-  int y, 
+  Render_pipe& rp,
+  int x, int y, 
   SDL_Rect* clip,
-  const render_rotation_data& rd
+  const r_data& rd
 ) const {
   //Set fullsize texture
   SDL_Rect renderQuad = { x, y, width_, height_ };
@@ -97,12 +104,11 @@ void LTexture::render(
     renderQuad.w = clip->w;
     renderQuad.h = clip->h;
   }
+  //!!
   SDL_RenderCopyEx(
-    gRenderer, texture_, 
+    rp.get_renderer(), texture_, 
     clip, &renderQuad, 
-    rd.angle, 
-    &rd.center, 
-    rd.flip
+    rd.angle, &rd.center, rd.flip
   );
 }
 
