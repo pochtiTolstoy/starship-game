@@ -33,3 +33,5 @@ APP
 *.app
 
 *.swp
+
+LOCAL/
