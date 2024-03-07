@@ -7,6 +7,7 @@
 #include "entity/planet.h"
 #include "entity/ui.h"
 #include "entity/obj_health.h"
+#include "entity/ui_killbar.h"
 
 bool loadMedia();
 void close_local_textures();
@@ -15,7 +16,6 @@ void init_enemy(enemy& enemy_data, double angle);
 void reinit_enemy(enemy&);
 bool enemy_move(enemy& enemy_data, Planet& pl);
 void shoot(Ship& sd, enemy enemy_arr[]);
-void render_killbar(ui_killbar&, const Ship&);
 void detect_collision(Ship& ship_data, enemy meteor_arr[]);
 void add_life(Planet& pl, Ship& sd);
 void calc_cooldown(Ship&);
@@ -23,14 +23,11 @@ void init_color(SDL_Color& cl, int R, int G, int B);
 bool game_is_running(const Ship&, const Planet&);
 int shoot_animation(const Ship&);
 void spawn_health();
-void init_killbar(ui_killbar&);
 
 Render_pipe rp;
 
 LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
 LTexture gBackground;
-LTexture gTextTexture;
-
 
 /*
  * General game process:
@@ -40,7 +37,6 @@ LTexture gTextTexture;
  */
 int main(int argc, char* args[]) {
   srand(time(0));
-  //Render_pipe;
   if (!rp.init()) {
     std::cout << "Failed to init!\n";
     exit(EXIT_FAILURE);
@@ -65,10 +61,8 @@ int main(int argc, char* args[]) {
   Ship sd(rp);
   Planet pl;
   Obj_health oh(ui.get_texture(UI::IMAGES::RED_HEART));
-  ui_killbar uk;
+  UI_killbar uk(rp);
   enemy meteor_arr[NUM_ENEMY_ON_MAP];
-
-  init_killbar(uk);
 
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     init_enemy(meteor_arr[i], 15 * i);
@@ -96,7 +90,6 @@ int main(int argc, char* args[]) {
     ui.render_ship_bullets(rp, sd);
 
     //Draw obj_health
-    //render_obj_health(oh);
     oh.render(rp);
 
     //Draw ship
@@ -114,7 +107,7 @@ int main(int argc, char* args[]) {
     }
 
     //Render text
-    render_killbar(uk, sd);
+    uk.render(rp, sd);
 
     //Process final render
     SDL_RenderPresent(rp.get_renderer());
@@ -122,9 +115,7 @@ int main(int argc, char* args[]) {
     //Calculate game events
     detect_collision(sd, meteor_arr);
     calc_cooldown(sd);
-    //calc_spawn_health(oh);
     oh.calc_spawn();
-    //detect_collision_health(sd, oh, pl);
     if (oh.detect_collision(sd)) {
       add_life(pl, sd);
     }
@@ -180,7 +171,6 @@ bool process_key(SDL_Event& e, Ship& sd, enemy enemy_arr[]) {
 }
 
 void close_local_textures() {
-  gTextTexture.free();
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     gEnemyTextures[i].free();
   }
@@ -245,8 +235,9 @@ void shoot(Ship& sd, enemy enemy_arr[]) {
 
 void detect_collision(Ship& sd, enemy ma[]) {
   //Wrong, should be 1/2
-  int wh_diff = SCREEN_WIDTH - SCREEN_HEIGHT;
-  int spawn_diff = -SPAWN_ENEMY_X;
+  int wh_diff = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
+  //int spawn_diff = -SPAWN_ENEMY_X;
+  int spawn_diff = 0;
   int coords_sync = spawn_diff - wh_diff;
   int angle_sync = sd.render_.angle + COORDS_SYNC;
 
@@ -293,28 +284,6 @@ void init_color(SDL_Color& cl, int r, int g, int b) {
   cl.r = r;
   cl.g = g;
   cl.b = b;
-}
-
-void init_killbar(ui_killbar& uk) {
-  uk.max_kills = KILLS_TO_WIN;
-  uk.curr_kills = 0;
-  uk.text = "Kills: 0/" + std::to_string(uk.max_kills);
-  uk.color = { 0, 0, 0 };
-  gTextTexture.loadFromRenderedText(rp, uk.text, uk.color);
-}
-
-void render_killbar(ui_killbar& uk, const Ship& sd) {
-  if (uk.curr_kills != sd.kills_) {
-    uk.curr_kills = sd.kills_;
-    uk.text = "Kills: " + std::to_string(uk.curr_kills) +
-      "/" + std::to_string(KILLS_TO_WIN);
-    gTextTexture.loadFromRenderedText(rp, uk.text, uk.color);
-  }
-  gTextTexture.render(
-    rp,
-    (SCREEN_WIDTH - gTextTexture.get_width()) / 2,
-    SCREEN_HEIGHT - gTextTexture.get_height()
-  );
 }
 
 bool game_is_running(const Ship& sd, const Planet& pl) {
