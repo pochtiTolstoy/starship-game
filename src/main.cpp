@@ -32,10 +32,6 @@ void init_killbar(ui_killbar&);
 Render_pipe rp;
 
 LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
-
-/*
-LTexture gUITextures[NUM_UI_TEXTURES];
-*/
 LTexture gBackground;
 LTexture gTextTexture;
 
@@ -61,14 +57,6 @@ int main(int argc, char* args[]) {
       exit(EXIT_FAILURE);
     }
   }
-  /*
-  for (int i = 0; i < NUM_UI_TEXTURES; ++i) {
-    if (!gUITextures[i].loadFromFile(rp, FILE_PATHS_UI[i])) {
-      std::cout << "Filed to load UI textures!\n";
-      exit(EXIT_FAILURE);
-    }
-  }
-  */
 
   if (!gBackground.loadFromFile(rp, FILE_PATH_BACKGROUND)) {
     std::cout << "Failed to load planet!\n";
@@ -84,7 +72,6 @@ int main(int argc, char* args[]) {
   ui_killbar uk;
   enemy meteor_arr[NUM_ENEMY_ON_MAP];
 
-  //init_planet(pl);
   //init_obj_health(oh);
   init_killbar(uk);
 
@@ -106,67 +93,12 @@ int main(int argc, char* args[]) {
 
     //Hearts planet
     ui.render_planet_health(rp, pl);
-    /*
-    for (int i = 0; i < pl.get_curr_lifes(); ++i) {
-      gUITextures[0].render(
-        rp,
-        SCREEN_WIDTH / 2 + (i - pl.get_max_lifes() / 2) * gUITextures[0].get_width(),
-        (SCREEN_HEIGHT - gUITextures[0].get_height()) / 2 + SHIFT_HEART_PLANET_Y
-      );
-    }
-    for (int i = pl.get_curr_lifes(); i < pl.get_max_lifes(); ++i) {
-      gUITextures[1].render(
-        rp,
-        SCREEN_WIDTH / 2 + (i - pl.get_max_lifes() / 2) * gUITextures[1].get_width(),
-        (SCREEN_HEIGHT - gUITextures[1].get_height()) / 2 + SHIFT_HEART_PLANET_Y
-      );
-    }
-    */
 
     //Hearts ship
     ui.render_ship_health(rp, sd);
-    /*
-    for (int i = 0; i < sd.curr_lifes_; ++i) {
-      gUITextures[0].render(
-        rp,
-        SCREEN_WIDTH / 2 + (i - sd.max_lifes_ / 2) * gUITextures[0].get_width(),
-        (SCREEN_HEIGHT - gUITextures[0].get_height()) / 2 + 
-          SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
-      );
-    }
-    for (int i = sd.curr_lifes_; i < sd.max_lifes_; ++i) {
-      gUITextures[1].render(
-        rp,
-        SCREEN_WIDTH / 2 + (i - sd.max_lifes_ / 2) * gUITextures[1].get_width(),
-        (SCREEN_HEIGHT - gUITextures[1].get_height()) / 2 + 
-          SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
-      );
-    }
-    */
 
     //Bullets
     ui.render_ship_bullets(rp, sd);
-    /*
-    for (int i = 0; i < sd.curr_bullets_; ++i) {
-      gUITextures[2].render(
-        rp,
-        SCREEN_WIDTH / 2 + (i - sd.max_bullets_ / 2) *
-        gUITextures[2].get_width(),
-        (SCREEN_HEIGHT -  gUITextures[2].get_height()) / 2 +
-          SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
-      );
-    }
-    for (int i = sd.curr_bullets_; i < sd.max_bullets_; ++i) {
-      gUITextures[3].render(
-        rp,
-        SCREEN_WIDTH / 2 + (i - sd.max_bullets_ / 2) *
-        gUITextures[3].get_width(),
-        (SCREEN_HEIGHT -  gUITextures[3].get_height()) / 2 +
-          SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
-      );
-    }
-    */
-
 
     //Draw obj_health
     //render_obj_health(oh);
