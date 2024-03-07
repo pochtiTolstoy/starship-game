@@ -12,6 +12,7 @@ static const int SPAWN_ENEMY_X = -400;
 static const int DEGREES_IN_CIRCLE = 360;
 static const int DEGREES_IN_HALF_CIRCLE = 180;
 static const int SHIP_HITBOX = 128;
+static const int PLANET_HITBOX = 240;
 static const int HEALTH_HITBOX = 64;
 static const int SHIFT_HEART_PLANET_Y = 185;
 static const int SHIFT_HEART_SHIP_Y = 30;

@@ -3,49 +3,49 @@
 #include "texture/LTexture.h"
 #include "entity/game_controls.h"
 #include "entity/ship.h"
+#include "entity/planet.h"
+#include "entity/ui.h"
 
-//bool init();
 bool loadMedia();
 void close_local_textures();
 bool process_key(SDL_Event&, Ship&, enemy enemy_arr[]);
 void init_enemy(enemy& enemy_data, double angle);
 void reinit_enemy(enemy&);
-bool enemy_move(enemy& enemy_data, planet& pl);
+bool enemy_move(enemy& enemy_data, Planet& pl);
 int eu_mod(int num, int mod);
 void shoot(Ship& sd, enemy enemy_arr[]);
-void render_obj_health(obj_health& oh);
+//void render_obj_health(obj_health& oh);
 void render_killbar(ui_killbar&, const Ship&);
 void detect_collision(Ship& ship_data, enemy meteor_arr[]);
-void detect_collision_health(Ship& sd, obj_health& oh, planet& pl);
-void add_life(planet& pl, Ship& sd);
-void init_planet(planet&);
+//void detect_collision_health(Ship& sd, obj_health& oh, Planet& pl);
+void add_life(Planet& pl, Ship& sd);
+//void init_planet(Planet&);
 void calc_cooldown(Ship&);
-void calc_spawn_health(obj_health& oh);
+//void calc_spawn_health(obj_health& oh);
 void init_color(SDL_Color& cl, int R, int G, int B);
-bool game_is_running(const Ship&, const planet&);
+bool game_is_running(const Ship&, const Planet&);
 int shoot_animation(const Ship&);
 void spawn_health();
-void init_obj_health(obj_health& oh);
+//void init_obj_health(obj_health& oh);
 void init_killbar(ui_killbar&);
 
-//Things to get rid of
-/*
-SDL_Window* gWindow = nullptr;
-SDL_Renderer* gRenderer = nullptr;
-TTF_Font* gFont = nullptr;
-
-LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
-LTexture gUITextures[NUM_UI_TEXTURES];
-LTexture gBackground;
-LTexture gTextTexture;
-*/
-
 Render_pipe rp;
-LTexture gTextTexture;
-LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
-LTexture gUITextures[NUM_UI_TEXTURES];
-LTexture gBackground;
 
+LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
+
+/*
+LTexture gUITextures[NUM_UI_TEXTURES];
+*/
+LTexture gBackground;
+LTexture gTextTexture;
+
+
+/*
+ * General game process:
+ * 1. Create render pipe, which initialize SDL subsystems
+ * 2. Create UI object, which tracks textures and helps render UI
+ * 3. Create other game objects, such as: ship, enemy, health_obj, planet
+ */
 int main(int argc, char* args[]) {
   srand(time(0));
   //Render_pipe;
@@ -53,27 +53,23 @@ int main(int argc, char* args[]) {
     std::cout << "Failed to init!\n";
     exit(EXIT_FAILURE);
   }
-  /*
-  if (!r_pipe.load_media()) {
-    std::cout << "Failed to load media!\n";
-    close();
-    exit(EXIT_FAILURE);
-  }
-  */
-  // Classes should load media
-
+  //Class UI
+  UI ui(rp);
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     if (!gEnemyTextures[i].loadFromFile(rp, FILE_PATHS_ENEMY[i])) {
       std::cout << "Failed to load enemy texture!\n";
       exit(EXIT_FAILURE);
     }
   }
+  /*
   for (int i = 0; i < NUM_UI_TEXTURES; ++i) {
     if (!gUITextures[i].loadFromFile(rp, FILE_PATHS_UI[i])) {
       std::cout << "Filed to load UI textures!\n";
       exit(EXIT_FAILURE);
     }
   }
+  */
+
   if (!gBackground.loadFromFile(rp, FILE_PATH_BACKGROUND)) {
     std::cout << "Failed to load planet!\n";
     exit(EXIT_FAILURE);
@@ -83,13 +79,13 @@ int main(int argc, char* args[]) {
   bool quit = false;
 
   Ship sd(rp);
-  planet pl;
-  obj_health oh;
+  Planet pl;
+  //obj_health oh;
   ui_killbar uk;
   enemy meteor_arr[NUM_ENEMY_ON_MAP];
 
-  init_planet(pl);
-  init_obj_health(oh);
+  //init_planet(pl);
+  //init_obj_health(oh);
   init_killbar(uk);
 
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
@@ -109,22 +105,27 @@ int main(int argc, char* args[]) {
     gBackground.render(rp, 0, 0);
 
     //Hearts planet
-    for (int i = 0; i < pl.curr_lifes; ++i) {
+    ui.render_planet_health(rp, pl);
+    /*
+    for (int i = 0; i < pl.get_curr_lifes(); ++i) {
       gUITextures[0].render(
         rp,
-        SCREEN_WIDTH / 2 + (i - pl.max_lifes / 2) * gUITextures[0].get_width(),
+        SCREEN_WIDTH / 2 + (i - pl.get_max_lifes() / 2) * gUITextures[0].get_width(),
         (SCREEN_HEIGHT - gUITextures[0].get_height()) / 2 + SHIFT_HEART_PLANET_Y
       );
     }
-    for (int i = pl.curr_lifes; i < pl.max_lifes; ++i) {
+    for (int i = pl.get_curr_lifes(); i < pl.get_max_lifes(); ++i) {
       gUITextures[1].render(
         rp,
-        SCREEN_WIDTH / 2 + (i - pl.max_lifes / 2) * gUITextures[1].get_width(),
+        SCREEN_WIDTH / 2 + (i - pl.get_max_lifes() / 2) * gUITextures[1].get_width(),
         (SCREEN_HEIGHT - gUITextures[1].get_height()) / 2 + SHIFT_HEART_PLANET_Y
       );
     }
+    */
 
     //Hearts ship
+    ui.render_ship_health(rp, sd);
+    /*
     for (int i = 0; i < sd.curr_lifes_; ++i) {
       gUITextures[0].render(
         rp,
@@ -141,8 +142,11 @@ int main(int argc, char* args[]) {
           SHIFT_HEART_PLANET_Y + SHIFT_HEART_SHIP_Y
       );
     }
+    */
 
     //Bullets
+    ui.render_ship_bullets(rp, sd);
+    /*
     for (int i = 0; i < sd.curr_bullets_; ++i) {
       gUITextures[2].render(
         rp,
@@ -152,7 +156,6 @@ int main(int argc, char* args[]) {
           SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
       );
     }
-
     for (int i = sd.curr_bullets_; i < sd.max_bullets_; ++i) {
       gUITextures[3].render(
         rp,
@@ -162,9 +165,11 @@ int main(int argc, char* args[]) {
           SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
       );
     }
+    */
+
 
     //Draw obj_health
-    render_obj_health(oh);
+    //render_obj_health(oh);
 
     //Draw ship
     sd.render(rp);
@@ -189,8 +194,8 @@ int main(int argc, char* args[]) {
     //Calculate game events
     detect_collision(sd, meteor_arr);
     calc_cooldown(sd);
-    calc_spawn_health(oh);
-    detect_collision_health(sd, oh, pl);
+    //calc_spawn_health(oh);
+    //detect_collision_health(sd, oh, pl);
   }
   close_local_textures();
   return 0;
@@ -242,94 +247,16 @@ bool process_key(SDL_Event& e, Ship& sd, enemy enemy_arr[]) {
   return false;
 }
 
-/*
-bool init() {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    std::cout << "SDL could not init! SDL error: "
-      << SDL_GetError() << '\n';
-    return false;
-  }
-  if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) {
-    std::cout << "Warning: Linear texture filtering not enabled!\n";
-  }
-  gWindow = SDL_CreateWindow(
-    "SDL Tutorial",
-    SDL_WINDOWPOS_UNDEFINED,
-    SDL_WINDOWPOS_UNDEFINED,
-    SCREEN_WIDTH,
-    SCREEN_HEIGHT,
-    SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN
-  );
-  if (gWindow == nullptr) {
-    std::cout << "Window could not be created! SDL Error: "
-      << SDL_GetError() << '\n';
-    return false; 
-  }
-  gRenderer = SDL_CreateRenderer(
-    gWindow, -1, SDL_RENDERER_ACCELERATED |
-    SDL_RENDERER_PRESENTVSYNC
-  );
-  if (gRenderer == nullptr) {
-    std::cout << "Renderer could not be crated! SDL Error: "
-      << SDL_GetError() << '\n';
-    return false;
-  }
-  SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-  int imgFlags = IMG_INIT_PNG;
-  if (!(IMG_Init(imgFlags) & imgFlags)) {
-    std::cout << "SDL_image could not init! SDL_image Error: "
-      << IMG_GetError() << '\n';
-    return false;
-  }
-
-  //Initialize SDL_ttf
-  if (TTF_Init() == -1) {
-    std::cout << "SDL_ttf could not init! SDL_ttf Error: "
-      << TTF_GetError() << '\n';
-    return false;
-  }
-  return true;
-}
-*/
-
-/*
-bool loadMedia() {
-  for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
-    if (!gEnemyTextures[i].loadFromFile(FILE_PATHS_ENEMY[i])) {
-      std::cout << "Failed to load enemy texture!\n";
-      return false;
-    }
-  }
-  for (int i = 0; i < NUM_UI_TEXTURES; ++i) {
-    if (!gUITextures[i].loadFromFile(FILE_PATHS_UI[i])) {
-      std::cout << "Filed to load UI textures!\n";
-      return false;
-    }
-  }
-  if (!gBackground.loadFromFile(FILE_PATH_BACKGROUND)) {
-    std::cout << "Failed to load planet!\n";
-    return false;
-  }
-
-  //Open the font
-  gFont = TTF_OpenFont(FILE_PATH_FONT, 35);
-  if (nullptr == gFont) {
-    std::cout << "Failed to load font! SDL_ttf Error: "
-      << TTF_GetError() << '\n';
-    return false;
-  }
-  return true;
-}
-*/
-
 void close_local_textures() {
   gTextTexture.free();
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     gEnemyTextures[i].free();
   }
+  /*
   for (int i = 0; i < NUM_UI_TEXTURES; ++i) {
     gUITextures[i].free();
   }
+  */
   gBackground.free();
 }
 
@@ -357,9 +284,12 @@ void reinit_enemy(enemy& enemy_data) {
   enemy_data.first_spawn = false;
 }
 
+/*
 void init_obj_health(obj_health& oh) {
-  oh.w = gUITextures[0].get_width();
-  oh.h = gUITextures[0].get_height();
+  //oh.w = gUITextures[0].get_width();
+  //oh.h = gUITextures[0].get_height();
+  oh.w = ui.get_image_width(UI::IMAGES::RED_HEART);
+  oh.h = ui.get_image_height(UI::IMAGES::RED_HEART);
   oh.x_pos = SPAWN_ENEMY_X;
   oh.y_pos = (SCREEN_HEIGHT - oh.h) / 2;
   oh.rd.angle = 0;
@@ -367,12 +297,16 @@ void init_obj_health(obj_health& oh) {
   oh.rd.flip = SDL_FLIP_NONE;
   oh.draw = false;
 }
+*/
 
+/*
 void init_planet(planet& p) {
   p.max_lifes = 4;
   p.curr_lifes = 4;
 }
+*/
 
+/*
 void calc_spawn_health(obj_health& oh) {
   if (!oh.draw && rand() % 100 == 0) {
     // turn off after collision with ship
@@ -387,22 +321,31 @@ void calc_spawn_health(obj_health& oh) {
     oh.rd.center = {SCREEN_WIDTH / 2 - oh.x_pos, oh.h / 2};
   }
 }
+*/
 
+/*
 void render_obj_health(obj_health& oh) {
   if (!oh.draw) return;
-  gUITextures[0].render(
+  ui.get_texture(UI::IMAGES::RED_HEART).render(
     rp,
     oh.x_pos, oh.y_pos,
     nullptr, oh.rd
   );
 }
+*/
+/*
+  gUITextures[0].render(
+    rp,
+    oh.x_pos, oh.y_pos,
+    nullptr, oh.rd
+  );
+*/
 
-bool enemy_move(enemy& ed, planet& p) {
-  static const int planet_hitbox = 240;
-  if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= planet_hitbox &&
-    std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= planet_hitbox) {
+bool enemy_move(enemy& ed, Planet& pl) {
+  if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= PLANET_HITBOX &&
+    std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= PLANET_HITBOX) {
     reinit_enemy(ed); //reinit enemy
-    --p.curr_lifes;
+    pl.dec_lifes();   //decrease lifes
     return false;
   }
   int spawn_chance = ed.first_spawn ? RAND_SPAWN_FIRST : RAND_SPAWN;
@@ -464,11 +407,11 @@ void detect_collision(Ship& sd, enemy ma[]) {
   }
 }
 
-void detect_collision_health(Ship& sd, obj_health& oh, planet& pl) {
+/*
+void detect_collision_health(Ship& sd, obj_health& oh, Planet& pl) {
   if (!oh.draw) return;
-  int wh_diff = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
+  int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
   int spawn_diff = 0;
-  int coords_sync = spawn_diff - wh_diff;
   int angle_sync = sd.render_.angle + COORDS_SYNC;
   int mid_ship_y = sd.y_pos_ + sd.height_ / 2 - 40;
   int mid_health_x = oh.x_pos + oh.w / 2;
@@ -490,9 +433,10 @@ void detect_collision_health(Ship& sd, obj_health& oh, planet& pl) {
     }
   }
 }
+*/
 
-void add_life(planet& pl, Ship& sd) {
-  if (pl.curr_lifes < pl.max_lifes) ++pl.curr_lifes;
+void add_life(Planet& pl, Ship& sd) {
+  if (pl.get_curr_lifes() < pl.get_max_lifes()) pl.inc_lifes();
   else if (sd.curr_lifes_ < sd.max_lifes_) ++sd.curr_lifes_;
 }
 
@@ -537,6 +481,6 @@ void render_killbar(ui_killbar& uk, const Ship& sd) {
   );
 }
 
-bool game_is_running(const Ship& sd, const planet& pl) {
-  return sd.is_fighting() && pl.curr_lifes;
+bool game_is_running(const Ship& sd, const Planet& pl) {
+  return sd.is_fighting() && pl.get_curr_lifes();
 }

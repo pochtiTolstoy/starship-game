@@ -91,7 +91,7 @@ void LTexture::setAlpha(Uint8 alpha) {
   SDL_SetTextureAlphaMod(texture_, alpha);
 }
 
-void LTexture::render(
+void LTexture::render (
   Render_pipe& rp,
   int x, int y, 
   SDL_Rect* clip,
