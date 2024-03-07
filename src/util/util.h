@@ -17,4 +17,6 @@ struct render_rotation_data {
   SDL_RendererFlip flip;
 };
 
+int eu_mod(int num, int mod);
+
 #endif /* UTIL_H_ */

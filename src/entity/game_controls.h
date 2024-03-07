@@ -16,13 +16,6 @@ struct enemy {
   bool first_spawn;
 };
 
-/*
-struct planet {
-  int max_lifes;
-  int curr_lifes;
-};
-*/
-
 struct obj_health {
   int w;
   int h;
