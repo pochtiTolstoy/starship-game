@@ -17,15 +17,18 @@ public:
   void render_ship_bullets(Render_pipe&, const Ship&);
   int get_image_width(int image) const;
   int get_image_height(int image) const;
-  const LTexture& get_texture(int image) const;
+  const LTexture& get_ui_texture(int image) const;
+  const LTexture& get_enemy_texture(int image) const;
 private:
   int calc_render_x(int image, int obj_num, int objs_in_ui_bar) const;
   int calc_render_y(int i) const;
 
   LTexture gUITextures_[NUM_UI_TEXTURES];
+  LTexture gEnemyTextures_[NUM_ENEMY_TEXTURES];
 
 public:
   enum IMAGES { RED_HEART, BLACK_HEART, BULLET, EMPTY_BULLET };
+  enum ENEMY { METEOR };
 };
 
 #endif /* UI_H_ */

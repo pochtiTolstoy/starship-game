@@ -7,16 +7,29 @@ UI::UI(Render_pipe& rp) {
       exit(EXIT_FAILURE);
     }
   }
+  for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
+    if (!gEnemyTextures_[i].loadFromFile(rp, FILE_PATHS_ENEMY[i])) {
+      std::cout << "Failed to load enemy textures!\n";
+      exit(EXIT_FAILURE);
+    }
+  }
 }
 
 UI::~UI() {
   for (int i = 0; i < NUM_UI_TEXTURES; ++i) {
     gUITextures_[i].free();
   }
+  for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
+    gEnemyTextures_[i].free();
+  }
 }
 
-const LTexture& UI::get_texture(int image) const {
+const LTexture& UI::get_ui_texture(int image) const {
   return gUITextures_[image];
+}
+
+const LTexture& UI::get_enemy_texture(int image) const {
+  return gEnemyTextures_[image];
 }
 
 void UI::render_planet_health(Render_pipe& rp, const Planet& pl) {

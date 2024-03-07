@@ -12,8 +12,8 @@
 bool loadMedia();
 void close_local_textures();
 bool process_key(SDL_Event&, Ship&, enemy enemy_arr[]);
-void init_enemy(enemy& enemy_data, double angle);
-void reinit_enemy(enemy&);
+//void init_enemy(enemy& enemy_data, double angle);
+//void reinit_enemy(enemy&);
 bool enemy_move(enemy& enemy_data, Planet& pl);
 void shoot(Ship& sd, enemy enemy_arr[]);
 void detect_collision(Ship& ship_data, enemy meteor_arr[]);
@@ -26,7 +26,7 @@ void spawn_health();
 
 Render_pipe rp;
 
-LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
+//LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
 LTexture gBackground;
 
 /*
@@ -61,11 +61,18 @@ int main(int argc, char* args[]) {
   Ship sd(rp);
   Planet pl;
   Obj_health oh(ui.get_texture(UI::IMAGES::RED_HEART));
+  //Enemy 
   UI_killbar uk(rp);
-  enemy meteor_arr[NUM_ENEMY_ON_MAP];
 
+  /*
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     init_enemy(meteor_arr[i], 15 * i);
+  }
+  */
+  //Array of enemies
+  Enemy* meteor_arr = new Enemy[NUM_ENEMY_ON_MAP];
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
+    meteor_arr[i] = Enemy(ui.get_enemy_texture(UI::ENEMY::METEOR), 15 * i);
   }
 
   //Game loop
@@ -120,6 +127,7 @@ int main(int argc, char* args[]) {
       add_life(pl, sd);
     }
   }
+  delete[] meteor_arr;
   close_local_textures();
   return 0;
 }
@@ -177,6 +185,7 @@ void close_local_textures() {
   gBackground.free();
 }
 
+/*
 void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.w = gEnemyTextures[0].get_width();
   enemy_data.h = gEnemyTextures[0].get_height();
@@ -191,7 +200,9 @@ void init_enemy(enemy& enemy_data, double angle) {
   enemy_data.draw = false;
   enemy_data.first_spawn = true;
 }
+*/
 
+/*
 void reinit_enemy(enemy& enemy_data) {
   enemy_data.x_pos = SPAWN_ENEMY_X;
   enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
@@ -200,6 +211,7 @@ void reinit_enemy(enemy& enemy_data) {
   enemy_data.draw = false;
   enemy_data.first_spawn = false;
 }
+*/
 
 bool enemy_move(enemy& ed, Planet& pl) {
   if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= PLANET_HITBOX &&
