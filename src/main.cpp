@@ -32,7 +32,8 @@ int main(int argc, char* args[]) {
 
   Ship sd(rp);
   Planet pl;
-  Obj_health oh(ui.get_ui_texture(UI::IMAGES::RED_HEART));
+  Obj_health oh1(ui.get_ui_texture(UI::IMAGES::RED_HEART));
+  Obj_health oh2(ui.get_ui_texture(UI::IMAGES::RED_HEART));
   UI_killbar uk(rp);
 
   //Array of enemies
@@ -69,7 +70,8 @@ int main(int argc, char* args[]) {
     ui.render_ship_bullets(rp, sd);
 
     //Draw obj_health
-    oh.render(rp);
+    oh1.render(rp);
+    oh2.render(rp);
 
     //Draw ship
     sd.render(rp);
@@ -89,8 +91,10 @@ int main(int argc, char* args[]) {
     //Calculate game events
     sd.detect_collision(meteor_arr);
     sd.calc_cooldown();
-    oh.calc_spawn();
-    if (oh.detect_collision(sd)) add_life(pl, sd);
+    oh1.calc_spawn();
+    oh2.calc_spawn();
+    if (oh1.detect_collision(sd)) add_life(pl, sd);
+    if (oh2.detect_collision(sd)) add_life(pl, sd);
   }
   //close_local_textures();
   return 0;
