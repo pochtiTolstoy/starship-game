@@ -10,24 +10,9 @@
 #include "entity/ui_killbar.h"
 #include "entity/enemy.h"
 
-//void close_local_textures();
 bool process_key(SDL_Event&, Ship&, Enemy* enemy_arr);
-//void init_enemy(enemy& enemy_data, double angle);
-//void reinit_enemy(enemy&);
-//bool enemy_move(enemy& enemy_data, Planet& pl);
-//void shoot(Ship& sd, Enemy* enemy_arr);
-//void detect_collision(Ship& ship_data, Enemy* enemy_arr);
 void add_life(Planet& pl, Ship& sd);
-//void calc_cooldown(Ship&);
-//void init_color(SDL_Color& cl, int R, int G, int B);
 bool game_is_running(const Ship&, const Planet&);
-//int shoot_animation(const Ship&);
-//void spawn_health();
-
-Render_pipe rp;
-
-//LTexture gEnemyTextures[NUM_ENEMY_TEXTURES];
-//LTexture gBackground;
 
 /*
  * General game process:
@@ -37,42 +22,19 @@ Render_pipe rp;
  */
 int main(int argc, char* args[]) {
   srand(time(0));
+  Render_pipe rp;
   if (!rp.init()) {
     std::cout << "Failed to init!\n";
     exit(EXIT_FAILURE);
   }
   //Class UI
   UI ui(rp);
-  /*
-  for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
-    if (!gEnemyTextures[i].loadFromFile(rp, FILE_PATHS_ENEMY[i])) {
-      std::cout << "Failed to load enemy texture!\n";
-      exit(EXIT_FAILURE);
-    }
-  }
-  */
-
-  /*
-  if (!gBackground.loadFromFile(rp, FILE_PATH_BACKGROUND)) {
-    std::cout << "Failed to load planet!\n";
-    exit(EXIT_FAILURE);
-  }
-  */
-  
-  SDL_Event e;
-  bool quit = false;
 
   Ship sd(rp);
   Planet pl;
   Obj_health oh(ui.get_ui_texture(UI::IMAGES::RED_HEART));
-  //Enemy 
   UI_killbar uk(rp);
 
-  /*
-  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    init_enemy(meteor_arr[i], 15 * i);
-  }
-  */
   //Array of enemies
   Enemy meteor_arr[NUM_ENEMY_ON_MAP];
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
@@ -80,6 +42,9 @@ int main(int argc, char* args[]) {
     meteor_arr[i].set_angle(i * 15);
     meteor_arr[i].set_texture(ui.get_enemy_texture(UI::ENEMY::METEOR));
   }
+  
+  SDL_Event e;
+  bool quit = false;
 
   //Game loop
   while (!quit && game_is_running(sd, pl)) {
@@ -122,7 +87,6 @@ int main(int argc, char* args[]) {
     SDL_RenderPresent(rp.get_renderer());
     
     //Calculate game events
-    //detect_collision(sd, meteor_arr);
     sd.detect_collision(meteor_arr);
     sd.calc_cooldown();
     oh.calc_spawn();
@@ -177,113 +141,6 @@ bool process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
   }
   return false;
 }
-
-/*
-void close_local_textures() {
-  for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
-    gEnemyTextures[i].free();
-  }
-  //gBackground.free();
-}
-*/
-
-/*
-void init_enemy(enemy& enemy_data, double angle) {
-  enemy_data.w = gEnemyTextures[0].get_width();
-  enemy_data.h = gEnemyTextures[0].get_height();
-  enemy_data.x_pos = SPAWN_ENEMY_X;
-  enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
-  enemy_data.shift_enemy = rand() % ENEMY_SPEED_LEVELS + 1;
-  enemy_data.frame_rate = rand() % ENEMY_FRAMERATE_LEVELS + 1;
-  enemy_data.current_frame = 0;
-  enemy_data.rd.angle = angle;
-  enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
-  enemy_data.rd.flip = SDL_FLIP_NONE;
-  enemy_data.draw = false;
-  enemy_data.first_spawn = true;
-}
-*/
-
-/*
-void reinit_enemy(enemy& enemy_data) {
-  enemy_data.x_pos = SPAWN_ENEMY_X;
-  enemy_data.y_pos = (SCREEN_HEIGHT - enemy_data.h) / 2;
-  enemy_data.current_frame = 0;
-  enemy_data.rd.center = {SCREEN_WIDTH / 2 - enemy_data.x_pos, enemy_data.h / 2};
-  enemy_data.draw = false;
-  enemy_data.first_spawn = false;
-}
-*/
-
-  /*
-  if (std::abs(SCREEN_WIDTH / 2 - ed.x_pos - ed.w / 4) <= PLANET_HITBOX &&
-    std::abs(SCREEN_HEIGHT / 2 - ed.y_pos - ed.h / 4) <= PLANET_HITBOX) {
-    reinit_enemy(ed); //reinit enemy
-    pl.dec_lifes();   //decrease lifes
-    return false;
-  }
-  */
-
-/*
-bool enemy_move(enemy& ed) {
-  int spawn_chance = ed.first_spawn ? RAND_SPAWN_FIRST : RAND_SPAWN;
-  if (!ed.draw && rand() % spawn_chance == 0) {
-    ed.draw = true;
-    return false;
-  }
-  if (ed.draw == true && ed.current_frame % ed.frame_rate == 0) {
-    ed.x_pos += ed.shift_enemy;
-    ed.rd.center.x -= ed.shift_enemy;
-  }
-  ++ed.current_frame;
-  return true;
-}
-*/
-
-/*
-void shoot(Ship& sd, Enemy* enemy_arr) {
-  if (sd.curr_bullets_ <= 0) return;
-  --sd.curr_bullets_;
-  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    if (enemy_arr[i].draw && 
-      (eu_mod(static_cast<int>(sd.render_.angle) + COORDS_SYNC, DEGREES_IN_CIRCLE)) == enemy_arr[i].rd.angle) {
-      enemy_arr[i].reinit();
-      ++sd.kills_;
-    }
-  }
-}
-*/
-
-/*
-void detect_collision(Ship& sd, enemy ma[]) {
-  //Wrong, should be 1/2
-  int wh_diff = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
-  //int spawn_diff = -SPAWN_ENEMY_X;
-  int spawn_diff = 0;
-  int coords_sync = spawn_diff + wh_diff;
-  int angle_sync = sd.render_.angle + COORDS_SYNC;
-
-  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    if (sd.y_pos_ <= SCREEN_HEIGHT / 2) {
-      if (eu_mod(angle_sync, 360) == eu_mod(ma[i].rd.angle, 360)) {
-        if (std::abs(sd.y_pos_ - (ma[i].x_pos - coords_sync)) <= SHIP_HITBOX) {
-          reinit_enemy(ma[i]);
-          --sd.curr_lifes_;
-        }
-      }
-    } else {
-      if (eu_mod(angle_sync, 360) != eu_mod(ma[i].rd.angle, 360) &&
-          eu_mod(angle_sync, 180) == eu_mod(ma[i].rd.angle, 180)) {
-        if (std::abs(-sd.y_pos_ - sd.height_ + SCREEN_HEIGHT - (ma[i].x_pos - coords_sync)) <=
-            SHIP_HITBOX - 30) {
-          reinit_enemy(ma[i]);
-          --sd.curr_lifes_;
-        }
-      }
-    }
-  }
-}
-*/
 
 void add_life(Planet& pl, Ship& sd) {
   if (pl.get_curr_lifes() < pl.get_max_lifes()) pl.inc_lifes();
