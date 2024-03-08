@@ -31,6 +31,57 @@ void Ship::render(Render_pipe& rp) {
   else render_image(rp);
 }
 
+void Ship::shoot(Enemy* enemy_arr) {
+  if (curr_bullets_ <= 0) return;
+  --curr_bullets_;
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
+    if (is_angle_sync(enemy_arr[i])) {
+      enemy_arr[i].reinit();
+      ++kills_;
+      return;
+    }
+  }
+}
+
+void Ship::calc_cooldown() {
+  if (curr_bullets_ > 0) return;
+  ++cooldown_timer_;
+  if (cooldown_timer_ >= cooldown_) {
+    cooldown_timer_ = 0;
+    curr_bullets_ = max_bullets_;
+  }
+}
+
+void Ship::detect_collision(Enemy* e) {
+  int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
+  int angle_sync = render_.angle + COORDS_SYNC; 
+  int diff = SCREEN_HEIGHT - y_pos_ - height_ + coords_sync;
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
+    if (y_pos_ <= SCREEN_HEIGHT / 2) {
+      if (eu_mod(angle_sync, 360) == eu_mod(e[i].get_angle(), 360)) {
+        std::cout << "SHIP: " << y_pos_ << ", e[i] - dx: "
+          << e[i].get_x() - coords_sync << '\n';
+        if (std::abs(y_pos_ - e[i].get_x() + coords_sync) <= SHIP_HITBOX) {
+          e[i].reinit();
+          --curr_lifes_;
+        }
+      }
+    } else {
+      if (eu_mod(angle_sync, 360) != eu_mod(e[i].get_angle(), 360) &&
+          eu_mod(angle_sync, 180) == eu_mod(e[i].get_angle(), 180)) {
+        if (std::abs(diff - e[i].get_x()) <= SHIP_HITBOX - 30) {
+          e[i].reinit();
+          --curr_lifes_;
+        }
+      }
+    }
+  }
+}
+
+void Ship::change_shoot_animation() {
+  image_ = (curr_bullets_ <= 0) ? STATES::RELOAD : STATES::SHOOT;
+}
+
 bool Ship::is_fighting() const {
   return curr_lifes_ && kills_ < KILLS_TO_WIN;
 }
@@ -99,4 +150,9 @@ int Ship::get_image_height(int image) const {
 
 int Ship::get_image_width(int image) const {
   return gShipTextures_[image].get_width();
+}
+
+bool Ship::is_angle_sync(const Enemy& enemy) {
+  int angle_sync = static_cast<int>(render_.angle) + COORDS_SYNC;
+  return enemy.is_alive() && eu_mod(angle_sync, 360) == enemy.get_angle();
 }

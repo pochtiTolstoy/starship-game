@@ -5,6 +5,7 @@
 #include "../util/constants.h"
 #include "../util/render_pipe.h"
 #include "../texture/LTexture.h"
+#include "enemy.h"
 
 using r_data = render_rotation_data;
 
@@ -17,6 +18,10 @@ public:
   );
   ~Ship();
   void render(Render_pipe&);
+  void shoot(Enemy*);
+  void detect_collision(Enemy*);
+  void change_shoot_animation();
+  void calc_cooldown();
   bool is_fighting() const;
 
 private:
@@ -31,6 +36,7 @@ private:
   int get_image_width(int image) const;
   bool is_reloaded() const;
   bool is_image_high() const;
+  bool is_angle_sync(const Enemy&);
 
 //CHANGE TO PRIVATE LATER
 public:

@@ -15,6 +15,7 @@ public:
   void render_planet_health(Render_pipe&, const Planet&);
   void render_ship_health(Render_pipe&, const Ship&);
   void render_ship_bullets(Render_pipe&, const Ship&);
+  void render_background(Render_pipe&);
   int get_image_width(int image) const;
   int get_image_height(int image) const;
   const LTexture& get_ui_texture(int image) const;
@@ -25,6 +26,7 @@ private:
 
   LTexture gUITextures_[NUM_UI_TEXTURES];
   LTexture gEnemyTextures_[NUM_ENEMY_TEXTURES];
+  LTexture gBackground_;
 
 public:
   enum IMAGES { RED_HEART, BLACK_HEART, BULLET, EMPTY_BULLET };

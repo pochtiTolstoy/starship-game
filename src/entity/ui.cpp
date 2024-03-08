@@ -13,6 +13,10 @@ UI::UI(Render_pipe& rp) {
       exit(EXIT_FAILURE);
     }
   }
+  if (!gBackground_.loadFromFile(rp, FILE_PATH_BACKGROUND)) {
+    std::cout << "Failed to load planet!\n";
+    exit(EXIT_FAILURE);
+  }
 }
 
 UI::~UI() {
@@ -22,6 +26,7 @@ UI::~UI() {
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     gEnemyTextures_[i].free();
   }
+  gBackground_.free();
 }
 
 const LTexture& UI::get_ui_texture(int image) const {
@@ -89,6 +94,10 @@ void UI::render_ship_bullets(Render_pipe& rp, const Ship& sd) {
       SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
     );
   }
+}
+
+void UI::render_background(Render_pipe& rp) {
+  gBackground_.render(rp, 0, 0);
 }
 
 //======================Helper methods===========================
