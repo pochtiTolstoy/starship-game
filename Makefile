@@ -12,7 +12,7 @@
 SRC_DIRS := src src/texture src/entity src/util
 SRCS := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.cpp))
 OBJS := $(SRCS:.cpp=.o)
-OBJ_NAME := APP
+OBJ_NAME := APP1
 CC := g++
 
 LINKER_FLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf
