@@ -10,7 +10,7 @@
 #include "entity/ui_killbar.h"
 #include "entity/enemy.h"
 
-bool process_key(SDL_Event&, Ship&, Enemy* enemy_arr);
+void process_key(SDL_Event&, Ship&, Enemy* enemy_arr);
 void add_life(Planet& pl, Ship& sd);
 bool game_is_running(const Ship&, const Planet&);
 
@@ -50,8 +50,10 @@ int main(int argc, char* args[]) {
   //Game loop
   while (!quit && game_is_running(sd, pl)) {
     while (SDL_PollEvent(&e) != 0) {
-      quit = process_key(e, sd, meteor_arr);
+      if (e.type == SDL_QUIT) quit = true;
+      //quit = process_key(e, sd, meteor_arr);
     }
+    process_key(e, sd, meteor_arr);
     //Clear screen
     SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(rp.get_renderer());
@@ -100,9 +102,36 @@ int main(int argc, char* args[]) {
   return 0;
 }
 
-bool process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
+void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
   static const int MOVE_LEN = 30;
-  if (e.type == SDL_QUIT) return true;
+  //if (e.type == SDL_QUIT) return true;
+  const Uint8* states = SDL_GetKeyboardState(nullptr);
+  if (states[SDL_SCANCODE_W]) {
+    sd.image_ = Ship::STATES::MOVE_FORWARD;
+    sd.y_pos_ -= MOVE_LEN;
+    sd.render_.center.y += MOVE_LEN;
+  } else if (states[SDL_SCANCODE_S]) {
+    sd.image_ = Ship::STATES::MOVE_BACKWARD; 
+    sd.y_pos_ += MOVE_LEN;
+    sd.render_.center.y -= MOVE_LEN;
+  } else if (states[SDL_SCANCODE_A]) {
+    sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
+                Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
+    sd.render_.angle -= MOVE_ANGULAR;
+  } else if (states[SDL_SCANCODE_D]) {
+    sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
+                Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
+    sd.render_.angle += MOVE_ANGULAR;
+  } else if (states[SDL_SCANCODE_SPACE]) {
+    sd.change_shoot_animation();
+    sd.shoot(enemy_arr);
+  } else if (states[SDL_SCANCODE_E]) {
+    sd.image_ = Ship::STATES::DEFAULT;
+    sd.render_.angle += DEGREES_IN_HALF_CIRCLE;
+  } else {
+    sd.image_ = Ship::STATES::DEFAULT;
+  }
+  /*
   if (e.type == SDL_KEYDOWN) {
     //Change frame
     switch(e.key.keysym.sym) {
@@ -143,7 +172,7 @@ bool process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
     }
   }
-  return false;
+  */
 }
 
 void add_life(Planet& pl, Ship& sd) {
