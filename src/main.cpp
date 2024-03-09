@@ -129,12 +129,14 @@ int main(int argc, char* args[]) {
   //Test FPS
   LTimer fpsTimer;
   LTimer capTimer;
+  LTimer testTimer;
   SDL_Color textColor = { 0, 0, 0, 255 };
   LTexture gFPSTextTexture;
   int countedFrames = 0;
   std::stringstream timeText;
 
   fpsTimer.start();
+  bool start_timer = false;
   //Game loop
   while (!quit && game_is_running(sd, pl)) {
     capTimer.start();
@@ -183,7 +185,15 @@ int main(int argc, char* args[]) {
     oh2.render(rp);
 
     //Draw ship
+    if (!start_timer) {
+      testTimer.start();
+      start_timer = true;
+    }
     sd.render(rp);
+    if (eu_mod(sd.render_.angle, 360) == 0) {
+      std::cout << "FULL ROTATION TIME: " << testTimer.getTicks() << '\n';
+      start_timer = false;
+    }
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
@@ -214,7 +224,7 @@ int main(int argc, char* args[]) {
 
     ++countedFrames;
     int frameTicks = capTimer.getTicks();
-    std::cout << "counted frames: " << countedFrames << ", cycle ticks: " << frameTicks << ", TICKS PER FRAME: " << SCREEN_TICK_PER_FRAME << '\n';;
+    //std::cout << "counted frames: " << countedFrames << ", cycle ticks: " << frameTicks << ", TICKS PER FRAME: " << SCREEN_TICK_PER_FRAME << '\n';;
     if (frameTicks < SCREEN_TICK_PER_FRAME) {
       SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
     }
