@@ -129,13 +129,13 @@ int main(int argc, char* args[]) {
   //Test FPS
   LTimer fpsTimer;
   LTimer capTimer;
-  LTimer testTimer;
   SDL_Color textColor = { 0, 0, 0, 255 };
   LTexture gFPSTextTexture;
   int countedFrames = 0;
   std::stringstream timeText;
 
   //Game loop
+  fpsTimer.start();
   while (!quit && game_is_running(sd, pl)) {
     capTimer.start();
     while (SDL_PollEvent(&e) != 0) {
@@ -148,6 +148,7 @@ int main(int argc, char* args[]) {
     //Calculate average FPS
     float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.0f);
     if (avgFPS > 2'000'000) avgFPS = 0;
+    std::cout << "AVG FPS: " << avgFPS << '\n';
     timeText.str("");
     timeText << "Average Frames Per Second " << avgFPS;
     if (!gFPSTextTexture.loadFromRenderedText(
