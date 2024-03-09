@@ -59,8 +59,8 @@ void Ship::detect_collision(Enemy* e) {
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     if (y_pos_ <= SCREEN_HEIGHT / 2) {
       if (eu_mod(angle_sync, 360) == eu_mod(e[i].get_angle(), 360)) {
-        std::cout << "SHIP: " << y_pos_ << ", e[i] - dx: "
-          << e[i].get_x() - coords_sync << '\n';
+        //std::cout << "SHIP: " << y_pos_ << ", e[i] - dx: "
+          //<< e[i].get_x() - coords_sync << '\n';
         if (std::abs(y_pos_ - e[i].get_x() + coords_sync) <= SHIP_HITBOX) {
           e[i].reinit();
           --curr_lifes_;
