@@ -9,10 +9,89 @@
 #include "entity/obj_health.h"
 #include "entity/ui_killbar.h"
 #include "entity/enemy.h"
+#include <sstream>
+
+const int SCREEN_FPS = 60;
+const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 
 void process_key(SDL_Event&, Ship&, Enemy* enemy_arr);
 void add_life(Planet& pl, Ship& sd);
 bool game_is_running(const Ship&, const Planet&);
+
+class LTimer {
+public:
+  LTimer();
+  void start();
+  void stop();
+  void pause();
+  void unpause();
+  Uint32 getTicks();
+  bool isStarted();
+  bool isPaused();
+private:
+  Uint32 mStartTicks;
+  Uint32 mPausedTicks;
+  bool mPaused;
+  bool mStarted;
+};
+
+LTimer::LTimer() {
+  mStartTicks = 0;
+  mPausedTicks = 0;
+  mPaused = false;
+  mStarted = false;
+}
+
+void LTimer::start() {
+  mStarted = true;
+  mPaused = false;
+  mStartTicks = SDL_GetTicks();
+  mPausedTicks = 0;
+}
+
+void LTimer::stop() {
+  mStarted = false;
+  mPaused = false;
+  mStartTicks = 0;
+  mPausedTicks = 0;
+}
+
+void LTimer::pause() {
+  if (mStarted && !mPaused) {
+    mPaused = true;
+    mPausedTicks = SDL_GetTicks() - mStartTicks;
+    mStartTicks = 0;
+  }
+}
+
+void LTimer::unpause() {
+  if (mStarted && mPaused) {
+    mPaused = false;
+    mStartTicks = SDL_GetTicks() - mPausedTicks;
+    mPausedTicks = 0;
+  }
+}
+
+Uint32 LTimer::getTicks() {
+  Uint32 time = 0;
+  if (mStarted) {
+    if (mPaused) time = mPausedTicks;
+    else time = SDL_GetTicks() - mStartTicks;
+  }
+  return time;
+}
+
+bool LTimer::isStarted()
+{
+	//Timer is running and paused or unpaused
+    return mStarted;
+}
+
+bool LTimer::isPaused()
+{
+	//Timer is running and paused
+    return mPaused && mStarted;
+}
 
 /*
  * General game process:
@@ -47,13 +126,41 @@ int main(int argc, char* args[]) {
   SDL_Event e;
   bool quit = false;
 
+  //Test FPS
+  LTimer fpsTimer;
+  LTimer capTimer;
+  SDL_Color textColor = { 0, 0, 0, 255 };
+  LTexture gFPSTextTexture;
+  int countedFrames = 0;
+  std::stringstream timeText;
+
+  fpsTimer.start();
   //Game loop
   while (!quit && game_is_running(sd, pl)) {
+    capTimer.start();
     while (SDL_PollEvent(&e) != 0) {
       if (e.type == SDL_QUIT) quit = true;
-      //quit = process_key(e, sd, meteor_arr);
+#if 1
+      process_key(e, sd, meteor_arr);
+#endif
     }
+
+    //Calculate average FPS
+    float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.0f);
+    if (avgFPS > 2'000'000) avgFPS = 0;
+    timeText.str("");
+    timeText << "Average Frames Per Second " << avgFPS;
+    if (!gFPSTextTexture.loadFromRenderedText(
+      rp, timeText.str().c_str(), textColor
+    )) {
+      std::cout << "Unable to render FPS texture!\n";
+    }
+    //Process key control
+#if 0
     process_key(e, sd, meteor_arr);
+#endif
+    //std::cout << "SHIP angle:" << sd.render_.angle << '\n';
+
     //Clear screen
     SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(rp.get_renderer());
@@ -80,12 +187,19 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
+      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
       if (meteor_arr[i].move()) meteor_arr[i].render(rp);
     }
 
     //Render text
     uk.render(rp, sd);
+
+    //avg FPS render
+    gFPSTextTexture.render(
+      rp,
+      (SCREEN_WIDTH - gFPSTextTexture.get_width()) / 2,
+      0
+    );
 
     //Process final render
     SDL_RenderPresent(rp.get_renderer());
@@ -97,6 +211,13 @@ int main(int argc, char* args[]) {
     oh2.calc_spawn();
     if (oh1.detect_collision(sd)) add_life(pl, sd);
     if (oh2.detect_collision(sd)) add_life(pl, sd);
+
+    ++countedFrames;
+    int frameTicks = capTimer.getTicks();
+    std::cout << "counted frames: " << countedFrames << ", cycle ticks: " << frameTicks << ", TICKS PER FRAME: " << SCREEN_TICK_PER_FRAME << '\n';;
+    if (frameTicks < SCREEN_TICK_PER_FRAME) {
+      SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
+    }
   }
   //close_local_textures();
   return 0;
@@ -104,7 +225,7 @@ int main(int argc, char* args[]) {
 
 void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
   static const int MOVE_LEN = 30;
-  //if (e.type == SDL_QUIT) return true;
+#if 0
   const Uint8* states = SDL_GetKeyboardState(nullptr);
   if (states[SDL_SCANCODE_W]) {
     sd.image_ = Ship::STATES::MOVE_FORWARD;
@@ -131,7 +252,8 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
   } else {
     sd.image_ = Ship::STATES::DEFAULT;
   }
-  /*
+#endif
+#if 1
   if (e.type == SDL_KEYDOWN) {
     //Change frame
     switch(e.key.keysym.sym) {
@@ -172,7 +294,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
     }
   }
-  */
+#endif
 }
 
 void add_life(Planet& pl, Ship& sd) {
