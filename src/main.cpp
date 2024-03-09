@@ -46,7 +46,6 @@ int main(int argc, char* args[]) {
   
   SDL_Event e;
   bool quit = false;
-
   //Game loop
   while (!quit && game_is_running(sd, pl)) {
     while (SDL_PollEvent(&e) != 0) {
