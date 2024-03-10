@@ -168,9 +168,20 @@ int main(int argc, char* args[]) {
 #endif
 
     //sd.move();
-    if (angTimer.isStarted() && angTimer.getTicks() > 90) {
+    if (angTimer.isStarted() && angTimer.getTicks() > 100) {
       count_diff = 0; 
-      sd.render_.angle += sd.vel_ang_; 
+      //sd.render_.angle += sd.vel_ang_; 
+      if (sd.vel_ang_ < 0)
+        sd.render_.angle -= ang_fix;
+      else
+        sd.render_.angle += ang_fix;
+      int rem = eu_mod(static_cast<int>(sd.render_.angle),
+                   static_cast<int>(MOVE_ANGULAR));
+      if (sd.vel_ang_ < 0) {
+        sd.render_.angle -= rem;
+      } else {
+        sd.render_.angle += (MOVE_ANGULAR - rem);
+      }
       /*
       if (sd.vel_ang_ < 0) {
         sd.render_.angle += count_diff * ang_fix;
@@ -178,7 +189,7 @@ int main(int argc, char* args[]) {
         sd.render_.angle -= count_diff * ang_fix; 
       }
       */
-      angTimer.start();
+      angTimer.start(); //restart timer
     } else if (angTimer.isStarted()) {
       if (sd.vel_ang_ < 0)
         sd.render_.angle -= ang_fix;
