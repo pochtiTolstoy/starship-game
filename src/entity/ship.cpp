@@ -2,10 +2,11 @@
 
 //Default constructor
 Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown)
-  : image_(STATES::DEFAULT), kills_(0),
-    max_lifes_(max_lifes),        curr_lifes_(max_lifes),
+  : vel_r_(0), vel_ang_(0),
+    curr_lifes_(max_lifes), max_lifes_(max_lifes),
     max_bullets_(max_bullets),    curr_bullets_(max_bullets),
-    cooldown_(cooldown),          cooldown_timer_(0)
+    cooldown_(cooldown),          cooldown_timer_(0),
+    kills_(0), image_(STATES::DEFAULT)
 {
   init_images(rp);
   width_  = get_image_width(STATES::DEFAULT);
@@ -30,6 +31,12 @@ void Ship::render(Render_pipe& rp) {
   if (is_image_high()) render_high_image(rp);
   else render_image(rp);
 }
+
+/*
+void Ship::move() {
+  render_.angle += vel_ang_;
+}
+*/
 
 void Ship::shoot(Enemy* enemy_arr) {
   if (curr_bullets_ <= 0) return;

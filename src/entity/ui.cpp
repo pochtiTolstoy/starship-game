@@ -58,7 +58,9 @@ void UI::render_planet_health(Render_pipe& rp, const Planet& pl) {
 
 void UI::render_ship_health(Render_pipe& rp, const Ship& sd) {
   //DRAW RED HEARTS
+  //std::cout << "SHIP LIFES INSIDE CLASS: " << sd.curr_lifes_ << ", " << sd.max_lifes_ << '\n';
   for (int i = 0; i < sd.curr_lifes_; ++i) {
+    //std::cout << "RED i : " << i << '\n';
     gUITextures_[IMAGES::RED_HEART].render(
       rp,
       calc_render_x(IMAGES::RED_HEART, i, sd.max_lifes_),
@@ -68,6 +70,7 @@ void UI::render_ship_health(Render_pipe& rp, const Ship& sd) {
   }
   //DRAW BLACK HEARTS
   for (int i = sd.curr_lifes_; i < sd.max_lifes_; ++i) {
+    //std::cout << "BLACK i : " << i << '\n';
     gUITextures_[IMAGES::BLACK_HEART].render(
       rp,
       calc_render_x(IMAGES::BLACK_HEART, i, sd.max_lifes_),

@@ -99,6 +99,9 @@ bool LTimer::isPaused()
  * 2. Create UI object, which tracks textures and helps render UI
  * 3. Create other game objects, such as: ship, enemy, health_obj, planet
  */
+
+LTimer angTimer;
+LTimer moveTimer;
 int main(int argc, char* args[]) {
   srand(time(0));
   Render_pipe rp;
@@ -110,6 +113,7 @@ int main(int argc, char* args[]) {
   UI ui(rp);
 
   Ship sd(rp);
+  //std::cout << "LIFES: " << sd.curr_lifes_ << ", " << sd.max_lifes_ << '\n';
   Planet pl;
   Obj_health oh1(ui.get_ui_texture(UI::IMAGES::RED_HEART));
   Obj_health oh2(ui.get_ui_texture(UI::IMAGES::RED_HEART));
@@ -148,7 +152,7 @@ int main(int argc, char* args[]) {
     //Calculate average FPS
     float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.0f);
     if (avgFPS > 2'000'000) avgFPS = 0;
-    std::cout << "AVG FPS: " << avgFPS << '\n';
+    //std::cout << "AVG FPS: " << avgFPS << '\n';
     timeText.str("");
     timeText << "Average Frames Per Second " << avgFPS;
     if (!gFPSTextTexture.loadFromRenderedText(
@@ -161,6 +165,16 @@ int main(int argc, char* args[]) {
     process_key(e, sd, meteor_arr);
 #endif
 
+    //sd.move();
+    if (angTimer.isStarted() && angTimer.getTicks() > 95) {
+      sd.render_.angle += sd.vel_ang_; 
+      angTimer.start();
+    }
+    if (moveTimer.isStarted() && moveTimer.getTicks() > 70) {
+      sd.y_pos_ += sd.vel_r_;
+      sd.render_.center.y -= sd.vel_r_;
+      moveTimer.start();
+    }
     //Clear screen
     SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(rp.get_renderer());
@@ -186,7 +200,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
+      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
       if (meteor_arr[i].move()) meteor_arr[i].render(rp);
     }
 
@@ -213,7 +227,7 @@ int main(int argc, char* args[]) {
 
     ++countedFrames;
     int frameTicks = capTimer.getTicks();
-    std::cout << "counted frames: " << countedFrames << ", cycle ticks: " << frameTicks << ", TICKS PER FRAME: " << SCREEN_TICK_PER_FRAME << '\n';;
+    //std::cout << "counted frames: " << countedFrames << ", cycle ticks: " << frameTicks << ", TICKS PER FRAME: " << SCREEN_TICK_PER_FRAME << '\n';;
     if (frameTicks < SCREEN_TICK_PER_FRAME) {
       SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
     }
@@ -252,7 +266,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
     sd.image_ = Ship::STATES::DEFAULT;
   }
 #endif
-#if 1
+#if 0
   if (e.type == SDL_KEYDOWN) {
     //Change frame
     switch(e.key.keysym.sym) {
@@ -293,6 +307,65 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
     }
   }
+#endif
+#if 1
+  if (e.type == SDL_KEYDOWN) {
+    switch(e.key.keysym.sym) {
+      case SDLK_w: sd.image_ = Ship::STATES::MOVE_FORWARD; break;
+      case SDLK_s: sd.image_ = Ship::STATES::MOVE_BACKWARD; break;
+      case SDLK_SPACE: sd.change_shoot_animation(); break;
+      case SDLK_a: 
+        sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
+                    Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
+        break;
+      case SDLK_d:
+        sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
+                    Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
+        break;
+      default:
+        sd.image_ = Ship::STATES::DEFAULT;
+    }
+  }
+  if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
+    switch (e.key.keysym.sym) {
+      case SDLK_w: 
+        sd.vel_r_ -= MOVE_LEN; 
+        sd.y_pos_ += sd.vel_r_;
+        sd.render_.center.y -= sd.vel_r_;
+        moveTimer.start();
+        break;
+      case SDLK_s: 
+        sd.vel_r_ += MOVE_LEN; 
+        sd.y_pos_ += sd.vel_r_;
+        sd.render_.center.y -= sd.vel_r_;
+        moveTimer.start();
+        break;
+      case SDLK_a: 
+        sd.vel_ang_ -= MOVE_ANGULAR; 
+        sd.render_.angle += sd.vel_ang_;
+        angTimer.start(); 
+        break;
+      case SDLK_d: 
+        sd.vel_ang_ += MOVE_ANGULAR; 
+        sd.render_.angle += sd.vel_ang_;
+        angTimer.start(); 
+        break;
+      //OK
+      case SDLK_e: sd.render_.angle += DEGREES_IN_HALF_CIRCLE; break;
+      case SDLK_SPACE: sd.shoot(enemy_arr); break;
+    }
+  } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
+    switch (e.key.keysym.sym) {
+      case SDLK_w: sd.vel_r_ += MOVE_LEN; moveTimer.stop();
+        break;
+      case SDLK_s: sd.vel_r_ -= MOVE_LEN; moveTimer.stop();
+        break;
+      case SDLK_a: sd.vel_ang_ += MOVE_ANGULAR; angTimer.stop(); break;
+      case SDLK_d: sd.vel_ang_ -= MOVE_ANGULAR; angTimer.stop(); break;
+    }
+
+  }
+  
 #endif
 }
 
