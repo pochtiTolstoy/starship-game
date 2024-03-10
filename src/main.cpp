@@ -103,7 +103,7 @@ bool LTimer::isPaused()
 LTimer angTimer;
 LTimer moveTimer;
 int count_diff = 0;
-const int ang_fix = 5;
+const int ang_fix = 3;
 int main(int argc, char* args[]) {
   srand(time(0));
   Render_pipe rp;
