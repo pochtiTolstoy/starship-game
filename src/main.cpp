@@ -103,7 +103,7 @@ bool LTimer::isPaused()
 LTimer angTimer;
 LTimer moveTimer;
 int count_diff = 0;
-const int ang_fix = 2;
+const int ang_fix = 3;
 int main(int argc, char* args[]) {
   srand(time(0));
   Render_pipe rp;
@@ -146,15 +146,12 @@ int main(int argc, char* args[]) {
     capTimer.start();
     while (SDL_PollEvent(&e) != 0) {
       if (e.type == SDL_QUIT) quit = true;
-#if 1
       process_key(e, sd, meteor_arr);
-#endif
     }
 
     //Calculate average FPS
     float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.0f);
     if (avgFPS > 2'000'000) avgFPS = 0;
-    //std::cout << "AVG FPS: " << avgFPS << '\n';
     timeText.str("");
     timeText << "Average Frames Per Second " << avgFPS;
     if (!gFPSTextTexture.loadFromRenderedText(
@@ -162,12 +159,16 @@ int main(int argc, char* args[]) {
     )) {
       std::cout << "Unable to render FPS texture!\n";
     }
-    //Process key control
-#if 0
-    process_key(e, sd, meteor_arr);
-#endif
 
     //sd.move();
+    if (angTimer.isStarted()) {
+      if (sd.vel_ang_ < 0)
+        sd.render_.angle -= ang_fix;
+      else
+        sd.render_.angle += ang_fix;
+      angTimer.start(); //Restart timer
+    }
+#if 0
     if (angTimer.isStarted() && angTimer.getTicks() > 100) {
       count_diff = 0; 
       //sd.render_.angle += sd.vel_ang_; 
@@ -200,6 +201,7 @@ int main(int argc, char* args[]) {
         sd.render_.angle += ang_fix;
       ++count_diff;
     }
+#endif
     /*
     if (!angTimer.isStarted()) {
       int rem = static_cast<int>(sd.render_.angle) % 15;
@@ -244,7 +246,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
+      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
       if (meteor_arr[i].move()) meteor_arr[i].render(rp);
     }
 
@@ -276,6 +278,7 @@ int main(int argc, char* args[]) {
       SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
     }
   }
+  std::cout << "KILLS: " << sd.kills_ << "/" << KILLS_TO_WIN << '\n';
   //close_local_textures();
   return 0;
 }

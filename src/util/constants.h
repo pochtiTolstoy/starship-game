@@ -21,8 +21,8 @@ static const double MOVE_ANGULAR = 15;
 /* === Safe to change === */
 
 static const int RAND_SPAWN = 700;
-static const int RAND_SPAWN_FIRST = 300;
-static const int KILLS_TO_WIN = 60;
+static const int RAND_SPAWN_FIRST = 350;
+static const int KILLS_TO_WIN = 120;
 
 //Enemy movements
 static const int ENEMY_SPEED_LEVELS = 4;

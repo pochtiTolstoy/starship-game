@@ -70,7 +70,7 @@ void Ship::detect_collision(Enemy* e) {
           //<< e[i].get_x() - coords_sync << '\n';
         if (std::abs(y_pos_ - e[i].get_x() + coords_sync) <= SHIP_HITBOX) {
           e[i].reinit();
-          //--curr_lifes_;
+          --curr_lifes_;
         }
       }
     } else {
@@ -78,7 +78,7 @@ void Ship::detect_collision(Enemy* e) {
           eu_mod(angle_sync, 180) == eu_mod(e[i].get_angle(), 180)) {
         if (std::abs(diff - e[i].get_x()) <= SHIP_HITBOX - 30) {
           e[i].reinit();
-          //--curr_lifes_;
+          --curr_lifes_;
         }
       }
     }
