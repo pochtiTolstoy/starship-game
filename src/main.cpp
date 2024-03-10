@@ -102,6 +102,8 @@ bool LTimer::isPaused()
 
 LTimer angTimer;
 LTimer moveTimer;
+int count_diff = 0;
+const int ang_fix = 5;
 int main(int argc, char* args[]) {
   srand(time(0));
   Render_pipe rp;
@@ -166,10 +168,38 @@ int main(int argc, char* args[]) {
 #endif
 
     //sd.move();
-    if (angTimer.isStarted() && angTimer.getTicks() > 95) {
+    if (angTimer.isStarted() && angTimer.getTicks() > 90) {
+      count_diff = 0; 
       sd.render_.angle += sd.vel_ang_; 
+      /*
+      if (sd.vel_ang_ < 0) {
+        sd.render_.angle += count_diff * ang_fix;
+      } else {
+        sd.render_.angle -= count_diff * ang_fix; 
+      }
+      */
       angTimer.start();
+    } else if (angTimer.isStarted()) {
+      if (sd.vel_ang_ < 0)
+        sd.render_.angle -= ang_fix;
+      else
+        sd.render_.angle += ang_fix;
+      ++count_diff;
     }
+    /*
+    if (!angTimer.isStarted()) {
+      int rem = static_cast<int>(sd.render_.angle) % 15;
+      if (rem < 8) {
+        sd.render_.angle -= rem;
+      }else {
+        sd.render_.angle += rem;
+      }
+      std::cout << "FIX  SHIP ANGLE: " << sd.render_.angle << '\n';
+    } else { 
+      std::cout << "FREE SHIP ANGLE: " << sd.render_.angle << '\n';
+    }
+    */
+    std::cout << "SHIP ANGLE: " << sd.render_.angle << '\n';
     if (moveTimer.isStarted() && moveTimer.getTicks() > 70) {
       sd.y_pos_ += sd.vel_r_;
       sd.render_.center.y -= sd.vel_r_;
@@ -200,7 +230,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
+      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
       if (meteor_arr[i].move()) meteor_arr[i].render(rp);
     }
 
@@ -309,6 +339,8 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
   }
 #endif
 #if 1
+  int rem = eu_mod(static_cast<int>(sd.render_.angle), 
+                   static_cast<int>(MOVE_ANGULAR));
   if (e.type == SDL_KEYDOWN) {
     switch(e.key.keysym.sym) {
       case SDLK_w: sd.image_ = Ship::STATES::MOVE_FORWARD; break;
@@ -342,12 +374,12 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
       case SDLK_a: 
         sd.vel_ang_ -= MOVE_ANGULAR; 
-        sd.render_.angle += sd.vel_ang_;
+        //sd.render_.angle += sd.vel_ang_;
         angTimer.start(); 
         break;
       case SDLK_d: 
         sd.vel_ang_ += MOVE_ANGULAR; 
-        sd.render_.angle += sd.vel_ang_;
+        //sd.render_.angle += sd.vel_ang_;
         angTimer.start(); 
         break;
       //OK
@@ -360,12 +392,30 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
       case SDLK_s: sd.vel_r_ -= MOVE_LEN; moveTimer.stop();
         break;
-      case SDLK_a: sd.vel_ang_ += MOVE_ANGULAR; angTimer.stop(); break;
-      case SDLK_d: sd.vel_ang_ -= MOVE_ANGULAR; angTimer.stop(); break;
+      case SDLK_a: 
+        sd.vel_ang_ += MOVE_ANGULAR;
+        /*sd.render_.angle -= count_diff * ang_fix;*/
+        if (rem > 9)
+          //DAMPER CLOCKWISE
+          sd.render_.angle += (MOVE_ANGULAR - rem);
+        else
+          sd.render_.angle -= rem;
+        count_diff = 0;
+        angTimer.stop();
+        break;
+      case SDLK_d:
+        sd.vel_ang_ -= MOVE_ANGULAR;
+        /*sd.render_.angle += count_diff * ang_fix;*/
+        if (rem > 5)
+          sd.render_.angle += (MOVE_ANGULAR - rem);
+        else
+          //DAMPER COUNTER-CLOCKWISE
+          sd.render_.angle -= rem;
+        count_diff = 0;
+        angTimer.stop();
+        break;
     }
-
   }
-  
 #endif
 }
 
