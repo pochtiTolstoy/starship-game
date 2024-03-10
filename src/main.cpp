@@ -103,7 +103,7 @@ bool LTimer::isPaused()
 LTimer angTimer;
 LTimer moveTimer;
 int count_diff = 0;
-const int ang_fix = 3;
+const int ang_fix = 2;
 int main(int argc, char* args[]) {
   srand(time(0));
   Render_pipe rp;
@@ -175,6 +175,8 @@ int main(int argc, char* args[]) {
         sd.render_.angle -= ang_fix;
       else
         sd.render_.angle += ang_fix;
+
+      /*
       int rem = eu_mod(static_cast<int>(sd.render_.angle),
                    static_cast<int>(MOVE_ANGULAR));
       if (sd.vel_ang_ < 0) {
@@ -182,6 +184,7 @@ int main(int argc, char* args[]) {
       } else {
         sd.render_.angle += (MOVE_ANGULAR - rem);
       }
+      */
       /*
       if (sd.vel_ang_ < 0) {
         sd.render_.angle += count_diff * ang_fix;
