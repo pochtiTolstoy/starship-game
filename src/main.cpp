@@ -131,11 +131,6 @@ int main(int argc, char* args[]) {
   
   SDL_Event e;
   bool quit = false;
-<<<<<<< HEAD
-||||||| 3e3c181
-
-=======
-
   //Test FPS
   LTimer fpsTimer;
   LTimer capTimer;
@@ -143,8 +138,6 @@ int main(int argc, char* args[]) {
   LTexture gFPSTextTexture;
   int countedFrames = 0;
   std::stringstream timeText;
-
->>>>>>> change_sdl_control_system
   //Game loop
   fpsTimer.start();
   while (!quit && game_is_running(sd, pl)) {
