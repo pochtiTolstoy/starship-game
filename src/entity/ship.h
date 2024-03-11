@@ -48,6 +48,8 @@ public:
   int y_pos_;
   int vel_r_;
   int vel_ang_;
+  bool moving_r_;
+  bool moving_ang_;
 
   //Render rotation data
   r_data render_;
