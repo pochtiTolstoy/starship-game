@@ -37,6 +37,8 @@ Enemy::~Enemy() {}
 void Enemy::reinit() {
   x_pos_ = SPAWN_ENEMY_X;
   y_pos_ = (SCREEN_HEIGHT - height_) / 2;
+  shift_ = rand() % ENEMY_SPEED_LEVELS + 1;
+  frame_rate_ = rand() % ENEMY_FRAMERATE_LEVELS + 1;
   current_frame_ = 0;
   render_.center = { SCREEN_WIDTH / 2 - x_pos_, height_ / 2 };
   draw_ = false;

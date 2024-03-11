@@ -22,6 +22,7 @@ public:
   void detect_collision(Enemy*);
   void change_shoot_animation();
   void calc_cooldown();
+  //void move();
   bool is_fighting() const;
 
 private:
@@ -45,6 +46,8 @@ public:
   int height_;
   int x_pos_;
   int y_pos_;
+  int vel_r_;
+  int vel_ang_;
 
   //Render rotation data
   r_data render_;

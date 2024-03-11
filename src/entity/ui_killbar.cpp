@@ -13,6 +13,7 @@ UI_killbar::~UI_killbar() {
 }
 
 void UI_killbar::render(Render_pipe& rp, const Ship& sd) {
+  //std::cout << "SHIP KILLS: " << sd.kills_ << ", UK KILLS: " << curr_kills_ << '\n';
   if (curr_kills_ != sd.kills_) {
     curr_kills_ = sd.kills_;
     text_ = "Kills: " + std::to_string(curr_kills_) +

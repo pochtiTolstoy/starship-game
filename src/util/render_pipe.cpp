@@ -36,8 +36,7 @@ bool Render_pipe::init() {
     return false; 
   }
   gRenderer_ = SDL_CreateRenderer(
-    gWindow_, -1, SDL_RENDERER_ACCELERATED |
-    SDL_RENDERER_PRESENTVSYNC
+    gWindow_, -1, SDL_RENDERER_ACCELERATED /*| SDL_RENDERER_PRESENTVSYNC*/
   );
   if (gRenderer_ == nullptr) {
     std::cout << "Renderer could not be crated! SDL Error: "
