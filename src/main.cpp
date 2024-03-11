@@ -131,6 +131,8 @@ int main(int argc, char* args[]) {
   SDL_Color textColor = { 0, 0, 0, 255 };
   LTexture gFPSTextTexture;
   int countedFrames = 0;
+  double last_frame_time = 0.0;
+  double deltaTime = 0.0;
   std::stringstream timeText;
   //Game loop
   fpsTimer.start();
@@ -151,21 +153,23 @@ int main(int argc, char* args[]) {
     )) {
       std::cout << "Unable to render FPS texture!\n";
     }
-
+    
+    deltaTime = (SDL_GetTicks() - last_frame_time) / 1000.0;
+    last_frame_time = SDL_GetTicks();
     //sd.move();
     if (sd.moving_ang_) {
       if (sd.vel_ang_ < 0)
-        sd.render_.angle -= 3;
+        sd.render_.angle -= std::floor(250 * deltaTime);
       else
-        sd.render_.angle += 3;
+        sd.render_.angle += std::floor(250 * deltaTime);
     }
     if (sd.moving_r_) {
       if (sd.vel_r_ < 0) {
-        sd.y_pos_ -= 8;
-        sd.render_.center.y += 8;
+        sd.y_pos_ -= std::floor(480 * deltaTime);
+        sd.render_.center.y += std::floor(480 * deltaTime);
       } else {
-        sd.y_pos_ += 8;
-        sd.render_.center.y -= 8;
+        sd.y_pos_ += std::floor(480 * deltaTime);
+        sd.render_.center.y -= std::floor(480 * deltaTime);
       }
     }
     std::cout << "SHIP POS: " << sd.y_pos_ << ", SHIP ANGLE: " << sd.render_.angle << '\n';
