@@ -115,7 +115,6 @@ int main(int argc, char* args[]) {
   UI ui(rp);
 
   Ship sd(rp);
-  //std::cout << "LIFES: " << sd.curr_lifes_ << ", " << sd.max_lifes_ << '\n';
   Planet pl;
   Obj_health oh1(ui.get_ui_texture(UI::IMAGES::RED_HEART));
   Obj_health oh2(ui.get_ui_texture(UI::IMAGES::RED_HEART));
@@ -124,7 +123,6 @@ int main(int argc, char* args[]) {
   //Array of enemies
   Enemy meteor_arr[NUM_ENEMY_ON_MAP];
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    //meteor_arr[i] = Enemy(ui.get_enemy_texture(UI::ENEMY::METEOR), 15 * i);
     meteor_arr[i].set_angle(i * 15);
     meteor_arr[i].set_texture(ui.get_enemy_texture(UI::ENEMY::METEOR));
   }
@@ -151,7 +149,7 @@ int main(int argc, char* args[]) {
     float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.0f);
     if (avgFPS > 2'000'000) avgFPS = 0;
     timeText.str("");
-    timeText << "Average Frames Per Second " << avgFPS;
+    timeText << "FPS: " << avgFPS;
     if (!gFPSTextTexture.loadFromRenderedText(
       rp, timeText.str().c_str(), textColor
     )) {
@@ -174,67 +172,11 @@ int main(int argc, char* args[]) {
         sd.render_.center.y -= 8;
       }
     }
-#if 0
-    if (angTimer.isStarted() && angTimer.getTicks() > 100) {
-      count_diff = 0; 
-      //sd.render_.angle += sd.vel_ang_; 
-      if (sd.vel_ang_ < 0)
-        sd.render_.angle -= ang_fix;
-      else
-        sd.render_.angle += ang_fix;
-
-      /*
-      int rem = eu_mod(static_cast<int>(sd.render_.angle),
-                   static_cast<int>(MOVE_ANGULAR));
-      if (sd.vel_ang_ < 0) {
-        sd.render_.angle -= rem;
-      } else {
-        sd.render_.angle += (MOVE_ANGULAR - rem);
-      }
-      */
-      /*
-      if (sd.vel_ang_ < 0) {
-        sd.render_.angle += count_diff * ang_fix;
-      } else {
-        sd.render_.angle -= count_diff * ang_fix; 
-      }
-      */
-      angTimer.start(); //restart timer
-    } else if (angTimer.isStarted()) {
-      if (sd.vel_ang_ < 0)
-        sd.render_.angle -= ang_fix;
-      else
-        sd.render_.angle += ang_fix;
-      ++count_diff;
-    }
-#endif
-    /*
-    if (!angTimer.isStarted()) {
-      int rem = static_cast<int>(sd.render_.angle) % 15;
-      if (rem < 8) {
-        sd.render_.angle -= rem;
-      }else {
-        sd.render_.angle += rem;
-      }
-      std::cout << "FIX  SHIP ANGLE: " << sd.render_.angle << '\n';
-    } else { 
-      std::cout << "FREE SHIP ANGLE: " << sd.render_.angle << '\n';
-    }
-    */
-    std::cout << "SHIP ANGLE: " << sd.render_.angle << '\n';
-    /*
-    if (moveTimer.isStarted() && moveTimer.getTicks() > 70) {
-      sd.y_pos_ += sd.vel_r_;
-      sd.render_.center.y -= sd.vel_r_;
-      moveTimer.start();
-    }
-    */
     //Clear screen
     SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(rp.get_renderer());
 
     //Background
-    //gBackground.render(rp, 0, 0);
     ui.render_background(rp);
 
     //Hearts planet
@@ -281,89 +223,16 @@ int main(int argc, char* args[]) {
 
     ++countedFrames;
     int frameTicks = capTimer.getTicks();
-    //std::cout << "counted frames: " << countedFrames << ", cycle ticks: " << frameTicks << ", TICKS PER FRAME: " << SCREEN_TICK_PER_FRAME << '\n';;
     if (frameTicks < SCREEN_TICK_PER_FRAME) {
       SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
     }
   }
   std::cout << "KILLS: " << sd.kills_ << "/" << KILLS_TO_WIN << '\n';
-  //close_local_textures();
   return 0;
 }
 
 void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
   static const int MOVE_LEN = 30;
-#if 0
-  const Uint8* states = SDL_GetKeyboardState(nullptr);
-  if (states[SDL_SCANCODE_W]) {
-    sd.image_ = Ship::STATES::MOVE_FORWARD;
-    sd.y_pos_ -= MOVE_LEN;
-    sd.render_.center.y += MOVE_LEN;
-  } else if (states[SDL_SCANCODE_S]) {
-    sd.image_ = Ship::STATES::MOVE_BACKWARD; 
-    sd.y_pos_ += MOVE_LEN;
-    sd.render_.center.y -= MOVE_LEN;
-  } else if (states[SDL_SCANCODE_A]) {
-    sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
-                Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
-    sd.render_.angle -= MOVE_ANGULAR;
-  } else if (states[SDL_SCANCODE_D]) {
-    sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
-                Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
-    sd.render_.angle += MOVE_ANGULAR;
-  } else if (states[SDL_SCANCODE_SPACE]) {
-    sd.change_shoot_animation();
-    sd.shoot(enemy_arr);
-  } else if (states[SDL_SCANCODE_E]) {
-    sd.image_ = Ship::STATES::DEFAULT;
-    sd.render_.angle += DEGREES_IN_HALF_CIRCLE;
-  } else {
-    sd.image_ = Ship::STATES::DEFAULT;
-  }
-#endif
-#if 0
-  if (e.type == SDL_KEYDOWN) {
-    //Change frame
-    switch(e.key.keysym.sym) {
-      case SDLK_w: sd.image_ = Ship::STATES::MOVE_FORWARD; break;
-      case SDLK_s: sd.image_ = Ship::STATES::MOVE_BACKWARD; break;
-      case SDLK_SPACE: sd.change_shoot_animation(); break;
-      case SDLK_a: 
-        sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
-                    Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
-        break;
-      case SDLK_d:
-        sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
-                    Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
-        break;
-      default:
-        sd.image_ = Ship::STATES::DEFAULT;
-    }
-
-    //Change move
-    switch(e.key.keysym.sym) {
-      case SDLK_a: sd.render_.angle -= MOVE_ANGULAR;
-        break;
-      case SDLK_d: sd.render_.angle += MOVE_ANGULAR;
-        break;
-      case SDLK_w: 
-        sd.y_pos_ -= MOVE_LEN;
-        sd.render_.center.y += MOVE_LEN;
-        break;
-      case SDLK_s: 
-        sd.y_pos_ += MOVE_LEN;
-        sd.render_.center.y -= MOVE_LEN;
-        break;
-      case SDLK_e:
-        sd.render_.angle += DEGREES_IN_HALF_CIRCLE;
-        break;
-      case SDLK_SPACE: 
-        sd.shoot(enemy_arr);
-        break;
-    }
-  }
-#endif
-#if 1
   int rem = eu_mod(static_cast<int>(sd.render_.angle), 
                    static_cast<int>(MOVE_ANGULAR));
   if (e.type == SDL_KEYDOWN) {
@@ -387,24 +256,18 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
     switch (e.key.keysym.sym) {
       case SDLK_w: 
         sd.vel_r_ -= MOVE_LEN; 
-        //sd.y_pos_ += sd.vel_r_;
-        //sd.render_.center.y -= sd.vel_r_;
         moveTimer.start();
         break;
       case SDLK_s: 
         sd.vel_r_ += MOVE_LEN; 
-        //sd.y_pos_ += sd.vel_r_;
-        //sd.render_.center.y -= sd.vel_r_;
         moveTimer.start();
         break;
       case SDLK_a: 
         sd.vel_ang_ -= MOVE_ANGULAR; 
-        //sd.render_.angle += sd.vel_ang_;
         angTimer.start(); 
         break;
       case SDLK_d: 
         sd.vel_ang_ += MOVE_ANGULAR; 
-        //sd.render_.angle += sd.vel_ang_;
         angTimer.start(); 
         break;
       //OK
@@ -423,7 +286,6 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
       case SDLK_a: 
         sd.vel_ang_ += MOVE_ANGULAR;
-        /*sd.render_.angle -= count_diff * ang_fix;*/
         if (rem > 9)
           //DAMPER CLOCKWISE
           sd.render_.angle += (MOVE_ANGULAR - rem);
@@ -434,7 +296,6 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
       case SDLK_d:
         sd.vel_ang_ -= MOVE_ANGULAR;
-        /*sd.render_.angle += count_diff * ang_fix;*/
         if (rem > 5)
           sd.render_.angle += (MOVE_ANGULAR - rem);
         else
@@ -445,7 +306,6 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
     }
   }
-#endif
 }
 
 void add_life(Planet& pl, Ship& sd) {

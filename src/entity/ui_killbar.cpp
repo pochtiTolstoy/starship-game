@@ -3,7 +3,7 @@
 UI_killbar::UI_killbar(Render_pipe& rp)
   : max_kills_(KILLS_TO_WIN), curr_kills_(0) 
 {
-  text_ = "Kills: 0/" + std::to_string(max_kills_);
+  text_ = "KILLS: 0/" + std::to_string(max_kills_);
   color_ = { 0, 0, 0 };
   gTextTexture_.loadFromRenderedText(rp, text_, color_);
 }
@@ -16,7 +16,7 @@ void UI_killbar::render(Render_pipe& rp, const Ship& sd) {
   //std::cout << "SHIP KILLS: " << sd.kills_ << ", UK KILLS: " << curr_kills_ << '\n';
   if (curr_kills_ != sd.kills_) {
     curr_kills_ = sd.kills_;
-    text_ = "Kills: " + std::to_string(curr_kills_) +
+    text_ = "KILLS: " + std::to_string(curr_kills_) +
                   "/" + std::to_string(KILLS_TO_WIN);
     gTextTexture_.loadFromRenderedText(rp, text_, color_);
   }

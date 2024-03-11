@@ -57,7 +57,7 @@ bool Render_pipe::init() {
       << TTF_GetError() << '\n';
     return false;
   }
-  gFont_ = TTF_OpenFont(FILE_PATH_FONT, 35);
+  gFont_ = TTF_OpenFont(FILE_PATH_FONT, 30);
   if (nullptr == gFont_) {
     std::cout << "Failed to load font! SDL_ttf Error: "
       << TTF_GetError() << '\n';
