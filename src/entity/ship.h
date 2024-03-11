@@ -37,7 +37,7 @@ private:
   int get_image_width(int image) const;
   bool is_reloaded() const;
   bool is_image_high() const;
-  bool is_angle_sync(const Enemy&);
+  bool is_angle_sync(double, const Enemy&);
 
 //CHANGE TO PRIVATE LATER
 public:

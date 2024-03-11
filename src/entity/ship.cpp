@@ -41,8 +41,24 @@ void Ship::move() {
 void Ship::shoot(Enemy* enemy_arr) {
   if (curr_bullets_ <= 0) return;
   --curr_bullets_;
+  //Triple gun
+  /*
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    if (is_angle_sync(enemy_arr[i])) {
+    if (is_angle_sync(render_.angle - 15, enemy_arr[i])) {
+      enemy_arr[i].reinit();
+      ++kills_;
+    } else if (is_angle_sync(render_.angle, enemy_arr[i])) {
+      enemy_arr[i].reinit();
+      ++kills_;
+    } else if (is_angle_sync(render_.angle + 15, enemy_arr[i])) {
+      enemy_arr[i].reinit();
+      ++kills_;
+      return;
+    }
+  }
+  */
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
+    if (is_angle_sync(render_.angle, enemy_arr[i])) {
       enemy_arr[i].reinit();
       ++kills_;
       return;
@@ -159,7 +175,7 @@ int Ship::get_image_width(int image) const {
   return gShipTextures_[image].get_width();
 }
 
-bool Ship::is_angle_sync(const Enemy& enemy) {
-  int angle_sync = static_cast<int>(render_.angle) + COORDS_SYNC;
+bool Ship::is_angle_sync(double angle, const Enemy& enemy) {
+  int angle_sync = static_cast<int>(angle) + COORDS_SYNC;
   return enemy.is_alive() && eu_mod(angle_sync, 360) == enemy.get_angle();
 }

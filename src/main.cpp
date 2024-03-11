@@ -252,6 +252,10 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
       default:
         sd.image_ = Ship::STATES::DEFAULT;
     }
+  } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
+    switch(e.key.keysym.sym) {
+      case SDLK_SPACE: sd.image_ = Ship::STATES::DEFAULT;
+    }
   }
   if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
     switch (e.key.keysym.sym) {
