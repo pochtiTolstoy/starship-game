@@ -166,7 +166,15 @@ int main(int argc, char* args[]) {
         sd.render_.angle -= ang_fix;
       else
         sd.render_.angle += ang_fix;
-      angTimer.start(); //Restart timer
+    }
+    if (moveTimer.isStarted()) {
+      if (sd.vel_r_ < 0) {
+        sd.y_pos_ -= 8;
+        sd.render_.center.y += 8;
+      } else {
+        sd.y_pos_ += 8;
+        sd.render_.center.y -= 8;
+      }
     }
 #if 0
     if (angTimer.isStarted() && angTimer.getTicks() > 100) {
@@ -216,11 +224,13 @@ int main(int argc, char* args[]) {
     }
     */
     std::cout << "SHIP ANGLE: " << sd.render_.angle << '\n';
+    /*
     if (moveTimer.isStarted() && moveTimer.getTicks() > 70) {
       sd.y_pos_ += sd.vel_r_;
       sd.render_.center.y -= sd.vel_r_;
       moveTimer.start();
     }
+    */
     //Clear screen
     SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(rp.get_renderer());
@@ -379,14 +389,14 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
     switch (e.key.keysym.sym) {
       case SDLK_w: 
         sd.vel_r_ -= MOVE_LEN; 
-        sd.y_pos_ += sd.vel_r_;
-        sd.render_.center.y -= sd.vel_r_;
+        //sd.y_pos_ += sd.vel_r_;
+        //sd.render_.center.y -= sd.vel_r_;
         moveTimer.start();
         break;
       case SDLK_s: 
         sd.vel_r_ += MOVE_LEN; 
-        sd.y_pos_ += sd.vel_r_;
-        sd.render_.center.y -= sd.vel_r_;
+        //sd.y_pos_ += sd.vel_r_;
+        //sd.render_.center.y -= sd.vel_r_;
         moveTimer.start();
         break;
       case SDLK_a: 
@@ -405,9 +415,13 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
     }
   } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
     switch (e.key.keysym.sym) {
-      case SDLK_w: sd.vel_r_ += MOVE_LEN; moveTimer.stop();
+      case SDLK_w: 
+        sd.vel_r_ += MOVE_LEN; 
+        moveTimer.stop();
         break;
-      case SDLK_s: sd.vel_r_ -= MOVE_LEN; moveTimer.stop();
+      case SDLK_s: 
+        sd.vel_r_ -= MOVE_LEN; 
+        moveTimer.stop();
         break;
       case SDLK_a: 
         sd.vel_ang_ += MOVE_ANGULAR;
