@@ -18,24 +18,24 @@ public:
   bool detect_planet_collision(const Planet&);
   void reinit();
   bool is_planet_hitted(const Planet&);
-  bool move();
+  bool move(double delta_time);
 
   //Getters
   bool is_alive() const;
   double get_angle() const;
   int get_x() const;
 private:
+  void calc_speed();
   const LTexture* pTexture_;
   int weight_;
   int height_;
   int x_pos_;
   int y_pos_;
   int shift_;
-  int frame_rate_;
-  int current_frame_;
   r_data render_; 
   bool draw_;
   bool first_spawn_;
+  static int enemy_on_map_;
 };
 
 #endif /* ENEMY_H_ */

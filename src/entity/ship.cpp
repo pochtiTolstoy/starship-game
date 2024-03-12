@@ -32,11 +32,26 @@ void Ship::render(Render_pipe& rp) {
   else render_image(rp);
 }
 
-/*
-void Ship::move() {
-  render_.angle += vel_ang_;
+void Ship::move(double delta_time) {
+  int distance_to_center = std::abs(y_pos_ + 128 - SCREEN_HEIGHT / 2);
+  if (moving_ang_) {
+    if (vel_ang_ < 0) {
+      render_.angle -= std::abs((-0.25 * distance_to_center + 210) * delta_time);
+    }
+    else {
+      render_.angle += std::abs((-0.25 * distance_to_center + 210) * delta_time);
+    }
+  }
+  if (moving_r_) {
+    if (vel_r_ < 0) {
+      y_pos_ -= std::floor(480 * delta_time);
+      render_.center.y += std::floor(480 * delta_time);
+    } else {
+      y_pos_ += std::floor(480 * delta_time);
+      render_.center.y -= std::floor(480 * delta_time);
+    }
+  }
 }
-*/
 
 void Ship::shoot(Enemy* enemy_arr) {
   if (curr_bullets_ <= 0) return;

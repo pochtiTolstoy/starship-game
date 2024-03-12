@@ -22,7 +22,7 @@ public:
   void detect_collision(Enemy*);
   void change_shoot_animation();
   void calc_cooldown();
-  //void move();
+  void move(double delta_time);
   bool is_fighting() const;
 
 private:

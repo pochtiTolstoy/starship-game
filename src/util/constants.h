@@ -17,16 +17,17 @@ static const int HEALTH_HITBOX = 64;
 static const int SHIFT_HEART_PLANET_Y = 185;
 static const int SHIFT_HEART_SHIP_Y = 30;
 static const double MOVE_ANGULAR = 15;
+static const int MOVE_LEN = 30;
 
 /* === Safe to change === */
 
-static const int RAND_SPAWN = 700;
-static const int RAND_SPAWN_FIRST = 350;
+static const int RAND_SPAWN = 1300;
+static const int RAND_SPAWN_FIRST = 800;
 static const int KILLS_TO_WIN = 120;
 
 //Enemy movements
-static const int ENEMY_SPEED_LEVELS = 4;
-static const int ENEMY_FRAMERATE_LEVELS = 6;
+static const int ENEMY_SPEED_LEVELS = 100;
+static const int ENEMY_FRAMERATE_LEVELS = 1;
 
 /* === File paths === */
 
