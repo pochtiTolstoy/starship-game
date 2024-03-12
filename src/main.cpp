@@ -3,7 +3,7 @@
 #include "util/render_pipe.h"
 #include "util/timer.h"
 #include "texture/LTexture.h"
-#include "entity/game_controls.h"
+//#include "entity/game_controls.h"
 #include "entity/ship.h"
 #include "entity/planet.h"
 #include "entity/ui.h"
@@ -24,6 +24,7 @@ bool game_is_running(const Ship&, const Planet&);
  * 1. Create render pipe, which initialize SDL subsystems
  * 2. Create UI object, which tracks textures and helps render UI
  * 3. Create other game objects, such as: ship, enemy, health_obj, planet
+ * 4. Game loop
  */
 
 int main(int argc, char* args[]) {
@@ -110,7 +111,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
+      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
       if (meteor_arr[i].move(delta_time)) meteor_arr[i].render(rp);
     }
 
@@ -148,23 +149,21 @@ int main(int argc, char* args[]) {
 void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
   if (e.type == SDL_KEYDOWN) {
     switch(e.key.keysym.sym) {
-      case SDLK_w: sd.image_ = Ship::STATES::MOVE_FORWARD; break;
-      case SDLK_s: sd.image_ = Ship::STATES::MOVE_BACKWARD; break;
+      case SDLK_w: sd.image_ = STATES::MOVE_FORWARD; break;
+      case SDLK_s: sd.image_ = STATES::MOVE_BACKWARD; break;
       case SDLK_SPACE: sd.change_shoot_animation(); break;
       case SDLK_a: 
-        sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
-                    Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
+        sd.image_ = (sd.image_ == STATES::RELOAD) ? STATES::RELOAD : STATES::DEFAULT;
         break;
       case SDLK_d:
-        sd.image_ = (sd.image_ == Ship::STATES::RELOAD) ? 
-                    Ship::STATES::RELOAD : Ship::STATES::DEFAULT;
+        sd.image_ = (sd.image_ == STATES::RELOAD) ? STATES::RELOAD : STATES::DEFAULT;
         break;
       default:
-        sd.image_ = Ship::STATES::DEFAULT;
+        sd.image_ = STATES::DEFAULT;
     }
   } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
     switch(e.key.keysym.sym) {
-      case SDLK_SPACE: sd.image_ = Ship::STATES::DEFAULT;
+      case SDLK_SPACE: sd.image_ = STATES::DEFAULT;
     }
   }
   if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
@@ -191,7 +190,10 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         break;
       //OK
       case SDLK_e: sd.render_.angle += DEGREES_IN_HALF_CIRCLE; break;
-      case SDLK_SPACE: sd.shoot(enemy_arr); break;
+      case SDLK_SPACE: 
+        sd.process_shooting(enemy_arr); 
+        std::cout << "STREAK: " << sd.kill_streak_ << '\n';
+        break;
     }
   } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
     sd.render_.angle = std::floor(sd.render_.angle);

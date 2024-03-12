@@ -10,6 +10,15 @@
 
 using r_data = render_rotation_data;
 
+namespace STATES {
+  enum { 
+    DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD, RELOAD 
+  };
+}
+namespace GUN_STATES {
+  enum { DEFAULT, TRIPLE };
+}
+
 class Ship {
 public:
   Ship() = delete;
@@ -19,6 +28,7 @@ public:
   );
   ~Ship();
   void render(Render_pipe&);
+  void process_shooting(Enemy*);
   void shoot(Enemy*);
   void detect_collision(Enemy*);
   void change_shoot_animation();
@@ -39,6 +49,8 @@ private:
   bool is_reloaded() const;
   bool is_image_high() const;
   bool is_angle_sync(double, const Enemy&);
+  void triple_shoot(Enemy*);
+  void default_shoot(Enemy*);
 
 //CHANGE TO PRIVATE LATER
 public:
@@ -63,16 +75,15 @@ public:
   int cooldown_;
   //int cooldown_timer_;
   LTimer cooldown_timer_;
+  int kill_streak_;
   int kills_;
 
   //Visuals
   int image_;
+  int gun_state_;
   LTexture gShipTextures_[NUM_SHIP_TEXTURES];
 
-public:
-  enum STATES { 
-    DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD, RELOAD 
-  };
+//public:
 };
 
 #endif /* SHIP_H_ */

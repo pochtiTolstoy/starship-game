@@ -84,7 +84,7 @@ int Enemy::get_x() const { return x_pos_; }
 void Enemy::calc_speed() {
   if (rand() % 6 == 0) {
     shift_ = rand() % 40 + 250;
-    std::cout << "I AM VERY FAST!\n";
+    //std::cout << "I AM VERY FAST!\n";
   } else {
     shift_ = rand() % 90 + 70; 
   }

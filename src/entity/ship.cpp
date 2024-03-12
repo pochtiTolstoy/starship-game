@@ -1,12 +1,21 @@
 #include "ship.h"
 
 //Default constructor
-Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown)
-  : vel_r_(0), vel_ang_(0), moving_r_(false), moving_ang_(false),
-    curr_lifes_(max_lifes), max_lifes_(max_lifes),
-    max_bullets_(max_bullets),    curr_bullets_(max_bullets),
-    cooldown_(cooldown),          cooldown_timer_(),
-    kills_(0), image_(STATES::DEFAULT)
+Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown): 
+  vel_r_(0),
+  vel_ang_(0),
+  moving_r_(false),
+  moving_ang_(false),
+  curr_lifes_(max_lifes),
+  max_lifes_(max_lifes),
+  max_bullets_(max_bullets),
+  curr_bullets_(max_bullets),
+  cooldown_(cooldown),
+  cooldown_timer_(),
+  kill_streak_(0),
+  kills_(0), 
+  image_(STATES::DEFAULT),
+  gun_state_(GUN_STATES::DEFAULT)
 {
   init_images(rp);
   width_  = get_image_width(STATES::DEFAULT);
@@ -53,37 +62,40 @@ void Ship::move(double delta_time) {
   }
 }
 
-void Ship::shoot(Enemy* enemy_arr) {
+void Ship::process_shooting(Enemy* enemy_arr) {
   if (curr_bullets_ <= 0) return;
-  --curr_bullets_;
-  //Triple gun
-  /*
-  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    if (is_angle_sync(render_.angle - 15, enemy_arr[i])) {
-      enemy_arr[i].reinit();
-      ++kills_;
-    } else if (is_angle_sync(render_.angle, enemy_arr[i])) {
-      enemy_arr[i].reinit();
-      ++kills_;
-    } else if (is_angle_sync(render_.angle + 15, enemy_arr[i])) {
-      enemy_arr[i].reinit();
-      ++kills_;
-      return;
-    }
+  if (gun_state_ == GUN_STATES::DEFAULT &&
+      kill_streak_ && kill_streak_ % 10 == 0
+  ) {
+    gun_state_ = GUN_STATES::TRIPLE;
+    max_bullets_ = 4;
+    curr_bullets_ = max_bullets_;
   }
-  */
-  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    if (is_angle_sync(render_.angle, enemy_arr[i])) {
-      enemy_arr[i].reinit();
-      ++kills_;
-      return;
-    }
+  shoot(enemy_arr);
+}
+
+void Ship::shoot(Enemy* enemy_arr) {
+  --curr_bullets_;
+  if (gun_state_ == GUN_STATES::TRIPLE) {
+    triple_shoot(enemy_arr);
+  } else if (gun_state_ == GUN_STATES::DEFAULT) {
+    default_shoot(enemy_arr);
   }
 }
 
 void Ship::calc_cooldown() {
   if (curr_bullets_ > 0) return;
-  //++cooldown_timer_;
+  if (gun_state_ != GUN_STATES::DEFAULT) {
+    gun_state_ = GUN_STATES::DEFAULT;
+    max_bullets_ = 6;
+    curr_bullets_ = max_bullets_;
+    return;
+  } else if (kill_streak_ && kill_streak_ % 10 == 0) {
+    gun_state_ = GUN_STATES::TRIPLE;
+    max_bullets_ = 4; 
+    curr_bullets_ = max_bullets_;
+    return;
+  }
   if (!cooldown_timer_.isStarted()) {
     cooldown_timer_.start();
   }
@@ -196,4 +208,34 @@ int Ship::get_image_width(int image) const {
 bool Ship::is_angle_sync(double angle, const Enemy& enemy) {
   int angle_sync = static_cast<int>(angle) + COORDS_SYNC;
   return enemy.is_alive() && eu_mod(angle_sync, 360) == enemy.get_angle();
+}
+
+void Ship::default_shoot(Enemy* enemy_arr) {
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
+    if (is_angle_sync(render_.angle, enemy_arr[i])) {
+      enemy_arr[i].reinit();
+      ++kills_;
+      ++kill_streak_;
+      return;
+    }
+  }
+  kill_streak_ = 0;
+}
+
+void Ship::triple_shoot(Enemy* enemy_arr) {
+  //BAD
+  int old_kills = kills_;
+  for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
+    if (is_angle_sync(render_.angle - 15, enemy_arr[i])) {
+      enemy_arr[i].reinit();
+      ++kills_;
+    } else if (is_angle_sync(render_.angle, enemy_arr[i])) {
+      enemy_arr[i].reinit();
+      ++kills_;
+    } else if (is_angle_sync(render_.angle + 15, enemy_arr[i])) {
+      enemy_arr[i].reinit();
+      ++kills_;
+    }
+  }
+  kill_streak_ = (kills_ != old_kills) ? (kill_streak_ + 1) : 0;
 }
