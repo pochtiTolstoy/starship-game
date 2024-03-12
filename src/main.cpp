@@ -157,11 +157,16 @@ int main(int argc, char* args[]) {
     deltaTime = (SDL_GetTicks() - last_frame_time) / 1000.0;
     last_frame_time = SDL_GetTicks();
     //sd.move();
+    int distance_to_center = std::abs(sd.y_pos_ + 128 - SCREEN_HEIGHT / 2);
     if (sd.moving_ang_) {
-      if (sd.vel_ang_ < 0)
-        sd.render_.angle -= std::floor(250 * deltaTime);
-      else
-        sd.render_.angle += std::floor(250 * deltaTime);
+      if (sd.vel_ang_ < 0) {
+        sd.render_.angle -= std::abs((-0.25 * distance_to_center + 210) * deltaTime);
+        std::cout << "Distance to center: " << distance_to_center << ", speed: " << (-0.2 * distance_to_center + 200) * deltaTime << '\n';
+      }
+      else {
+        sd.render_.angle += std::abs((-0.25 * distance_to_center + 210) * deltaTime);
+        std::cout << "Distance to center: " << distance_to_center << ", speed: " << (-0.2 * distance_to_center + 200) * deltaTime << '\n';
+      }
     }
     if (sd.moving_r_) {
       if (sd.vel_r_ < 0) {
@@ -172,7 +177,7 @@ int main(int argc, char* args[]) {
         sd.render_.center.y -= std::floor(480 * deltaTime);
       }
     }
-    std::cout << "SHIP POS: " << sd.y_pos_ << ", SHIP ANGLE: " << sd.render_.angle << '\n';
+    //std::cout << "SHIP POS: " << sd.y_pos_ << ", SHIP ANGLE: " << sd.render_.angle << '\n';
     //Clear screen
     SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(rp.get_renderer());
@@ -234,8 +239,6 @@ int main(int argc, char* args[]) {
 
 void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
   static const int MOVE_LEN = 30;
-  int rem = eu_mod(static_cast<int>(sd.render_.angle), 
-                   static_cast<int>(MOVE_ANGULAR));
   if (e.type == SDL_KEYDOWN) {
     switch(e.key.keysym.sym) {
       case SDLK_w: sd.image_ = Ship::STATES::MOVE_FORWARD; break;
@@ -284,6 +287,9 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
       case SDLK_SPACE: sd.shoot(enemy_arr); break;
     }
   } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
+    sd.render_.angle = std::floor(sd.render_.angle);
+    int rem = eu_mod(static_cast<int>(sd.render_.angle), 
+                     static_cast<int>(MOVE_ANGULAR));
     switch (e.key.keysym.sym) {
       case SDLK_w: 
         sd.vel_r_ += MOVE_LEN; 
