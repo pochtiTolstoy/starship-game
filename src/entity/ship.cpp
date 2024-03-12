@@ -5,7 +5,7 @@ Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown)
   : vel_r_(0), vel_ang_(0), moving_r_(false), moving_ang_(false),
     curr_lifes_(max_lifes), max_lifes_(max_lifes),
     max_bullets_(max_bullets),    curr_bullets_(max_bullets),
-    cooldown_(cooldown),          cooldown_timer_(0),
+    cooldown_(cooldown),          cooldown_timer_(),
     kills_(0), image_(STATES::DEFAULT)
 {
   init_images(rp);
@@ -83,9 +83,12 @@ void Ship::shoot(Enemy* enemy_arr) {
 
 void Ship::calc_cooldown() {
   if (curr_bullets_ > 0) return;
-  ++cooldown_timer_;
-  if (cooldown_timer_ >= cooldown_) {
-    cooldown_timer_ = 0;
+  //++cooldown_timer_;
+  if (!cooldown_timer_.isStarted()) {
+    cooldown_timer_.start();
+  }
+  if (cooldown_timer_.getTicks() >= cooldown_) {
+    cooldown_timer_.stop();
     curr_bullets_ = max_bullets_;
   }
 }

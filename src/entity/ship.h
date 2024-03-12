@@ -4,6 +4,7 @@
 #include "../util/util.h"
 #include "../util/constants.h"
 #include "../util/render_pipe.h"
+#include "../util/timer.h"
 #include "../texture/LTexture.h"
 #include "enemy.h"
 
@@ -14,7 +15,7 @@ public:
   Ship() = delete;
   Ship(
     Render_pipe& rp, 
-    int max_lifes = 2, int max_bullets = 6, int cooldown = 100
+    int max_lifes = 2, int max_bullets = 6, int cooldown = 1500
   );
   ~Ship();
   void render(Render_pipe&);
@@ -60,7 +61,8 @@ public:
   int max_bullets_;
   int curr_bullets_;
   int cooldown_;
-  int cooldown_timer_;
+  //int cooldown_timer_;
+  LTimer cooldown_timer_;
   int kills_;
 
   //Visuals
