@@ -3,7 +3,7 @@
 
 static const int SCREEN_WIDTH = 1920;
 static const int SCREEN_HEIGHT = 1080;
-static const int NUM_SHIP_TEXTURES = 5;
+static const int NUM_SHIP_TEXTURES = 6;
 static const int NUM_ENEMY_TEXTURES = 1;
 static const int NUM_ENEMY_ON_MAP = 24;
 static const int NUM_UI_TEXTURES = 5;
@@ -21,6 +21,7 @@ static const int MOVE_LEN = 30;
 
 /* === Safe to change === */
 
+//DELETE
 static const int RAND_SPAWN = 1300;
 static const int RAND_SPAWN_FIRST = 800;
 static const int KILLS_TO_WIN = 120;
@@ -36,7 +37,8 @@ static const char* FILE_PATHS_SHIP[NUM_SHIP_TEXTURES] = {
 	"res/pics/ship1moveBig.png",
 	"res/pics/ship_shoot1Big.png",
 	"res/pics/ship_back1Big.png",
-	"res/pics/ship_reloadBig.png"
+	"res/pics/ship_reloadBig.png",
+  "res/pics/triple_shoot_test.png"
 };
 
 static const char* FILE_PATHS_ENEMY[NUM_ENEMY_TEXTURES] = {

@@ -52,6 +52,7 @@ bool Enemy::move(double delta_time) {
   int spawn_chance = first_spawn_ ? RAND_SPAWN_FIRST : RAND_SPAWN; 
   //std::cout << "SPAWN CHANCE: " << spawn_chance << '\n';
   //std::cout << "Enemies on map: " << enemy_on_map_ << '\n';
+  //DELETE
   if (!draw_ && enemy_on_map_ < 12 && rand() % spawn_chance == 0) {
     draw_ = true;
     ++enemy_on_map_;
@@ -86,6 +87,7 @@ void Enemy::calc_speed() {
     shift_ = rand() % 40 + 250;
     //std::cout << "I AM VERY FAST!\n";
   } else {
-    shift_ = rand() % 90 + 70; 
+    shift_ = 60;
+    //shift_ = rand() % 90 + 70; 
   }
 }

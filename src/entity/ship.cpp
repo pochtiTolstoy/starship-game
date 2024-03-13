@@ -83,6 +83,21 @@ void Ship::shoot(Enemy* enemy_arr) {
   }
 }
 
+void Ship::change_shoot_animation() {
+  if (curr_bullets_ <= 0) {
+    image_ = STATES::RELOAD;
+  } else if (gun_state_ == GUN_STATES::TRIPLE) {
+    image_ = STATES::TRIPLE;
+  } else if (gun_state_ == GUN_STATES::DEFAULT &&
+             kill_streak_ && kill_streak_ % 10 == 0
+  ) {
+    image_ = STATES::TRIPLE;
+  } else if (gun_state_ == GUN_STATES::DEFAULT) {
+    image_ = STATES::SHOOT;
+  }
+  //image_ = (curr_bullets_ <= 0) ? STATES::RELOAD : STATES::SHOOT;
+}
+
 void Ship::calc_cooldown() {
   if (curr_bullets_ > 0) return;
   if (gun_state_ != GUN_STATES::DEFAULT) {
@@ -131,9 +146,6 @@ void Ship::detect_collision(Enemy* e) {
   }
 }
 
-void Ship::change_shoot_animation() {
-  image_ = (curr_bullets_ <= 0) ? STATES::RELOAD : STATES::SHOOT;
-}
 
 bool Ship::is_fighting() const {
   return curr_lifes_ && kills_ < KILLS_TO_WIN;
@@ -169,9 +181,13 @@ void Ship::render_image(Render_pipe& rp) const {
 }
 
 void Ship::render_high_image(Render_pipe& rp) const {
+  r_data temp_render = calc_rotation_high();
+  temp_render.center.x = get_image_width(image_) / 2;
+  int temp_width = (SCREEN_WIDTH - get_image_width(image_)) / 2;
+
   gShipTextures_[image_].render(
     rp,
-    x_pos_, calc_high_y(), nullptr, calc_rotation_high()
+    temp_width, calc_high_y(), nullptr, temp_render
   );
 }
 

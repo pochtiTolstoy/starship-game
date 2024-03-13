@@ -191,7 +191,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
       //OK
       case SDLK_e: sd.render_.angle += DEGREES_IN_HALF_CIRCLE; break;
       case SDLK_SPACE: 
-        sd.process_shooting(enemy_arr); 
+        sd.process_shooting(enemy_arr); // CAN CHANGE IMAGE OF SHIP
         std::cout << "STREAK: " << sd.kill_streak_ << '\n';
         break;
     }

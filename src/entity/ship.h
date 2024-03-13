@@ -12,7 +12,7 @@ using r_data = render_rotation_data;
 
 namespace STATES {
   enum { 
-    DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD, RELOAD 
+    DEFAULT, MOVE_FORWARD, SHOOT, MOVE_BACKWARD, RELOAD, TRIPLE
   };
 }
 namespace GUN_STATES {
