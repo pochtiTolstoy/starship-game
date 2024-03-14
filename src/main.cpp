@@ -6,6 +6,7 @@
 //#include "entity/game_controls.h"
 #include "entity/ship.h"
 #include "entity/planet.h"
+#include "entity/orbit.h"
 #include "entity/ui.h"
 #include "entity/obj_health.h"
 #include "entity/ui_killbar.h"
@@ -38,6 +39,7 @@ int main(int argc, char* args[]) {
   UI ui(rp);
 
   Ship sd(rp);
+  Orbit orb(rp); 
   Planet pl;
   Obj_health oh1(ui.get_ui_texture(UI::IMAGES::RED_HEART));
   Obj_health oh2(ui.get_ui_texture(UI::IMAGES::RED_HEART));
@@ -86,6 +88,7 @@ int main(int argc, char* args[]) {
 
     //Calculate moving ship parameters
     sd.move(delta_time);
+    orb.move(delta_time);
 
     //Clear screen
     SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
@@ -106,12 +109,13 @@ int main(int argc, char* args[]) {
     //Draw obj_health
     oh1.render(rp);
     oh2.render(rp);
-
+    
+    orb.render(rp);
     sd.render(rp);
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
+      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
       if (meteor_arr[i].move(delta_time)) meteor_arr[i].render(rp);
     }
 
@@ -130,6 +134,7 @@ int main(int argc, char* args[]) {
     
     //Calculate game events
     sd.detect_collision(meteor_arr);
+    orb.detect_collision(meteor_arr);
     sd.calc_cooldown();
     oh1.calc_spawn();
     oh2.calc_spawn();

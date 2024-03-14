@@ -90,3 +90,7 @@ void Enemy::calc_speed() {
     shift_ = rand() % 90 + 70; 
   }
 }
+
+int Enemy::get_weight() const {
+  return weight_;
+}

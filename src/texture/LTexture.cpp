@@ -4,7 +4,7 @@ LTexture::LTexture()
   : texture_(nullptr), width_(0), height_(0) {}
 
 LTexture::~LTexture() { 
-  std::cout << "LTexture destructor\n";
+  std::cout << "~LTexture: Free Final destructos\n";
   free(); 
 }
 
@@ -13,6 +13,7 @@ bool LTexture::loadFromFile(
   std::string path, 
   const SDL_Color& c
 ) {
+  std::cout << "LOAD FROM FILE: Free before load texture\n";
   free();
   SDL_Texture* newTexture = nullptr;
   SDL_Surface* loadedSurface = IMG_Load(path.c_str());

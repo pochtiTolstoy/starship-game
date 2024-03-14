@@ -7,6 +7,7 @@ static const int NUM_SHIP_TEXTURES = 6;
 static const int NUM_ENEMY_TEXTURES = 1;
 static const int NUM_ENEMY_ON_MAP = 24;
 static const int NUM_UI_TEXTURES = 5;
+static const int NUM_ORBIT_TEXTURES = 1;
 static const int COORDS_SYNC = 90;
 static const int SPAWN_ENEMY_X = -400;
 static const int DEGREES_IN_CIRCLE = 360;
@@ -22,8 +23,10 @@ static const int MOVE_LEN = 30;
 /* === Safe to change === */
 
 //DELETE
-static const int RAND_SPAWN = 1300;
-static const int RAND_SPAWN_FIRST = 1000;
+static const int RAND_SPAWN = 600;
+static const int RAND_SPAWN_FIRST = 600;
+//static const int RAND_SPAWN = 1300;
+//static const int RAND_SPAWN_FIRST = 1000;
 static const int KILLS_TO_WIN = 120;
 
 //Enemy movements
@@ -51,6 +54,10 @@ static const char* FILE_PATHS_UI[NUM_UI_TEXTURES] = {
 	"res/pics/ui_shootBig.png",
 	"res/pics/ui_shootBlackBig.png",
 	"res/pics/obj_healthBig.png"
+};
+
+static const char* FILE_PATHS_ORBIT[NUM_ORBIT_TEXTURES] = {
+  "res/pics/orbit.png"
 };
 
 static const char* FILE_PATH_BACKGROUND = "res/pics/planet1DarkBig.png";

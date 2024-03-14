@@ -24,6 +24,7 @@ public:
   bool is_alive() const;
   double get_angle() const;
   int get_x() const;
+  int get_weight() const;
 private:
   void calc_speed();
   const LTexture* pTexture_;
