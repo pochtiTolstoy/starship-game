@@ -9,6 +9,7 @@
 #include "entity/orbit.h"
 #include "entity/ui.h"
 #include "entity/obj_health.h"
+#include "entity/obj_orbit.h"
 #include "entity/ui_killbar.h"
 #include "entity/enemy.h"
 #include <sstream>
@@ -43,6 +44,7 @@ int main(int argc, char* args[]) {
   Planet pl;
   Obj_health oh1(ui.get_ui_texture(UI::IMAGES::RED_HEART));
   Obj_health oh2(ui.get_ui_texture(UI::IMAGES::RED_HEART));
+  Obj_orbit obj_orb(ui.get_ui_texture(UI::IMAGES::ORBIT_ELEMENT));
   UI_killbar uk(rp);
   LTexture gFPSTextTexture;
 
@@ -109,8 +111,14 @@ int main(int argc, char* args[]) {
     //Draw obj_health
     oh1.render(rp);
     oh2.render(rp);
+
+    //Draw obj_orbit
+    obj_orb.render(rp);
     
+    //Draw orbite module
     orb.render(rp);
+
+    //Draw ship
     sd.render(rp);
 
     //Draw enemy
@@ -129,13 +137,17 @@ int main(int argc, char* args[]) {
       0
     );
 
-    //Process final render
+    //PROCESS FINAL RENDER
     SDL_RenderPresent(rp.get_renderer());
     
     //Calculate game events
     sd.detect_collision(meteor_arr);
     orb.detect_collision(meteor_arr);
     sd.calc_cooldown();
+    obj_orb.calc_spawn(sd, orb);
+    if (obj_orb.detect_collision(sd)) {
+      //orb.reinit(obj_orb);
+    }
     oh1.calc_spawn();
     oh2.calc_spawn();
     if (oh1.detect_collision(sd)) add_life(pl, sd);

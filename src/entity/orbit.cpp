@@ -11,6 +11,7 @@ Orbit::Orbit(Render_pipe& rp) {
   render_.angle = 0;
   render_.center = { width_ / 2, height_ / 2 + 500 };
   render_.flip = SDL_FLIP_NONE;
+  alive_ = false;
 }
 
 Orbit::~Orbit() {
@@ -22,6 +23,7 @@ Orbit::~Orbit() {
 }
 
 void Orbit::render(Render_pipe& rp) {
+  if (!alive_) return;
   gOrbitTextures_[image_].render(
     rp,
     x_pos_, y_pos_, nullptr, render_
@@ -29,6 +31,7 @@ void Orbit::render(Render_pipe& rp) {
 }
 
 void Orbit::move(double delta_time) {
+  if (!alive_) return;
   render_.angle -= (speed_ * delta_time); 
   //std::cout << "Orbit angles: " << (20 * delta_time) << '\n';
 }
@@ -44,8 +47,8 @@ void Orbit::init_images(Render_pipe& rp) {
 }
 
 void Orbit::detect_collision(Enemy* e_arr) {
+  if (!alive_) return;
   int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
-  //int diff = SCREEN_HEIGHT - y_pos_ - height_ + coords_sync;
   double angle_sync = render_.angle + COORDS_SYNC;
 
   //std::cout << "ANGLE BEFORE CORRECTION: " << angle_sync << '\n';
@@ -67,7 +70,9 @@ void Orbit::detect_collision(Enemy* e_arr) {
   }
 }
 
+
 void Orbit::change_speed(double velocity) { //ANGULAR SPEED
+  if (!alive_) return;
   speed_ += velocity; 
   change_animation_move(velocity);
 }
@@ -91,4 +96,8 @@ int Orbit::get_image_height(int image) const {
 
 int Orbit::get_image_width(int image) const {
   return gOrbitTextures_[image].get_width();
+}
+
+bool Orbit::is_alive() const {
+  return alive_;
 }

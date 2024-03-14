@@ -53,7 +53,7 @@ static const char* FILE_PATHS_UI[NUM_UI_TEXTURES] = {
 	"res/pics/heartBlackBig.png",
 	"res/pics/ui_shootBig.png",
 	"res/pics/ui_shootBlackBig.png",
-	"res/pics/obj_healthBig.png"
+  "res/pics/orbitElement.png"
 };
 
 static const char* FILE_PATHS_ORBIT[NUM_ORBIT_TEXTURES] = {
