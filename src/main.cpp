@@ -123,7 +123,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
+      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
       if (meteor_arr[i].move(delta_time)) meteor_arr[i].render(rp);
     }
 
@@ -211,7 +211,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
         break;
       //ORBIT KEYS:
       case SDLK_m:
-        orb.change_speed(30);
+        orb.change_speed(200);
         break;
     }
   } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
@@ -248,7 +248,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
         break;
       //ORBIT KEYS UP:
       case SDLK_m:
-        orb.change_speed(-30);
+        orb.change_speed(-200);
         break;
     }
   }

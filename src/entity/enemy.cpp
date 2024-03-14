@@ -53,7 +53,7 @@ bool Enemy::move(double delta_time) {
   //std::cout << "SPAWN CHANCE: " << spawn_chance << '\n';
   //std::cout << "Enemies on map: " << enemy_on_map_ << '\n';
   //DELETE
-  if (!draw_ && enemy_on_map_ < 24 && rand() % spawn_chance == 0) {
+  if (!draw_ && enemy_on_map_ < 12 && rand() % spawn_chance == 0) {
     draw_ = true;
     ++enemy_on_map_;
     return false;
