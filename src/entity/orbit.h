@@ -5,7 +5,6 @@
 #include "../util/render_pipe.h"
 #include "../util/constants.h"
 #include "enemy.h"
-//#include "obj_orbit.h"
 
 using r_data = render_rotation_data;
 
@@ -20,6 +19,7 @@ public:
   void change_speed(double velocity); //ANGULAR SPEED
   void change_animation_move(double velocity);
   bool is_alive() const;
+  void reinit(int, const r_data&);
 private:
   void init_images(Render_pipe&);
   int get_image_height(int image) const;
@@ -32,6 +32,8 @@ private:
   int x_pos_;
   int y_pos_;
   bool alive_;
+  int curr_lifes_;
+  int max_lifes_;
 
   //Angular data
   r_data render_;

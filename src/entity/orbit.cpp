@@ -12,6 +12,8 @@ Orbit::Orbit(Render_pipe& rp) {
   render_.center = { width_ / 2, height_ / 2 + 500 };
   render_.flip = SDL_FLIP_NONE;
   alive_ = false;
+  curr_lifes_ = 0;
+  max_lifes_ = 4;
 }
 
 Orbit::~Orbit() {
@@ -28,6 +30,15 @@ void Orbit::render(Render_pipe& rp) {
     rp,
     x_pos_, y_pos_, nullptr, render_
   );
+}
+
+void Orbit::reinit(int y_pos, const r_data& ang_data) {
+  image_ = STATES::DEFAULT; 
+  speed_ = 20;
+  y_pos_ = y_pos;
+  render_ = ang_data;
+  alive_ = true;
+  curr_lifes_ = max_lifes_;
 }
 
 void Orbit::move(double delta_time) {
@@ -65,9 +76,11 @@ void Orbit::detect_collision(Enemy* e_arr) {
       std::cout << "DIFF: " << std::abs(diff) << '\n';
       if (std::abs(diff) <= 90) {
         e_arr[i].reinit();
+        --curr_lifes_;
       }
     }
   }
+  if (curr_lifes_ <= 0) alive_ = false;
 }
 
 

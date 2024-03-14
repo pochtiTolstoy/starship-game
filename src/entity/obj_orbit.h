@@ -7,9 +7,9 @@
 #include "orbit.h"
 
 using r_data = render_rotation_data;
+class Orbit;
 
 class Obj_orbit {
-  //friend class Orbit;
 public:
   Obj_orbit() = delete;
   Obj_orbit(const LTexture&);
@@ -17,6 +17,10 @@ public:
   void render(Render_pipe&);
   void calc_spawn(const Ship&, const Orbit&);
   bool detect_collision(const Ship&);
+
+  //Getters:
+  int get_y() const;
+  const r_data& get_r_data() const;
 private:
   bool check_angle() const;
 

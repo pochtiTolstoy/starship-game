@@ -146,7 +146,7 @@ int main(int argc, char* args[]) {
     sd.calc_cooldown();
     obj_orb.calc_spawn(sd, orb);
     if (obj_orb.detect_collision(sd)) {
-      //orb.reinit(obj_orb);
+      orb.reinit(obj_orb.get_y(), obj_orb.get_r_data());
     }
     oh1.calc_spawn();
     oh2.calc_spawn();
