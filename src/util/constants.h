@@ -61,7 +61,7 @@ static const char* FILE_PATHS_ORBIT[NUM_ORBIT_TEXTURES] = {
   "res/pics/orbitMove.png"
 };
 
-static const char* FILE_PATH_BACKGROUND = "res/pics/planet1DarkBig.png";
+static const char* FILE_PATH_BACKGROUND = "res/pics/planet1Big.png";
 static const char* FILE_PATH_FONT = "res/Mx437_Acer710_Mono.ttf";
 
 #endif /* CONSTANTS_H_ */
