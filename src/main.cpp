@@ -16,7 +16,7 @@
 const int SCREEN_FPS = 60;
 const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 
-void process_key(SDL_Event&, Ship&, Enemy* enemy_arr);
+void process_key(SDL_Event&, Ship&, Enemy* enemy_arr, Orbit& orb);
 void add_life(Planet& pl, Ship& sd);
 bool game_is_running(const Ship&, const Planet&);
 
@@ -69,7 +69,7 @@ int main(int argc, char* args[]) {
     capTimer.start();
     while (SDL_PollEvent(&e) != 0) {
       if (e.type == SDL_QUIT) quit = true;
-      process_key(e, sd, meteor_arr);
+      process_key(e, sd, meteor_arr, orb);
     }
 
     //Calculate average FPS
@@ -151,7 +151,8 @@ int main(int argc, char* args[]) {
   return 0;
 }
 
-void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
+void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
+  //CHANGE ANIMATION
   if (e.type == SDL_KEYDOWN) {
     switch(e.key.keysym.sym) {
       case SDLK_w: sd.image_ = STATES::MOVE_FORWARD; break;
@@ -171,33 +172,34 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
       case SDLK_SPACE: sd.image_ = STATES::DEFAULT;
     }
   }
+  //KEY CONTROLS
   if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
     switch (e.key.keysym.sym) {
+      //SHIP KEYS:
       case SDLK_w: 
         sd.vel_r_ -= MOVE_LEN; 
         sd.moving_r_ = true;
-        //moveTimer.start();
         break;
       case SDLK_s: 
         sd.vel_r_ += MOVE_LEN; 
         sd.moving_r_ = true;
-        //moveTimer.start();
         break;
       case SDLK_a: 
         sd.vel_ang_ -= MOVE_ANGULAR; 
         sd.moving_ang_ = true;
-        //angTimer.start(); 
         break;
       case SDLK_d: 
         sd.vel_ang_ += MOVE_ANGULAR; 
         sd.moving_ang_ = true;
-        //angTimer.start(); 
         break;
-      //OK
       case SDLK_e: sd.render_.angle += DEGREES_IN_HALF_CIRCLE; break;
       case SDLK_SPACE: 
         sd.process_shooting(enemy_arr); // CAN CHANGE IMAGE OF SHIP
         std::cout << "STREAK: " << sd.kill_streak_ << '\n';
+        break;
+      //ORBIT KEYS:
+      case SDLK_m:
+        orb.change_speed(30);
         break;
     }
   } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
@@ -205,15 +207,14 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
     int rem = eu_mod(static_cast<int>(sd.render_.angle), 
                      static_cast<int>(MOVE_ANGULAR));
     switch (e.key.keysym.sym) {
+      //SHIP KEYS UP:
       case SDLK_w: 
         sd.vel_r_ += MOVE_LEN; 
         sd.moving_r_ = false;
-        //moveTimer.stop();
         break;
       case SDLK_s: 
         sd.vel_r_ -= MOVE_LEN; 
         sd.moving_r_ = false;
-        //moveTimer.stop();
         break;
       case SDLK_a: 
         sd.vel_ang_ += MOVE_ANGULAR;
@@ -223,7 +224,6 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
         else
           sd.render_.angle -= rem;
         sd.moving_ang_ = false;
-        //angTimer.stop();
         break;
       case SDLK_d:
         sd.vel_ang_ -= MOVE_ANGULAR;
@@ -233,7 +233,10 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr) {
           //DAMPER COUNTER-CLOCKWISE
           sd.render_.angle -= rem;
         sd.moving_ang_ = false;
-        //angTimer.stop();
+        break;
+      //ORBIT KEYS UP:
+      case SDLK_m:
+        orb.change_speed(-30);
         break;
     }
   }

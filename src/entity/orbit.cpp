@@ -3,6 +3,7 @@
 Orbit::Orbit(Render_pipe& rp) {
   init_images(rp);
   image_ = STATES::DEFAULT;
+  speed_ = 20;
   width_ = get_image_width(image_);
   height_ = get_image_height(image_);
   x_pos_ = (SCREEN_WIDTH - width_) / 2;
@@ -28,7 +29,7 @@ void Orbit::render(Render_pipe& rp) {
 }
 
 void Orbit::move(double delta_time) {
-  render_.angle -= (20 * delta_time); 
+  render_.angle -= (speed_ * delta_time); 
   //std::cout << "Orbit angles: " << (20 * delta_time) << '\n';
 }
 
@@ -64,6 +65,15 @@ void Orbit::detect_collision(Enemy* e_arr) {
       }
     }
   }
+}
+
+void Orbit::change_speed(double velocity) { //ANGULAR SPEED
+  speed_ += velocity; 
+  change_animation_move(velocity);
+}
+
+void Orbit::change_animation_move(double velocity) {
+  image_ = (velocity < 0) ? STATES::DEFAULT : STATES::MOVE;
 }
 
 bool Orbit::check_angle(double angle, const Enemy& e) {

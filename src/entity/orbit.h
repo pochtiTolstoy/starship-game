@@ -16,6 +16,8 @@ public:
   void render(Render_pipe&);
   void move(double delta_time);
   void detect_collision(Enemy*);
+  void change_speed(double velocity); //ANGULAR SPEED
+  void change_animation_move(double velocity);
 private:
   void init_images(Render_pipe&);
   int get_image_height(int image) const;
@@ -30,13 +32,14 @@ private:
 
   //Angular data
   r_data render_;
+  double speed_;
 
   //Image data
   LTexture gOrbitTextures_[NUM_ORBIT_TEXTURES];
   int image_;
 
   //Other
-  enum STATES { DEFAULT };
+  enum STATES { DEFAULT, MOVE };
 };
 
 #endif /* ORBIT_H_ */
