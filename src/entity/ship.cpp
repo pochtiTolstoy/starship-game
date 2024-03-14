@@ -45,10 +45,10 @@ void Ship::move(double delta_time) {
   int distance_to_center = std::abs(y_pos_ + 128 - SCREEN_HEIGHT / 2);
   if (moving_ang_) {
     if (vel_ang_ < 0) {
-      render_.angle -= std::abs((-0.25 * distance_to_center + 210) * delta_time);
+      render_.angle -= std::abs((-0.20 * distance_to_center + 200) * delta_time);
     }
     else {
-      render_.angle += std::abs((-0.25 * distance_to_center + 210) * delta_time);
+      render_.angle += std::abs((-0.20 * distance_to_center + 200) * delta_time);
     }
   }
   if (moving_r_) {

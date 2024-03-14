@@ -23,7 +23,7 @@ static const int MOVE_LEN = 30;
 
 //DELETE
 static const int RAND_SPAWN = 1300;
-static const int RAND_SPAWN_FIRST = 800;
+static const int RAND_SPAWN_FIRST = 1000;
 static const int KILLS_TO_WIN = 120;
 
 //Enemy movements
@@ -53,7 +53,7 @@ static const char* FILE_PATHS_UI[NUM_UI_TEXTURES] = {
 	"res/pics/obj_healthBig.png"
 };
 
-static const char* FILE_PATH_BACKGROUND = "res/pics/planet1Big.png";
+static const char* FILE_PATH_BACKGROUND = "res/pics/planet1DarkBig.png";
 static const char* FILE_PATH_FONT = "res/Mx437_Acer710_Mono.ttf";
 
 #endif /* CONSTANTS_H_ */
