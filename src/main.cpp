@@ -12,6 +12,7 @@
 #include "entity/obj_orbit.h"
 #include "entity/ui_killbar.h"
 #include "entity/enemy.h"
+#include "entity/health_module.h"
 #include <sstream>
 
 const int SCREEN_FPS = 60;
@@ -41,8 +42,10 @@ int main(int argc, char* args[]) {
 
   Ship sd(rp);
   Orbit orb(rp); 
+  Health_module hp_module(rp);
   Planet pl;
-  Obj_health obj_health_arr[2] = {
+  const int NUM_OBJ_HEALTH_ON_MAP = 2;
+  Obj_health obj_health_arr[NUM_OBJ_HEALTH_ON_MAP] = {
     Obj_health(ui.get_ui_texture(UI::IMAGES::RED_HEART)),
     Obj_health(ui.get_ui_texture(UI::IMAGES::RED_HEART))
   };
@@ -113,16 +116,19 @@ int main(int argc, char* args[]) {
     ui.render_ship_bullets(rp, sd);
 
     //Draw obj_health
-    //oh1.render(rp);
-    //oh2.render(rp);
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < NUM_OBJ_HEALTH_ON_MAP; ++i) {
       obj_health_arr[i].render(rp);
     }
 
     //Draw obj_orbit
     obj_orb.render(rp);
     
-    //Draw orbite module
+    //Draw Health module
+    if (hp_module.render(rp, delta_time, obj_health_arr)) {
+      add_life(pl, sd);
+    }
+
+    //Draw orbit module
     orb.render(rp);
 
     //Draw ship
@@ -130,7 +136,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
+      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
       if (meteor_arr[i].move(delta_time)) meteor_arr[i].render(rp);
     }
 
@@ -155,10 +161,12 @@ int main(int argc, char* args[]) {
     if (obj_orb.detect_collision(sd)) {
       orb.reinit(obj_orb.get_y(), obj_orb.get_r_data());
     }
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < NUM_OBJ_HEALTH_ON_MAP; ++i) {
       obj_health_arr[i].calc_spawn();
       if (obj_health_arr[i].detect_collision(sd)) add_life(pl, sd);
     }
+    hp_module.calc_spawn(sd, pl, obj_health_arr, NUM_OBJ_HEALTH_ON_MAP);
+
     //oh1.calc_spawn();
     //oh2.calc_spawn();
     //if (oh1.detect_collision(sd)) add_life(pl, sd);

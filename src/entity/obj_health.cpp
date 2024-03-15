@@ -78,3 +78,23 @@ bool Obj_health::check_angle() const {
 bool Obj_health::is_alive() const {
   return draw_;
 }
+
+const r_data& Obj_health::get_render_data() const {
+  return render_;
+}
+
+double Obj_health::get_angle() const {
+  return render_.angle;
+}
+
+void Obj_health::kill() {
+  draw_ = false;
+}
+
+int Obj_health::get_y_pos() const {
+  return y_pos_;
+}
+
+int Obj_health::get_image_height() const {
+  return height_;
+}

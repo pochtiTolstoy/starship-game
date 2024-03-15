@@ -16,6 +16,11 @@ public:
   void calc_spawn();
   bool detect_collision(const Ship&);
   bool is_alive() const;
+  const r_data& get_render_data() const;
+  double get_angle() const;
+  void kill();
+  int get_y_pos() const;
+  int get_image_height() const;
 
 private:
   bool check_angle() const;
