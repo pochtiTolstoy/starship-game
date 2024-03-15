@@ -31,7 +31,7 @@ void Obj_orbit::calc_spawn(const Ship& sd, const Orbit& orb) {
     draw_ = true; //Turn off after collision with ship
   } else return;
   render_.angle = (rand() % 24) * 15;
-  y_pos_ = rand() % 50 + 150;
+  y_pos_ = rand() % 50 + 50;
   render_.center = {width_ / 2, SCREEN_HEIGHT / 2 - y_pos_ };
 }
 
