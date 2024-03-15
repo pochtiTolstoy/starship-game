@@ -17,9 +17,9 @@ Health_module::~Health_module() {
   gTexture_.free();
 }
 
-void Health_module::render(Render_pipe& rp) {
+void Health_module::render(Render_pipe& rp, Obj_health oh_arr[], int n) {
   if (!alive_) return;
-  if (!get_heart_) move_to_heart();
+  if (!get_heart_) find_heart(oh_arr, n);
   else move_to_planet();
 }
 
@@ -42,6 +42,23 @@ void Health_module::calc_spawn(int kills, const Planet& pl) {
   alive_ = (kills >= 60 && pl.get_curr_lifes != pl.get_max_lifes);
 }
 
-void Health_moude::detect_collision() {
+void Health_module::detect_collision() {
   if (!alive_) return;
+}
+
+void Health_module::find_heart(Obj_health oh_arr[], int n) {
+  for (int i = 0; i < n; ++i) {
+    if (oh_arr[i].is_alive()) {
+      move_to_heart(oh_arr[i]); 
+      break;
+    }
+  }
+}
+
+void Health_module::move_to_heart(Obj_health& oh) {
+  
+}
+
+void Health_module::move_to_planet() {
+
 }

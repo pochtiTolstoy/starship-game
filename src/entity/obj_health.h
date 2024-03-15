@@ -15,6 +15,7 @@ public:
   void render(Render_pipe&);
   void calc_spawn();
   bool detect_collision(const Ship&);
+  bool is_alive() const;
 
 private:
   bool check_angle() const;

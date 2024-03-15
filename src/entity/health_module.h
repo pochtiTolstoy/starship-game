@@ -6,6 +6,7 @@
 #include "../util/constants.h"
 #include "../texture/LTexture.h"
 #include "planet.h"
+#include "obj_health.h"
 
 using r_data = render_rotation_data;
 

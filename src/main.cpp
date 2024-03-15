@@ -42,8 +42,12 @@ int main(int argc, char* args[]) {
   Ship sd(rp);
   Orbit orb(rp); 
   Planet pl;
-  Obj_health oh1(ui.get_ui_texture(UI::IMAGES::RED_HEART));
-  Obj_health oh2(ui.get_ui_texture(UI::IMAGES::RED_HEART));
+  Obj_health obj_health_arr[2] = {
+    Obj_health(ui.get_ui_texture(UI::IMAGES::RED_HEART)),
+    Obj_health(ui.get_ui_texture(UI::IMAGES::RED_HEART))
+  };
+  //Obj_health oh1(ui.get_ui_texture(UI::IMAGES::RED_HEART));
+  //Obj_health oh2(ui.get_ui_texture(UI::IMAGES::RED_HEART));
   Obj_orbit obj_orb(ui.get_ui_texture(UI::IMAGES::ORBIT_ELEMENT));
   UI_killbar uk(rp);
   LTexture gFPSTextTexture;
@@ -109,8 +113,11 @@ int main(int argc, char* args[]) {
     ui.render_ship_bullets(rp, sd);
 
     //Draw obj_health
-    oh1.render(rp);
-    oh2.render(rp);
+    //oh1.render(rp);
+    //oh2.render(rp);
+    for (int i = 0; i < 2; ++i) {
+      obj_health_arr[i].render(rp);
+    }
 
     //Draw obj_orbit
     obj_orb.render(rp);
@@ -123,7 +130,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
+      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
       if (meteor_arr[i].move(delta_time)) meteor_arr[i].render(rp);
     }
 
@@ -148,10 +155,14 @@ int main(int argc, char* args[]) {
     if (obj_orb.detect_collision(sd)) {
       orb.reinit(obj_orb.get_y(), obj_orb.get_r_data());
     }
-    oh1.calc_spawn();
-    oh2.calc_spawn();
-    if (oh1.detect_collision(sd)) add_life(pl, sd);
-    if (oh2.detect_collision(sd)) add_life(pl, sd);
+    for (int i = 0; i < 2; ++i) {
+      obj_health_arr[i].calc_spawn();
+      if (obj_health_arr[i].detect_collision(sd)) add_life(pl, sd);
+    }
+    //oh1.calc_spawn();
+    //oh2.calc_spawn();
+    //if (oh1.detect_collision(sd)) add_life(pl, sd);
+    //if (oh2.detect_collision(sd)) add_life(pl, sd);
 
     ++countedFrames;
     int frameTicks = capTimer.getTicks();
@@ -236,6 +247,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
         else
           sd.render_.angle -= rem;
         sd.moving_ang_ = false;
+        std::cout << "SHIP ANGLE: " << sd.render_.angle << '\n';
         break;
       case SDLK_d:
         sd.vel_ang_ -= MOVE_ANGULAR;
@@ -245,6 +257,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
           //DAMPER COUNTER-CLOCKWISE
           sd.render_.angle -= rem;
         sd.moving_ang_ = false;
+        std::cout << "SHIP ANGLE: " << sd.render_.angle << '\n';
         break;
       //ORBIT KEYS UP:
       case SDLK_m:
