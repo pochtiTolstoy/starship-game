@@ -165,7 +165,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
   };
   Obj_orbit obj_orb(ui.get_ui_texture(UI::IMAGES::ORBIT_ELEMENT));
   UI_killbar uk(rp);
-  //LTexture gFPSTextTexture;
+  LTexture gFPSTextTexture;
 
   //Array of enemies
   Enemy meteor_arr[NUM_ENEMY_ON_MAP];
@@ -198,13 +198,11 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     if (avgFPS > 2'000'000) avgFPS = 0;
     timeText.str("");
     timeText << "FPS: " << avgFPS;
-    /*
     if (!gFPSTextTexture.loadFromRenderedText(
       rp, timeText.str().c_str(), textColor
     )) {
       std::cout << "Unable to render FPS texture!\n";
     }
-    */
     
     delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
     last_frame_time = SDL_GetTicks();
@@ -258,13 +256,11 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     uk.render(rp, sd);
 
     //avg FPS render
-    /*
     gFPSTextTexture.render(
       rp,
       (SCREEN_WIDTH - gFPSTextTexture.get_width()) / 2,
       0
     );
-    */
 
     //PROCESS FINAL RENDER
     SDL_RenderPresent(rp.get_renderer());

@@ -3,7 +3,7 @@
 UI_killbar::UI_killbar(Render_pipe& rp)
   : max_kills_(KILLS_TO_WIN), curr_kills_(0) 
 {
-  text_ = "KILLS: 0/" + std::to_string(max_kills_);
+  text_ = "Kills: 0/" + std::to_string(max_kills_);
   color_ = { 0, 0, 0 };
   gTextTexture_.loadFromRenderedText(rp, text_, color_);
 }
