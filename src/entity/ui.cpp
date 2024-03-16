@@ -37,7 +37,7 @@ const LTexture& UI::get_enemy_texture(int image) const {
   return gEnemyTextures_[image];
 }
 
-void UI::render_planet_health(Render_pipe& rp, const Planet& pl) {
+void UI::render_planet_health(Render_pipe& rp, const Planet& pl) const {
   //DRAW RED HEARTS
   for (int i = 0; i < pl.get_curr_lifes(); ++i) {
     gUITextures_[IMAGES::RED_HEART].render(
@@ -56,11 +56,9 @@ void UI::render_planet_health(Render_pipe& rp, const Planet& pl) {
   }
 }
 
-void UI::render_ship_health(Render_pipe& rp, const Ship& sd) {
+void UI::render_ship_health(Render_pipe& rp, const Ship& sd) const {
   //DRAW RED HEARTS
-  //std::cout << "SHIP LIFES INSIDE CLASS: " << sd.curr_lifes_ << ", " << sd.max_lifes_ << '\n';
   for (int i = 0; i < sd.curr_lifes_; ++i) {
-    //std::cout << "RED i : " << i << '\n';
     gUITextures_[IMAGES::RED_HEART].render(
       rp,
       calc_render_x(IMAGES::RED_HEART, i, sd.max_lifes_),
@@ -70,7 +68,6 @@ void UI::render_ship_health(Render_pipe& rp, const Ship& sd) {
   }
   //DRAW BLACK HEARTS
   for (int i = sd.curr_lifes_; i < sd.max_lifes_; ++i) {
-    //std::cout << "BLACK i : " << i << '\n';
     gUITextures_[IMAGES::BLACK_HEART].render(
       rp,
       calc_render_x(IMAGES::BLACK_HEART, i, sd.max_lifes_),
@@ -80,7 +77,7 @@ void UI::render_ship_health(Render_pipe& rp, const Ship& sd) {
   }
 }
 
-void UI::render_ship_bullets(Render_pipe& rp, const Ship& sd) {
+void UI::render_ship_bullets(Render_pipe& rp, const Ship& sd) const {
   int bullet_image = 0;
   if (sd.gun_state_ == GUN_STATES::DEFAULT) {
     bullet_image = IMAGES::BULLET;
@@ -105,7 +102,7 @@ void UI::render_ship_bullets(Render_pipe& rp, const Ship& sd) {
   }
 }
 
-void UI::render_background(Render_pipe& rp) {
+void UI::render_background(Render_pipe& rp) const {
   gBackground_.render(rp, 0, 0);
 }
 

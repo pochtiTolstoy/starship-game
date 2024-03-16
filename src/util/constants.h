@@ -9,6 +9,7 @@ static const int NUM_ENEMY_ON_MAP = 24;
 static const int NUM_UI_TEXTURES = 6;
 static const int NUM_ORBIT_TEXTURES = 2;
 static const int NUM_HEALTH_MODULE_TEXTURES = 2;
+static const int NUM_OBJ_HEALTH_ON_MAP = 2;
 static const int COORDS_SYNC = 90;
 static const int SPAWN_ENEMY_X = -400;
 static const int DEGREES_IN_CIRCLE = 360;
@@ -20,6 +21,8 @@ static const int SHIFT_HEART_PLANET_Y = 185;
 static const int SHIFT_HEART_SHIP_Y = 30;
 static const double MOVE_ANGULAR = 15;
 static const int MOVE_LEN = 30;
+static const int SCREEN_FPS = 60;
+static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 
 /* === Safe to change === */
 

@@ -29,11 +29,9 @@ Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown):
 
 //Destructor
 Ship::~Ship() {
-  std::cout << "Clear Ship class textures:\n";
   for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
     gShipTextures_[i].free();
   }
-  std::cout << '\n';
 }
 
 //Public methods
@@ -130,8 +128,6 @@ void Ship::detect_collision(Enemy* e) {
     if (!e[i].is_alive()) continue;
     if (y_pos_ <= SCREEN_HEIGHT / 2) {
       if (eu_mod(angle_sync, 360) == eu_mod(e[i].get_angle(), 360)) {
-        //std::cout << "SHIP: " << y_pos_ << ", e[i] - dx: "
-          //<< e[i].get_x() - coords_sync << '\n';
         if (std::abs(y_pos_ - e[i].get_x() + coords_sync) <= SHIP_HITBOX) {
           e[i].reinit();
           --curr_lifes_;

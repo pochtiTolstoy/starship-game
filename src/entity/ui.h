@@ -7,15 +7,16 @@
 #include "planet.h"
 #include "ship.h"
 
+//Need for menu buttons, and ui in game process
 class UI {
 public:
   UI() = delete;
   UI(Render_pipe&);
   ~UI();
-  void render_planet_health(Render_pipe&, const Planet&);
-  void render_ship_health(Render_pipe&, const Ship&);
-  void render_ship_bullets(Render_pipe&, const Ship&);
-  void render_background(Render_pipe&);
+  void render_planet_health(Render_pipe&, const Planet&) const;
+  void render_ship_health(Render_pipe&, const Ship&) const;
+  void render_ship_bullets(Render_pipe&, const Ship&) const;
+  void render_background(Render_pipe&) const;
   int get_image_width(int image) const;
   int get_image_height(int image) const;
   const LTexture& get_ui_texture(int image) const;

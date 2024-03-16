@@ -33,12 +33,10 @@ void Obj_health::calc_spawn() {
   draw_ = true;
   render_.angle = (rand() % 24) * 15;
   //render_.angle = ;
-  std::cout << "HEALTH ANGLE: " << render_.angle << '\n';
   if (check_angle())
     y_pos_ = rand() % 50;
   else y_pos_ = rand() % 200 - 400; 
   int mid = y_pos_ + height_ / 2;
-  std::cout << "HEALTH Y    : " << y_pos_ << '\n';
   render_.center = { width_ / 2, SCREEN_HEIGHT / 2 - y_pos_ };
 }
 
