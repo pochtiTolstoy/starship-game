@@ -200,7 +200,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
     }
   } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
     switch(e.key.keysym.sym) {
-      case SDLK_SPACE: sd.image_ = STATES::DEFAULT;
+      case SDLK_SPACE: sd.image_ = (sd.image_ == STATES::RELOAD) ? STATES::RELOAD : STATES::DEFAULT;
     }
   }
   //KEY CONTROLS
