@@ -4,7 +4,7 @@ Health_module::Health_module(Render_pipe& rp) {
   init_image(rp); 
   width_ = get_image_width(STATES::FORWARD);
   height_ = get_image_height(STATES::FORWARD);
-  speed_ = 200;
+  speed_ = 150;
   reinit();
 }
 
