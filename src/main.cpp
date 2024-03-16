@@ -13,8 +13,8 @@ int main() {
   //Class UI with ui textures and draw methods
   UI ui(rp);
 
-  int state = 0;
-  while (state != -1) {
+  GAME_STATES state = GAME_STATES::MENU;
+  while (state != GAME_STATES::QUIT) {
     state = game_function(state, rp, ui);
   }
   return 0;

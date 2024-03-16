@@ -10,6 +10,7 @@ static const int NUM_UI_TEXTURES = 6;
 static const int NUM_ORBIT_TEXTURES = 2;
 static const int NUM_HEALTH_MODULE_TEXTURES = 2;
 static const int NUM_OBJ_HEALTH_ON_MAP = 2;
+static const int NUM_BACKGROUNDS = 2;
 static const int COORDS_SYNC = 90;
 static const int SPAWN_ENEMY_X = -400;
 static const int DEGREES_IN_CIRCLE = 360;
@@ -70,7 +71,11 @@ static const char* FILE_PATH_HEALTH_MODULE[NUM_HEALTH_MODULE_TEXTURES] = {
   "res/pics/healthModule.png",
   "res/pics/healthModuleBack.png"
 };
-static const char* FILE_PATH_BACKGROUND = "res/pics/planet1DarkBig.png";
+static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
+  "res/pics/planet1Big.png",
+  "res/pics/menuBack.png"
+};
+
 static const char* FILE_PATH_FONT = "res/Mx437_Acer710_Mono.ttf";
 
 #endif /* CONSTANTS_H_ */

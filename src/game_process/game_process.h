@@ -23,22 +23,50 @@
 #include "../entity/obj_health.h"
 #include "../entity/ui_killbar.h"
 
-int game_function(
-  int state, 
+enum GAME_STATES {
+  MENU,
+  PLAY,
+  QUIT
+};
+
+GAME_STATES game_function(
+  GAME_STATES state, 
   Render_pipe&, 
-  const UI&
+  UI&
 );
 
-void process_gameplay(
+GAME_STATES process_gameplay(
   Render_pipe&, 
-  const UI&
+  UI&
+);
+
+GAME_STATES process_menu(
+  Render_pipe&, 
+  UI&
 );
 
 void process_key(
-  SDL_Event&, Ship&, 
+  SDL_Event&, 
+  Ship&, 
   Enemy* enemy_arr, 
   Orbit& orb
 );
+
+void process_menu_key(
+  SDL_Event&,
+  GAME_STATES&,
+  int& active_button
+);
+
+void swap_buttons_colors(
+  Render_pipe&, 
+  int active_button, 
+  int prev_button,
+  LTexture& play, 
+  LTexture& quit
+);
+
+GAME_STATES get_state(int active_button);
 
 void add_life(
   Planet& pl, 

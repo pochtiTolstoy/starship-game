@@ -13,10 +13,13 @@ UI::UI(Render_pipe& rp) {
       exit(EXIT_FAILURE);
     }
   }
-  if (!gBackground_.loadFromFile(rp, FILE_PATH_BACKGROUND)) {
-    std::cout << "Failed to load planet!\n";
-    exit(EXIT_FAILURE);
+  for (int i = 0; i < NUM_BACKGROUNDS; ++i) {
+    if (!gBackground_[i].loadFromFile(rp, FILE_PATH_BACKGROUND[i])) {
+      std::cout << "Failed to load planet!\n";
+      exit(EXIT_FAILURE);
+    }
   }
+  image_background_ = BACKGROUND::MENU_BACK;
 }
 
 UI::~UI() {
@@ -26,7 +29,9 @@ UI::~UI() {
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     gEnemyTextures_[i].free();
   }
-  gBackground_.free();
+  for (int i = 0; i < NUM_BACKGROUNDS; ++i) {
+    gBackground_[i].free();
+  }
 }
 
 const LTexture& UI::get_ui_texture(int image) const {
@@ -103,7 +108,11 @@ void UI::render_ship_bullets(Render_pipe& rp, const Ship& sd) const {
 }
 
 void UI::render_background(Render_pipe& rp) const {
-  gBackground_.render(rp, 0, 0);
+  gBackground_[image_background_].render(rp, 0, 0);
+}
+
+void UI::reset_image_background(BACKGROUND image) {
+  image_background_ = image;
 }
 
 //======================Helper methods===========================

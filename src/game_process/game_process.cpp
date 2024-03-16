@@ -1,20 +1,160 @@
 #include "game_process.h"
 
-int game_function(
-  int state, 
+GAME_STATES game_function(
+  GAME_STATES state, 
   Render_pipe& rp,
-  const UI& ui
+  UI& ui
 ) {
   switch (state) {
-    case 0: process_gameplay(rp, ui); break;
+    case GAME_STATES::PLAY: state = process_gameplay(rp, ui); break;
+    case GAME_STATES::MENU: state = process_menu(rp, ui); break;
     default:
       std::cout << "Warning: there is no such game state as: " << state << '\n';
   }
-  return -1; //CODE FOR QUIT
+  return state; //CODE FOR QUIT
 }
 
-void process_gameplay(Render_pipe& rp, const UI& ui) {
+GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
+  //Clear screen
+  SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+  SDL_RenderClear(rp.get_renderer());
+  //
+  ui.reset_image_background(UI::BACKGROUND::MENU_BACK);
+
+  LTexture gPlayTextTexture;
+  LTexture gQuitTextTexture;
+  SDL_Color color_white = { 0xFF, 0xFF, 0xFF, 0xFF };
+  SDL_Color color_black = { 0x00, 0x00, 0x00, 0xFF };
+  if (!gPlayTextTexture.loadFromRenderedText(rp, "Play", color_black)) {
+    std::cout << "Error: Unable to render PLAY button.\n"; 
+  }
+  if (!gQuitTextTexture.loadFromRenderedText(rp, "Quit", color_black)) {
+    std::cout << "Error: Unable to render PLAY button.\n"; 
+  }
+  
+  SDL_Event e;
+  GAME_STATES state = GAME_STATES::MENU;
+  int prev_button = -1;
+  int active_button = -1;
+
+  while (state == GAME_STATES::MENU) {
+    while (SDL_PollEvent(&e) != 0) {
+      if (e.type == SDL_QUIT) state = GAME_STATES::QUIT;
+      else process_menu_key(e, state, active_button);
+    }
+    //Clear screen
+    SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderClear(rp.get_renderer());
+
+    //Render menu background
+    ui.render_background(rp);
+
+    //Swap colors of buttons
+    if (prev_button != active_button) {
+      swap_buttons_colors(
+        rp, 
+        active_button, 
+        prev_button,
+        gPlayTextTexture,
+        gQuitTextTexture
+      ); 
+      prev_button = active_button;
+    }
+
+    //Render play button
+    gPlayTextTexture.render(
+      rp,
+      (SCREEN_WIDTH - gPlayTextTexture.get_width()) / 2,
+      (SCREEN_HEIGHT - gPlayTextTexture.get_height()) / 2 - 40
+    );   
+
+    //Render quit button
+    gQuitTextTexture.render(
+      rp,
+      (SCREEN_WIDTH - gQuitTextTexture.get_width()) / 2,
+      (SCREEN_HEIGHT - gQuitTextTexture.get_height()) / 2 + 40
+    );   
+
+    //FINAL RENDER
+    SDL_RenderPresent(rp.get_renderer());
+  }
+
+  gPlayTextTexture.free();
+  gQuitTextTexture.free();
+
+  return state;
+}
+
+void process_menu_key(
+  SDL_Event& e, 
+  GAME_STATES& state, 
+  int& active_button
+) {
+  if (active_button == -1 && e.type == SDL_KEYDOWN) {
+    active_button = 0;
+    return;
+  }
+  //Change after adding new buttons!
+  if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
+    switch (e.key.keysym.sym) {
+      case SDLK_w:
+      case SDLK_UP:
+        active_button = (active_button == 0) ? 0 : --active_button;
+        break;
+      case SDLK_s:
+      case SDLK_DOWN:
+        active_button = (active_button == 1) ? 1 : ++active_button;
+        break;
+      case SDLK_RETURN:
+        state = get_state(active_button); 
+        break;
+    }
+  }
+}
+
+GAME_STATES get_state(int active_button) {
+  switch (active_button) {
+    case 0: return GAME_STATES::PLAY;
+    case 1: return GAME_STATES::QUIT;
+    default: 
+      std::cout << "Warning: there is no such button id: "
+                << active_button << '\n';
+      return GAME_STATES::QUIT;
+  }
+}
+
+void swap_buttons_colors(
+  Render_pipe& rp, 
+  int active_button, 
+  int prev_button,
+  LTexture& play, 
+  LTexture& quit
+) {
+  static const SDL_Color color_white = { 0xFF, 0xFF, 0xFF, 0xFF };
+  static const SDL_Color color_black = { 0x00, 0x00, 0x00, 0xFF };
+  if (active_button == 0) {
+    if (!play.loadFromRenderedText(rp, "Play", color_white)) {
+      std::cout << "Error: Unable to render PLAY button.\n"; 
+    }
+    if (!quit.loadFromRenderedText(rp, "Quit", color_black)) {
+      std::cout << "Error: Unable to render PLAY button.\n"; 
+    }
+  } else if (active_button == 1) {
+    if (!play.loadFromRenderedText(rp, "Play", color_black)) {
+      std::cout << "Error: Unable to render PLAY button.\n"; 
+    }
+    if (!quit.loadFromRenderedText(rp, "Quit", color_white)) {
+      std::cout << "Error: Unable to render PLAY button.\n"; 
+    }
+  }
+}
+
+GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
+  SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+  SDL_RenderClear(rp.get_renderer());
+
   srand(time(0)); // Need for game loop only
+  ui.reset_image_background(UI::BACKGROUND::GAME_BACK1);
   Ship sd(rp); //Need only in game loop
   Orbit orb(rp); //Need only in game loop
   Health_module hp_module(rp); //Need only in game loop
@@ -25,7 +165,7 @@ void process_gameplay(Render_pipe& rp, const UI& ui) {
   };
   Obj_orbit obj_orb(ui.get_ui_texture(UI::IMAGES::ORBIT_ELEMENT));
   UI_killbar uk(rp);
-  LTexture gFPSTextTexture;
+  //LTexture gFPSTextTexture;
 
   //Array of enemies
   Enemy meteor_arr[NUM_ENEMY_ON_MAP];
@@ -58,11 +198,13 @@ void process_gameplay(Render_pipe& rp, const UI& ui) {
     if (avgFPS > 2'000'000) avgFPS = 0;
     timeText.str("");
     timeText << "FPS: " << avgFPS;
+    /*
     if (!gFPSTextTexture.loadFromRenderedText(
       rp, timeText.str().c_str(), textColor
     )) {
       std::cout << "Unable to render FPS texture!\n";
     }
+    */
     
     delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
     last_frame_time = SDL_GetTicks();
@@ -116,11 +258,13 @@ void process_gameplay(Render_pipe& rp, const UI& ui) {
     uk.render(rp, sd);
 
     //avg FPS render
+    /*
     gFPSTextTexture.render(
       rp,
       (SCREEN_WIDTH - gFPSTextTexture.get_width()) / 2,
       0
     );
+    */
 
     //PROCESS FINAL RENDER
     SDL_RenderPresent(rp.get_renderer());
@@ -139,17 +283,13 @@ void process_gameplay(Render_pipe& rp, const UI& ui) {
     }
     hp_module.calc_spawn(sd, pl, obj_health_arr, NUM_OBJ_HEALTH_ON_MAP);
 
-    //oh1.calc_spawn();
-    //oh2.calc_spawn();
-    //if (oh1.detect_collision(sd)) add_life(pl, sd);
-    //if (oh2.detect_collision(sd)) add_life(pl, sd);
-
     ++countedFrames;
     int frameTicks = capTimer.getTicks();
     if (frameTicks < SCREEN_TICK_PER_FRAME) {
       SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
     }
   }
+  return GAME_STATES::MENU;
 }
 
 void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
