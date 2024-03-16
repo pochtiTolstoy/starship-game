@@ -6,7 +6,7 @@ static const int SCREEN_HEIGHT = 1080;
 static const int NUM_SHIP_TEXTURES = 6;
 static const int NUM_ENEMY_TEXTURES = 1;
 static const int NUM_ENEMY_ON_MAP = 24;
-static const int NUM_UI_TEXTURES = 5;
+static const int NUM_UI_TEXTURES = 6;
 static const int NUM_ORBIT_TEXTURES = 2;
 static const int NUM_HEALTH_MODULE_TEXTURES = 2;
 static const int COORDS_SYNC = 90;
@@ -54,7 +54,8 @@ static const char* FILE_PATHS_UI[NUM_UI_TEXTURES] = {
 	"res/pics/heartBlackBig.png",
 	"res/pics/ui_shootBig.png",
 	"res/pics/ui_shootBlackBig.png",
-  "res/pics/orbitElement.png"
+  "res/pics/orbitElement.png",
+  "res/pics/ui_shootBlue.png"
 };
 
 static const char* FILE_PATHS_ORBIT[NUM_ORBIT_TEXTURES] = {

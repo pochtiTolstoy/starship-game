@@ -81,11 +81,17 @@ void UI::render_ship_health(Render_pipe& rp, const Ship& sd) {
 }
 
 void UI::render_ship_bullets(Render_pipe& rp, const Ship& sd) {
+  int bullet_image = 0;
+  if (sd.gun_state_ == GUN_STATES::DEFAULT) {
+    bullet_image = IMAGES::BULLET;
+  } else {
+    bullet_image = IMAGES::BLUE_BULLET;
+  }
   for (int i = 0; i < sd.curr_bullets_; ++i) {
-    gUITextures_[IMAGES::BULLET].render(
+    gUITextures_[bullet_image].render(
       rp,
-      calc_render_x(IMAGES::BULLET, i, sd.max_bullets_),
-      calc_render_y(IMAGES::BULLET) +
+      calc_render_x(bullet_image, i, sd.max_bullets_),
+      calc_render_y(bullet_image) +
       SHIFT_HEART_PLANET_Y + 2 * SHIFT_HEART_SHIP_Y
     );
   }

@@ -136,7 +136,7 @@ int main(int argc, char* args[]) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
+      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
       if (meteor_arr[i].move(delta_time)) meteor_arr[i].render(rp);
     }
 

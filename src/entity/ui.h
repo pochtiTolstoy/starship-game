@@ -29,7 +29,14 @@ private:
   LTexture gBackground_;
 
 public:
-  enum IMAGES { RED_HEART, BLACK_HEART, BULLET, EMPTY_BULLET, ORBIT_ELEMENT };
+  enum IMAGES { 
+    RED_HEART, 
+    BLACK_HEART, 
+    BULLET, 
+    EMPTY_BULLET, 
+    ORBIT_ELEMENT, 
+    BLUE_BULLET 
+  };
   enum ENEMY { METEOR };
 };
 
