@@ -5,6 +5,7 @@
 #include "../texture/LTexture.h"
 #include "../util/render_pipe.h"
 #include "../util/constants.h"
+#include "enemy.h"
 
 using r_data = render_rotation_data;
 
@@ -17,7 +18,9 @@ public:
   void drop(int y_pos, double angle);
   void death();
   bool is_alive() const;
+  void detect_collision(Enemy*);
 private:
+  bool check_angle(double angle1, double angle2) const;
   int get_image_width() const;
   int get_image_height() const;
 

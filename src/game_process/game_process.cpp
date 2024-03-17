@@ -284,6 +284,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     //Calculate game events
     sd.detect_collision(meteor_arr);
     orb.detect_collision(meteor_arr);
+    orb.process_mines_collision(meteor_arr);
     orb.calc_drop_mine();
     sd.calc_cooldown();
     obj_orb.calc_spawn(sd, orb);

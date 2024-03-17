@@ -50,7 +50,7 @@ void Orbit::render_mines(Render_pipe& rp) {
 void Orbit::calc_drop_mine() {
   if (!alive_) return;
   if (curr_mine_ >= NUM_MINES) return;
-  if (rand() % 200 != 0) return;
+  if (rand() % 20 != 0) return;
   for (int i = 0; i < NUM_MINES; ++i) {
     if (!mine_arr_[curr_mine_].is_alive()) {
       mine_arr_[curr_mine_].drop(y_pos_, render_.angle);
@@ -114,6 +114,12 @@ void Orbit::detect_collision(Enemy* e_arr) {
     }
   }
   if (curr_lifes_ <= 0) death();
+}
+
+void Orbit::process_mines_collision(Enemy* e) {
+  for (int i = 0; i < NUM_MINES; ++i) {
+    mine_arr_[i].detect_collision(e);
+  }
 }
 
 void Orbit::death() {

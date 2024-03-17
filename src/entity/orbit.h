@@ -26,6 +26,7 @@ public:
   void set_mines_texture(const LTexture&);
   void calc_drop_mine();
   void death();
+  void process_mines_collision(Enemy*);
 private:
   //Constants
   static const int NUM_MINES = 12; 

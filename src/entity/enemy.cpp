@@ -78,7 +78,7 @@ void Enemy::render(Render_pipe& rp) {
 
 bool Enemy::move(double delta_time) {
   int spawn_chance = first_spawn_ ? RAND_SPAWN_FIRST : RAND_SPAWN; 
-  if (!draw_ && enemy_on_map_ < 12 && rand() % spawn_chance == 0) {
+  if (!draw_ && enemy_on_map_ < 24 && rand() % spawn_chance == 0) {
     draw_ = true;
     ++enemy_on_map_;
     return false;
