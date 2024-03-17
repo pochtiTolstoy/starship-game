@@ -15,6 +15,8 @@ public:
   void set_texture(const LTexture&);
   void render(Render_pipe&) const;
   void drop(int y_pos, double angle);
+  void death();
+  bool is_alive() const;
 private:
   int get_image_width() const;
   int get_image_height() const;

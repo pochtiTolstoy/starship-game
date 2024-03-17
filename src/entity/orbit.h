@@ -25,6 +25,7 @@ public:
   void reinit(int, const r_data&);
   void set_mines_texture(const LTexture&);
   void calc_drop_mine();
+  void death();
 private:
   //Constants
   static const int NUM_MINES = 12; 

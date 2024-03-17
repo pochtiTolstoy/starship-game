@@ -246,7 +246,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     }
 
     //Draw mines
-    //orb.render_mines(rp);
+    orb.render_mines(rp);
 
     //Draw obj_orbit
     obj_orb.render(rp);
@@ -284,7 +284,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     //Calculate game events
     sd.detect_collision(meteor_arr);
     orb.detect_collision(meteor_arr);
-    //orb.calc_drop_mine();
+    orb.calc_drop_mine();
     sd.calc_cooldown();
     obj_orb.calc_spawn(sd, orb);
     if (obj_orb.detect_collision(sd)) {

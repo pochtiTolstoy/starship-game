@@ -39,11 +39,16 @@ void Mine::set_texture(const LTexture& t) {
 }
 
 void Mine::drop(int y_pos, double angle) {
+  if (alive_) return;
   alive_ = true; 
   x_pos_ = (SCREEN_WIDTH - width_) / 2;
   y_pos_ = y_pos;
   render_.angle = angle;
   render_.center = { width_ / 2, SCREEN_HEIGHT / 2 - y_pos_ };
+}
+
+void Mine::death() {
+  alive_ = false;
 }
 
 /*
@@ -58,4 +63,8 @@ int Mine::get_image_width() const {
 
 int Mine::get_image_height() const {
   return height_;
+}
+
+bool Mine::is_alive() const {
+  return alive_;
 }
