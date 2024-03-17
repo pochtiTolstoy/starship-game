@@ -37,7 +37,13 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
   int prev_button = -1;
   int active_button = -1;
 
+  //For frame capping
+  LTimer capTimer;
+  int frameTicks = 0;
+
+
   while (state == GAME_STATES::MENU) {
+    capTimer.start(); //For SDL delay
     while (SDL_PollEvent(&e) != 0) {
       if (e.type == SDL_QUIT) state = GAME_STATES::QUIT;
       else process_menu_key(e, state, active_button);
@@ -66,17 +72,23 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
       rp,
       (SCREEN_WIDTH - gPlayTextTexture.get_width()) / 2,
       (SCREEN_HEIGHT - gPlayTextTexture.get_height()) / 2 - 40
-    );   
+    ); 
 
     //Render quit button
     gQuitTextTexture.render(
       rp,
       (SCREEN_WIDTH - gQuitTextTexture.get_width()) / 2,
       (SCREEN_HEIGHT - gQuitTextTexture.get_height()) / 2 + 40
-    );   
+    );
 
     //FINAL RENDER
     SDL_RenderPresent(rp.get_renderer());
+
+    //Wait
+    frameTicks = capTimer.getTicks();
+    if (frameTicks < SCREEN_TICK_PER_FRAME) {
+      SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
+    }
   }
 
   gPlayTextTexture.free();
@@ -335,7 +347,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
         break;
       //ORBIT KEYS:
       case SDLK_m:
-        orb.change_speed(200);
+        orb.change_speed(100);
         break;
     }
   } else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
@@ -372,7 +384,7 @@ void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
         break;
       //ORBIT KEYS UP:
       case SDLK_m:
-        orb.change_speed(-200);
+        orb.change_speed(-100);
         break;
     }
   }

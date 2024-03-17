@@ -32,7 +32,7 @@ void Obj_orbit::calc_spawn(const Ship& sd, const Orbit& orb) {
   } else return;
   render_.angle = (rand() % 24) * 15;
   //render_.angle = 0;
-  y_pos_ = rand() % 50;
+  y_pos_ = rand() % 10 - height_ / 2;
   render_.center = {width_ / 2, SCREEN_HEIGHT / 2 - y_pos_ };
 }
 
@@ -61,7 +61,7 @@ bool Obj_orbit::detect_collision(const Ship& sd) {
   if ((eu_mod(sd.render_.angle, 360) != eu_mod(render_.angle, 360)) &&
       (eu_mod(sd.render_.angle, 180) == eu_mod(render_.angle, 180))) {
     reflection_y = -sd.y_pos_ - sd.height_ / 2 + SCREEN_HEIGHT;
-    if (std::abs(reflection_y - mid_obj_x) <= 30) {
+    if (std::abs(reflection_y - mid_obj_x) <= 10) {
       draw_ = false;
       return true;
     }
