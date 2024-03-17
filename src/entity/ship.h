@@ -76,6 +76,7 @@ public:
   //int cooldown_timer_;
   LTimer cooldown_timer_;
   int kill_streak_;
+  static const int kill_streak_triple_ = 8;
   int kills_;
 
   //Visuals

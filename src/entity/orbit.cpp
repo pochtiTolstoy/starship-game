@@ -13,7 +13,7 @@ Orbit::Orbit(Render_pipe& rp) {
   render_.flip = SDL_FLIP_NONE;
   alive_ = false;
   curr_lifes_ = 0;
-  max_lifes_ = 6;
+  max_lifes_ = 4;
 }
 
 Orbit::~Orbit() {

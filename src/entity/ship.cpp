@@ -1,5 +1,6 @@
 #include "ship.h"
 
+
 //Default constructor
 Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown): 
   vel_r_(0),
@@ -65,7 +66,7 @@ void Ship::move(double delta_time) {
 void Ship::process_shooting(Enemy* enemy_arr) {
   if (curr_bullets_ <= 0) return;
   if (gun_state_ == GUN_STATES::DEFAULT &&
-      kill_streak_ && kill_streak_ % 10 == 0
+      kill_streak_ && kill_streak_ % kill_streak_triple_ == 0
   ) {
     gun_state_ = GUN_STATES::TRIPLE;
     max_bullets_ = 4;
@@ -89,7 +90,7 @@ void Ship::change_shoot_animation() {
   } else if (gun_state_ == GUN_STATES::TRIPLE) {
     image_ = STATES::TRIPLE;
   } else if (gun_state_ == GUN_STATES::DEFAULT &&
-             kill_streak_ && kill_streak_ % 10 == 0
+             kill_streak_ && kill_streak_ % kill_streak_triple_ == 0
   ) {
     image_ = STATES::TRIPLE;
   } else if (gun_state_ == GUN_STATES::DEFAULT) {
@@ -105,7 +106,7 @@ void Ship::calc_cooldown() {
     max_bullets_ = 6;
     curr_bullets_ = max_bullets_;
     return;
-  } else if (kill_streak_ && kill_streak_ % 10 == 0) {
+  } else if (kill_streak_ && kill_streak_ % kill_streak_triple_ == 0) {
     gun_state_ = GUN_STATES::TRIPLE;
     max_bullets_ = 4; 
     curr_bullets_ = max_bullets_;
