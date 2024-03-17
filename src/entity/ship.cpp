@@ -132,7 +132,7 @@ void Ship::detect_collision(Enemy* e) {
       if (eu_mod(render_.angle, 360) == eu_mod(e[i].get_angle(), 360)) {
         if (std::abs(mid_ship_y - mid_enemy_y) <= 75) {
           e[i].reinit();
-          --curr_lifes_;
+          //--curr_lifes_;
         }
       }
     } else {
@@ -140,7 +140,7 @@ void Ship::detect_collision(Enemy* e) {
           eu_mod(render_.angle, 180) == eu_mod(e[i].get_angle(), 180)) {
         if (std::abs(reflection_y - mid_enemy_y) <= 75) {
           e[i].reinit();
-          --curr_lifes_;
+          //--curr_lifes_;
         }
       }
     }

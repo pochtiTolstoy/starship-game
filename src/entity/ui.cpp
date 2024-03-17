@@ -7,12 +7,14 @@ UI::UI(Render_pipe& rp) {
       exit(EXIT_FAILURE);
     }
   }
+
   for (int i = 0; i < NUM_ENEMY_TEXTURES; ++i) {
     if (!gEnemyTextures_[i].loadFromFile(rp, FILE_PATHS_ENEMY[i])) {
       std::cout << "Failed to load enemy textures!\n";
       exit(EXIT_FAILURE);
     }
   }
+
   for (int i = 0; i < NUM_BACKGROUNDS; ++i) {
     if (!gBackground_[i].loadFromFile(rp, FILE_PATH_BACKGROUND[i])) {
       std::cout << "Failed to load planet!\n";
@@ -20,6 +22,11 @@ UI::UI(Render_pipe& rp) {
     }
   }
   image_background_ = BACKGROUND::MENU_BACK;
+
+  if (!gMineTexture_.loadFromFile(rp, FILE_PATH_MINE)) {
+    std::cout << "Failed to load mine texture!\n";
+    exit(EXIT_FAILURE);
+  }
 }
 
 UI::~UI() {
@@ -32,6 +39,7 @@ UI::~UI() {
   for (int i = 0; i < NUM_BACKGROUNDS; ++i) {
     gBackground_[i].free();
   }
+  gMineTexture_.free();
 }
 
 const LTexture& UI::get_ui_texture(int image) const {
@@ -40,6 +48,10 @@ const LTexture& UI::get_ui_texture(int image) const {
 
 const LTexture& UI::get_enemy_texture(int image) const {
   return gEnemyTextures_[image];
+}
+
+const LTexture& UI::get_mine_texture() const {
+  return gMineTexture_;
 }
 
 void UI::render_planet_health(Render_pipe& rp, const Planet& pl) const {

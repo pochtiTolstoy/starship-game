@@ -169,6 +169,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
   ui.reset_image_background(UI::BACKGROUND::GAME_BACK1);
   Ship sd(rp); //Need only in game loop
   Orbit orb(rp); //Need only in game loop
+  orb.set_mines_texture(ui.get_mine_texture());
   Health_module hp_module(rp); //Need only in game loop
   Planet pl; //Need only in game loop
   Obj_health obj_health_arr[NUM_OBJ_HEALTH_ON_MAP] = {
@@ -244,6 +245,9 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
       obj_health_arr[i].render(rp);
     }
 
+    //Draw mines
+    //orb.render_mines(rp);
+
     //Draw obj_orbit
     obj_orb.render(rp);
     
@@ -260,7 +264,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
+      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
       if (meteor_arr[i].move(delta_time)) meteor_arr[i].render(rp);
     }
 
@@ -280,6 +284,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     //Calculate game events
     sd.detect_collision(meteor_arr);
     orb.detect_collision(meteor_arr);
+    //orb.calc_drop_mine();
     sd.calc_cooldown();
     obj_orb.calc_spawn(sd, orb);
     if (obj_orb.detect_collision(sd)) {

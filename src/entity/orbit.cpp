@@ -1,19 +1,23 @@
 #include "orbit.h"
 
-Orbit::Orbit(Render_pipe& rp) {
+Orbit::Orbit(Render_pipe& rp)
+  : x_pos_(0),
+    y_pos_(0),
+    alive_(false),
+    curr_lifes_(0),
+    max_lifes_(4),
+    curr_mine_(0),
+    render_({
+      .angle = 0,
+      .center = {0, 0},
+      .flip = SDL_FLIP_NONE
+    }),
+    speed_(20),
+    image_(STATES::DEFAULT)
+{
   init_images(rp);
-  image_ = STATES::DEFAULT;
-  speed_ = 20;
   width_ = get_image_width(image_);
   height_ = get_image_height(image_);
-  x_pos_ = (SCREEN_WIDTH - width_) / 2;
-  y_pos_ = (SCREEN_HEIGHT - height_) / 2 - 500;
-  render_.angle = 0;
-  render_.center = { width_ / 2, height_ / 2 + 500 };
-  render_.flip = SDL_FLIP_NONE;
-  alive_ = false;
-  curr_lifes_ = 0;
-  max_lifes_ = 4;
 }
 
 Orbit::~Orbit() {
@@ -31,6 +35,26 @@ void Orbit::render(Render_pipe& rp) {
   );
 }
 
+void Orbit::set_mines_texture(const LTexture& t) {
+  for (int i = 0; i < NUM_MINES; ++i) { 
+    mine_arr_[i].set_texture(t);
+  }
+}
+
+void Orbit::render_mines(Render_pipe& rp) {
+  for (int i = 0; i < NUM_MINES; ++i) {
+    mine_arr_[i].render(rp);
+  }
+}
+
+void Orbit::calc_drop_mine() {
+  if (!alive_) return;
+  if (curr_mine_ >= NUM_MINES) return;
+  if (rand() % 600 != 0) return;
+  mine_arr_[curr_mine_].drop(y_pos_, render_.angle);
+  ++curr_mine_;
+}
+
 void Orbit::reinit(int y_pos, const r_data& ang_data) {
   image_ = STATES::DEFAULT; 
   speed_ = 20;
@@ -38,6 +62,7 @@ void Orbit::reinit(int y_pos, const r_data& ang_data) {
   render_ = ang_data;
   alive_ = true;
   curr_lifes_ = max_lifes_;
+  curr_mine_ = 0;
 }
 
 void Orbit::move(double delta_time) {
@@ -73,7 +98,7 @@ void Orbit::detect_collision(Enemy* e_arr) {
 
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     if (!e_arr[i].is_alive()) continue;
-    if (check_angle(fix_angle, e_arr[i])) {
+    if (check_angle(fix_angle, e_arr[i].get_angle())) {
       int diff = y_pos_ + (get_image_height(image_) / 2) - 
         (e_arr[i].get_y() + e_arr[i].get_height() / 2);
       if (std::abs(diff) <= 90) {
@@ -96,8 +121,8 @@ void Orbit::change_animation_move(double velocity) {
   image_ = (velocity < 0) ? STATES::DEFAULT : STATES::MOVE;
 }
 
-bool Orbit::check_angle(double angle, const Enemy& e) {
-  if (angle <= e.get_angle() + 10 && angle >= e.get_angle() - 10) {
+bool Orbit::check_angle(double angle1, double angle2 /*const Enemy& e*/) {
+  if (angle1 <= angle2 + 10 && angle1 >= angle2 - 10) {
     return true;
   }
   return false;

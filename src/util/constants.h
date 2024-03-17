@@ -76,6 +76,8 @@ static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
   "res/pics/menuBack.png"
 };
 
+static const char* FILE_PATH_MINE = "res/pics/mine.png";
+
 static const char* FILE_PATH_FONT = "res/Mx437_Acer710_Mono.ttf";
 
 #endif /* CONSTANTS_H_ */
