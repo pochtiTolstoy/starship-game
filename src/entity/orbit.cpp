@@ -58,6 +58,7 @@ void Orbit::calc_drop_mine() {
 void Orbit::reinit(int y_pos, const r_data& ang_data) {
   image_ = STATES::DEFAULT; 
   speed_ = 20;
+  x_pos_ = (SCREEN_WIDTH - width_) / 2;
   y_pos_ = y_pos;
   render_ = ang_data;
   alive_ = true;
