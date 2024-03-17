@@ -24,11 +24,13 @@ public:
   bool is_alive() const;
   double get_angle() const;
   int get_x() const;
-  int get_weight() const;
+  int get_y() const;
+  int get_width() const;
+  int get_height() const;
 private:
   void calc_speed();
   const LTexture* pTexture_;
-  int weight_;
+  int width_;
   int height_;
   int x_pos_;
   int y_pos_;

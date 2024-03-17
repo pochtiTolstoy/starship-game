@@ -121,24 +121,28 @@ void Ship::calc_cooldown() {
 }
 
 void Ship::detect_collision(Enemy* e) {
-  int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
-  int angle_sync = render_.angle + COORDS_SYNC; 
-  int diff = SCREEN_HEIGHT - y_pos_ - height_ + coords_sync;
+  //int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
+  //int angle_sync = render_.angle + COORDS_SYNC; 
+  //int diff = SCREEN_HEIGHT - y_pos_ - height_ + coords_sync;
+  int mid_ship_y = y_pos_ + height_ / 2 - 40;
+  int reflection_y = -y_pos_ - height_ / 2 + SCREEN_HEIGHT;
+  int mid_enemy_y = 0;
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     if (!e[i].is_alive()) continue;
+    mid_enemy_y = e[i].get_y() + e[i].get_height() / 2;
     if (y_pos_ <= SCREEN_HEIGHT / 2) {
-      if (eu_mod(angle_sync, 360) == eu_mod(e[i].get_angle(), 360)) {
-        if (std::abs(y_pos_ - e[i].get_x() + coords_sync) <= SHIP_HITBOX) {
+      if (eu_mod(render_.angle, 360) == eu_mod(e[i].get_angle(), 360)) {
+        if (std::abs(mid_ship_y - mid_enemy_y) <= 75) {
           e[i].reinit();
-          --curr_lifes_;
+          //--curr_lifes_;
         }
       }
     } else {
-      if (eu_mod(angle_sync, 360) != eu_mod(e[i].get_angle(), 360) &&
-          eu_mod(angle_sync, 180) == eu_mod(e[i].get_angle(), 180)) {
-        if (std::abs(diff - e[i].get_x()) <= SHIP_HITBOX - 30) {
+      if (eu_mod(render_.angle, 360) != eu_mod(e[i].get_angle(), 360) &&
+          eu_mod(render_.angle, 180) == eu_mod(e[i].get_angle(), 180)) {
+        if (std::abs(reflection_y - mid_enemy_y) <= 75) {
           e[i].reinit();
-          --curr_lifes_;
+          //--curr_lifes_;
         }
       }
     }

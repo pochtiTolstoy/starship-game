@@ -68,7 +68,7 @@ void Orbit::detect_collision(Enemy* e_arr) {
     if (!e_arr[i].is_alive()) continue;
     if (check_angle(angle_sync, e_arr[i])) {
       int diff = y_pos_ + (get_image_height(image_) / 2) - 
-        (e_arr[i].get_x() + e_arr[i].get_weight() / 2) + coords_sync;
+        (e_arr[i].get_x() + e_arr[i].get_width() / 2) + coords_sync;
       if (std::abs(diff) <= 90) {
         e_arr[i].reinit();
         --curr_lifes_;
