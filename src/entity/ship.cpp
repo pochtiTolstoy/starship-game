@@ -121,9 +121,6 @@ void Ship::calc_cooldown() {
 }
 
 void Ship::detect_collision(Enemy* e) {
-  //int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
-  //int angle_sync = render_.angle + COORDS_SYNC; 
-  //int diff = SCREEN_HEIGHT - y_pos_ - height_ + coords_sync;
   int mid_ship_y = y_pos_ + height_ / 2 - 40;
   int reflection_y = -y_pos_ - height_ / 2 + SCREEN_HEIGHT;
   int mid_enemy_y = 0;
@@ -201,7 +198,6 @@ void Ship::init_images(Render_pipe& rp) {
     if (!gShipTextures_[i].loadFromFile(rp, FILE_PATHS_SHIP[i], cut_color)) {
       std::cerr << "Failed to load ship texture!\n"; 
       exit(EXIT_FAILURE);
-      // write try catch or something instead of exit
     }
   }
 }
@@ -225,8 +221,7 @@ int Ship::get_image_width(int image) const {
 }
 
 bool Ship::is_angle_sync(double angle, const Enemy& enemy) {
-  int angle_sync = static_cast<int>(angle) + COORDS_SYNC;
-  return enemy.is_alive() && eu_mod(angle_sync, 360) == enemy.get_angle();
+  return enemy.is_alive() && eu_mod(angle, 360) == enemy.get_angle();
 }
 
 void Ship::default_shoot(Enemy* enemy_arr) {
@@ -245,15 +240,11 @@ void Ship::triple_shoot(Enemy* enemy_arr) {
   //BAD
   int old_kills = kills_;
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    if (is_angle_sync(render_.angle - 15, enemy_arr[i])) {
-      enemy_arr[i].reinit();
-      ++kills_;
-    } else if (is_angle_sync(render_.angle, enemy_arr[i])) {
-      enemy_arr[i].reinit();
-      ++kills_;
-    } else if (is_angle_sync(render_.angle + 15, enemy_arr[i])) {
-      enemy_arr[i].reinit();
-      ++kills_;
+    for (int mov_ang = -15; mov_ang <= 15; mov_ang += 15) {
+      if (is_angle_sync(render_.angle + mov_ang, enemy_arr[i])) {
+        enemy_arr[i].reinit();
+        ++kills_;
+      } 
     }
   }
   kill_streak_ = (kills_ != old_kills) ? (kill_streak_ + 1) : 0;

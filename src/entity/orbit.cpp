@@ -57,18 +57,25 @@ void Orbit::init_images(Render_pipe& rp) {
 
 void Orbit::detect_collision(Enemy* e_arr) {
   if (!alive_) return;
-  int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
-  double angle_sync = render_.angle + COORDS_SYNC;
+  //int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
+  //double angle_sync = render_.angle + COORDS_SYNC;
+  double fix_angle = render_.angle;
 
-  if (angle_sync < 0) {
+  /*
+  if (render_.angle < 0) {
     angle_sync += (-1) * (static_cast<int>(angle_sync) / 360) * 360 + 360;
+  }
+  */
+  //Positive angle from 0 to 360
+  if (fix_angle < 0) {
+    fix_angle += (-1) * (static_cast<int>(fix_angle) / 360) * 360 + 360;
   }
 
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     if (!e_arr[i].is_alive()) continue;
-    if (check_angle(angle_sync, e_arr[i])) {
+    if (check_angle(fix_angle, e_arr[i])) {
       int diff = y_pos_ + (get_image_height(image_) / 2) - 
-        (e_arr[i].get_x() + e_arr[i].get_width() / 2) + coords_sync;
+        (e_arr[i].get_y() + e_arr[i].get_height() / 2);
       if (std::abs(diff) <= 90) {
         e_arr[i].reinit();
         --curr_lifes_;
