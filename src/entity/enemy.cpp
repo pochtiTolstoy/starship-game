@@ -16,23 +16,8 @@ Enemy::Enemy()
     draw_(false),
     first_spawn_(true)
 {
-  //Linear data
-  //weight_ = 0;
-  //height_ = 0;
-  //x_pos_ = SPAWN_ENEMY_X;
-  //y_pos_ = (SCREEN_HEIGHT - height_) / 2;
-  //x_pos_ = 0;
-  //y_pos_ = 0;
   calc_speed();
-
-  //Rotation data
-  //render_.angle = 0; 
-  //render_.center = { 0, 0 };
-  //render_.flip = SDL_FLIP_NONE;
-
-  //Init conditions
-  //draw_ = false;
-  //first_spawn_ = true;
+  enemy_on_map_ = 0; //All enemy should be created
 }
 
 void Enemy::set_angle(double angle) {
@@ -78,7 +63,7 @@ void Enemy::render(Render_pipe& rp) {
 
 bool Enemy::move(double delta_time) {
   int spawn_chance = first_spawn_ ? RAND_SPAWN_FIRST : RAND_SPAWN; 
-  if (!draw_ && enemy_on_map_ < 24 && rand() % spawn_chance == 0) {
+  if (!draw_ && enemy_on_map_ < 16 && rand() % spawn_chance == 0) {
     draw_ = true;
     ++enemy_on_map_;
     return false;

@@ -3,6 +3,7 @@
 #include "game_process/game_process.h"
 
 int main() {
+  srand(time(0));
   //Render pipeline with SDL subsystems
   Render_pipe rp;
   if (!rp.init()) {

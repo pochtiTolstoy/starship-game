@@ -56,28 +56,13 @@ void Mine::detect_collision(Enemy* e) {
   int mid_mine_y = y_pos_ + height_ / 2; 
   int mid_enemy_y = 0;
   double fix_angle = render_.angle;
-  //Positive angle from 0 to 360
-  if (render_.angle < 5 && render_.angle > - 5) {
-    std::cout << "Angle before: " << fix_angle << '\n';
-  }
-
   if (fix_angle < 0) {
     fix_angle += (-1) * (static_cast<int>(fix_angle) / 360) * 360 + 360;
-  }
-
-  if (render_.angle < 5 && render_.angle > - 5) {
-    std::cout << "Angle after: " << fix_angle << '\n';
-    std::cout << '\n';
   }
 
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     if (!e[i].is_alive()) continue;
     mid_enemy_y = e[i].get_y() + e[i].get_height() / 2;
-    
-    if (render_.angle < 5 && render_.angle > - 5 && e[i].get_angle() == 0) {
-      std::cout << "CHECK ANGLE: "
-        << check_angle(fix_angle, e[i].get_angle()) << '\n';
-    }
     if (check_angle(fix_angle, e[i].get_angle())) {
       if (std::abs(mid_mine_y - mid_enemy_y) <= 50) {
         death();

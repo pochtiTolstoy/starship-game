@@ -30,9 +30,9 @@ static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 //DELETE
 //static const int RAND_SPAWN = 600;
 //static const int RAND_SPAWN_FIRST = 600;
-static const int RAND_SPAWN = 1300;
-static const int RAND_SPAWN_FIRST = 1000;
-static const int KILLS_TO_WIN = 120;
+static const int RAND_SPAWN = 800;
+static const int RAND_SPAWN_FIRST = 800;
+static const int KILLS_TO_WIN = 300;
 
 //Enemy movements
 static const int ENEMY_SPEED_LEVELS = 100;

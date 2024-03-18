@@ -27,7 +27,7 @@ void Obj_orbit::render(Render_pipe& rp) {
 }
 
 void Obj_orbit::calc_spawn(const Ship& sd, const Orbit& orb) {
-  if (!draw_ && !orb.is_alive() && sd.kills_ && sd.kills_ % 5 == 0) {
+  if (!draw_ && !orb.is_alive() && check_kills(sd.kills_)) {
     draw_ = true; //Turn off after collision with ship
   } else return;
   render_.angle = (rand() % 24) * 15;
@@ -43,6 +43,12 @@ bool Obj_orbit::check_angle() const {
          (render_.angle >= 315 && render_.angle <= 360);
 }
 */
+
+bool Obj_orbit::check_kills(int kills) const {
+  if (kills < 3) return false;
+  kills %= 50;
+  return kills == 0 || kills == 1 || kills == 2;
+}
 
 bool Obj_orbit::detect_collision(const Ship& sd) {
   if (!draw_) return false;

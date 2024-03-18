@@ -29,12 +29,13 @@ public:
   void process_mines_collision(Enemy*);
 private:
   //Constants
-  static const int NUM_MINES = 12; 
+  static const int NUM_MINES = 8; 
 
   void init_images(Render_pipe&);
   int get_image_height(int image) const;
   int get_image_width(int image) const;
   bool check_angle(double angle1, double angle2);
+  bool ready_to_drop_mine() const;
   
   //Linear data
   int width_;
@@ -46,6 +47,7 @@ private:
   int max_lifes_;
   Mine mine_arr_[NUM_MINES];
   int curr_mine_;
+  int mine_throwed_; //Due to lifecycle
 
   //Angular data
   r_data render_;

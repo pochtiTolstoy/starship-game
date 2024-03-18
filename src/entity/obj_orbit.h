@@ -16,6 +16,7 @@ public:
   ~Obj_orbit();
   void render(Render_pipe&);
   void calc_spawn(const Ship&, const Orbit&);
+
   bool detect_collision(const Ship&);
 
   //Getters:
@@ -23,7 +24,7 @@ public:
   const r_data& get_r_data() const;
 private:
   bool check_angle() const;
-
+  bool check_kills(int kills) const;
   const LTexture& gObjTexture_;
   int width_;
   int height_;

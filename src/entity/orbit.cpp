@@ -7,6 +7,7 @@ Orbit::Orbit(Render_pipe& rp)
     curr_lifes_(0),
     max_lifes_(4),
     curr_mine_(0),
+    mine_throwed_(0),
     render_({
       .angle = 0,
       .center = {0, 0},
@@ -48,17 +49,20 @@ void Orbit::render_mines(Render_pipe& rp) {
 }
 
 void Orbit::calc_drop_mine() {
-  if (!alive_) return;
-  if (curr_mine_ >= NUM_MINES) return;
-  if (rand() % 20 != 0) return;
+  if (!ready_to_drop_mine()) return;
   for (int i = 0; i < NUM_MINES; ++i) {
     if (!mine_arr_[curr_mine_].is_alive()) {
       mine_arr_[curr_mine_].drop(y_pos_, render_.angle);
+      ++mine_throwed_;
       curr_mine_ = (++curr_mine_) % NUM_MINES;
       return;
     }
     curr_mine_ = (++curr_mine_) % NUM_MINES;
   }
+}
+
+bool Orbit::ready_to_drop_mine() const {
+  return alive_ && mine_throwed_ < NUM_MINES && rand() % 300 == 0;
 }
 
 void Orbit::reinit(int y_pos, const r_data& ang_data) {
@@ -69,6 +73,7 @@ void Orbit::reinit(int y_pos, const r_data& ang_data) {
   render_ = ang_data;
   alive_ = true;
   curr_lifes_ = max_lifes_;
+  mine_throwed_ = 0;
 }
 
 void Orbit::move(double delta_time) {

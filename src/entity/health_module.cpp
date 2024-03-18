@@ -4,7 +4,7 @@ Health_module::Health_module(Render_pipe& rp) {
   init_image(rp); 
   width_ = get_image_width(STATES::FORWARD);
   height_ = get_image_height(STATES::FORWARD);
-  speed_ = 150;
+  speed_ = 130;
   reinit();
 }
 
@@ -76,7 +76,7 @@ void Health_module::calc_spawn(
   if (alive_) return;
   bool lifes_full = pl.get_curr_lifes() >= pl.get_max_lifes() &&
                     sd.curr_lifes_      >= sd.max_lifes_;
-  if (sd.kills_ < 60 || lifes_full) {
+  if (sd.kills_ < 150 || lifes_full) {
     alive_ = false;
     return;
   }

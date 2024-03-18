@@ -165,7 +165,6 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
   SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(rp.get_renderer());
 
-  srand(time(0)); // Need for game loop only
   ui.reset_image_background(UI::BACKGROUND::GAME_BACK1);
   Ship sd(rp); //Need only in game loop
   Orbit orb(rp); //Need only in game loop
@@ -264,7 +263,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
 
     //Draw enemy
     for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-      if (meteor_arr[i].detect_planet_collision(pl)) /*pl.dec_lifes()*/; 
+      if (meteor_arr[i].detect_planet_collision(pl)) pl.dec_lifes(); 
       if (meteor_arr[i].move(delta_time)) meteor_arr[i].render(rp);
     }
 
