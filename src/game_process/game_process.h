@@ -63,7 +63,9 @@ void swap_buttons_colors(
   int active_button, 
   int prev_button,
   LTexture& play, 
-  LTexture& quit
+  LTexture& play_shadow,
+  LTexture& quit,
+  LTexture& quit_shadow
 );
 
 GAME_STATES get_state(int active_button);

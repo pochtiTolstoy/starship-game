@@ -14,10 +14,12 @@ public:
   void render(Render_pipe&, const Ship&);
 private:
   LTexture gTextTexture_; 
+  LTexture gShadow_;
 	int max_kills_;
 	int curr_kills_;
 	std::string text_;
 	SDL_Color color_;
+  SDL_Color color_shadow_;
 };
 
 #endif /* UI_KILLBAR_H_ */

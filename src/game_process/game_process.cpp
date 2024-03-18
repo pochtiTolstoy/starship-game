@@ -21,14 +21,24 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
   //
   ui.reset_image_background(UI::BACKGROUND::MENU_BACK);
 
+  //BAD
   LTexture gPlayTextTexture;
+  LTexture gPlayShadow;
   LTexture gQuitTextTexture;
-  SDL_Color color_white = { 0xFF, 0xFF, 0xFF, 0xFF };
-  SDL_Color color_black = { 0x00, 0x00, 0x00, 0xFF };
-  if (!gPlayTextTexture.loadFromRenderedText(rp, "Play", color_black)) {
+  LTexture gQuitShadow;
+
+  SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
+  SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
+  if (!gPlayTextTexture.loadFromRenderedText(rp, "PLAY", color_main_pass)) {
     std::cout << "Error: Unable to render PLAY button.\n"; 
   }
-  if (!gQuitTextTexture.loadFromRenderedText(rp, "Quit", color_black)) {
+  if (!gQuitTextTexture.loadFromRenderedText(rp, "QUIT", color_main_pass)) {
+    std::cout << "Error: Unable to render PLAY button.\n"; 
+  }
+  if (!gPlayShadow.loadFromRenderedText(rp, "PLAY", color_shadow_pass)) {
+    std::cout << "Error: Unable to render PLAY button.\n"; 
+  }
+  if (!gQuitShadow.loadFromRenderedText(rp, "QUIT", color_shadow_pass)) {
     std::cout << "Error: Unable to render PLAY button.\n"; 
   }
   
@@ -62,12 +72,19 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
         active_button, 
         prev_button,
         gPlayTextTexture,
-        gQuitTextTexture
+        gPlayShadow,
+        gQuitTextTexture,
+        gQuitShadow
       ); 
       prev_button = active_button;
     }
 
     //Render play button
+    gPlayShadow.render(
+      rp,
+      (SCREEN_WIDTH - gPlayShadow.get_width()) / 2 + 4,
+      (SCREEN_HEIGHT - gPlayShadow.get_height()) / 2 - 40 + 4
+    );
     gPlayTextTexture.render(
       rp,
       (SCREEN_WIDTH - gPlayTextTexture.get_width()) / 2,
@@ -75,6 +92,12 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
     ); 
 
     //Render quit button
+    gQuitShadow.render(
+      rp,
+      (SCREEN_WIDTH - gQuitShadow.get_width()) / 2 + 4,
+      (SCREEN_HEIGHT - gQuitShadow.get_height()) / 2 + 40 + 4
+    );
+
     gQuitTextTexture.render(
       rp,
       (SCREEN_WIDTH - gQuitTextTexture.get_width()) / 2,
@@ -92,7 +115,9 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
   }
 
   gPlayTextTexture.free();
+  gPlayShadow.free();
   gQuitTextTexture.free();
+  gQuitShadow.free();
 
   return state;
 }
@@ -140,22 +165,43 @@ void swap_buttons_colors(
   int active_button, 
   int prev_button,
   LTexture& play, 
-  LTexture& quit
+  LTexture& play_shadow,
+  LTexture& quit,
+  LTexture& quit_shadow
 ) {
+  /*
   static const SDL_Color color_white = { 0xFF, 0xFF, 0xFF, 0xFF };
   static const SDL_Color color_black = { 0x00, 0x00, 0x00, 0xFF };
+  */
+  static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
+  static const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
+  static const SDL_Color color_main_act = { 163, 234, 255, 0xFF };
+  static const SDL_Color color_shadow_act = { 0, 75, 187, 0xFF };
+  //BAD
   if (active_button == 0) {
-    if (!play.loadFromRenderedText(rp, "Play", color_white)) {
+    if (!play.loadFromRenderedText(rp, "PLAY", color_main_act)) {
       std::cout << "Error: Unable to render PLAY button.\n"; 
     }
-    if (!quit.loadFromRenderedText(rp, "Quit", color_black)) {
+    if (!play_shadow.loadFromRenderedText(rp, "PLAY", color_shadow_act)) {
+      std::cout << "Error: Unable to render PLAY button.\n"; 
+    }
+    if (!quit.loadFromRenderedText(rp, "QUIT", color_main_pass)) {
+      std::cout << "Error: Unable to render PLAY button.\n"; 
+    }
+    if (!quit_shadow.loadFromRenderedText(rp, "QUIT", color_shadow_pass)) {
       std::cout << "Error: Unable to render PLAY button.\n"; 
     }
   } else if (active_button == 1) {
-    if (!play.loadFromRenderedText(rp, "Play", color_black)) {
+    if (!play.loadFromRenderedText(rp, "PLAY", color_main_pass)) {
       std::cout << "Error: Unable to render PLAY button.\n"; 
     }
-    if (!quit.loadFromRenderedText(rp, "Quit", color_white)) {
+    if (!play_shadow.loadFromRenderedText(rp, "PLAY", color_shadow_pass)) {
+      std::cout << "Error: Unable to render PLAY button.\n"; 
+    }
+    if (!quit.loadFromRenderedText(rp, "QUIT", color_main_act)) {
+      std::cout << "Error: Unable to render PLAY button.\n"; 
+    }
+    if (!quit_shadow.loadFromRenderedText(rp, "QUIT", color_shadow_act)) {
       std::cout << "Error: Unable to render PLAY button.\n"; 
     }
   }
@@ -177,7 +223,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
   };
   Obj_orbit obj_orb(ui.get_ui_texture(UI::IMAGES::ORBIT_ELEMENT));
   UI_killbar uk(rp);
-  LTexture gFPSTextTexture;
+  //LTexture gFPSTextTexture;
 
   //Array of enemies
   Enemy meteor_arr[NUM_ENEMY_ON_MAP];
@@ -190,11 +236,11 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
   bool quit = false; //Game loop
   LTimer fpsTimer; //Game loop
   LTimer capTimer; //Game loop
-  SDL_Color textColor = { 0, 0, 0, 255 };
+  SDL_Color textColor = { 255, 255, 255, 255 };
   int countedFrames = 0;
   double last_frame_time = 0.0;
   double delta_time = 0.0;
-  std::stringstream timeText;
+  //std::stringstream timeText;
 
   //Game loop
   fpsTimer.start();
@@ -208,6 +254,8 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     //Calculate average FPS
     float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.0f);
     if (avgFPS > 2'000'000) avgFPS = 0;
+
+    /*
     timeText.str("");
     timeText << "FPS: " << avgFPS;
     if (!gFPSTextTexture.loadFromRenderedText(
@@ -215,6 +263,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     )) {
       std::cout << "Unable to render FPS texture!\n";
     }
+    */
     
     delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
     last_frame_time = SDL_GetTicks();
@@ -271,11 +320,13 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     uk.render(rp, sd);
 
     //avg FPS render
+    /*
     gFPSTextTexture.render(
       rp,
       (SCREEN_WIDTH - gFPSTextTexture.get_width()) / 2,
       0
     );
+    */
 
     //PROCESS FINAL RENDER
     SDL_RenderPresent(rp.get_renderer());

@@ -30,7 +30,7 @@ static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 //DELETE
 //static const int RAND_SPAWN = 600;
 //static const int RAND_SPAWN_FIRST = 600;
-static const int RAND_SPAWN = 800;
+static const int RAND_SPAWN = 900;
 static const int RAND_SPAWN_FIRST = 800;
 static const int KILLS_TO_WIN = 300;
 
@@ -78,6 +78,7 @@ static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
 
 static const char* FILE_PATH_MINE = "res/pics/mine.png";
 
-static const char* FILE_PATH_FONT = "res/Mx437_Acer710_Mono.ttf";
+//static const char* FILE_PATH_FONT = "res/Mx437_Acer710_Mono.ttf";
+static const char* FILE_PATH_FONT = "res/starship_font.ttf";
 
 #endif /* CONSTANTS_H_ */
