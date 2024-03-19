@@ -22,6 +22,7 @@
 #include "../entity/obj_orbit.h"
 #include "../entity/obj_health.h"
 #include "../entity/ui_killbar.h"
+#include "../entity/button.h"
 
 enum GAME_STATES {
   MENU,
@@ -58,14 +59,12 @@ void process_menu_key(
   int& active_button
 );
 
-void swap_buttons_colors(
+void change_active_button(
   Render_pipe&, 
   int active_button, 
   int prev_button,
-  LTexture& play, 
-  LTexture& play_shadow,
-  LTexture& quit,
-  LTexture& quit_shadow
+  Button&,
+  Button&
 );
 
 GAME_STATES get_state(int active_button);

@@ -14,6 +14,7 @@ GAME_STATES game_function(
   return state; //CODE FOR QUIT
 }
 
+//==MENU=======================================================================
 GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
   //Clear screen
   SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
@@ -21,26 +22,26 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
   //
   ui.reset_image_background(UI::BACKGROUND::MENU_BACK);
 
-  //BAD
-  LTexture gPlayTextTexture;
-  LTexture gPlayShadow;
-  LTexture gQuitTextTexture;
-  LTexture gQuitShadow;
+  const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
+  const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
+  const int offset = 40;
 
-  SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
-  SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
-  if (!gPlayTextTexture.loadFromRenderedText(rp, "PLAY", color_main_pass)) {
-    std::cout << "Error: Unable to render PLAY button.\n"; 
-  }
-  if (!gQuitTextTexture.loadFromRenderedText(rp, "QUIT", color_main_pass)) {
-    std::cout << "Error: Unable to render PLAY button.\n"; 
-  }
-  if (!gPlayShadow.loadFromRenderedText(rp, "PLAY", color_shadow_pass)) {
-    std::cout << "Error: Unable to render PLAY button.\n"; 
-  }
-  if (!gQuitShadow.loadFromRenderedText(rp, "QUIT", color_shadow_pass)) {
-    std::cout << "Error: Unable to render PLAY button.\n"; 
-  }
+  Button play_button(
+    rp, "PLAY", color_main_pass, color_shadow_pass
+  );
+  play_button.set_position(
+    (SCREEN_WIDTH - play_button.get_width()) / 2,
+    (SCREEN_HEIGHT - play_button.get_height()) / 2 - offset
+  );
+
+  Button quit_button(
+    rp, "QUIT", color_main_pass, color_shadow_pass
+  );
+  quit_button.set_position(
+    (SCREEN_WIDTH - quit_button.get_width()) / 2,
+    (SCREEN_HEIGHT - quit_button.get_height()) / 2 + offset
+  );
+
   
   SDL_Event e;
   GAME_STATES state = GAME_STATES::MENU;
@@ -67,42 +68,18 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
 
     //Swap colors of buttons
     if (prev_button != active_button) {
-      swap_buttons_colors(
-        rp, 
-        active_button, 
-        prev_button,
-        gPlayTextTexture,
-        gPlayShadow,
-        gQuitTextTexture,
-        gQuitShadow
+      //std::cout << "SWAP COLORS, RERENDER.\n";
+      change_active_button(
+        rp, active_button, prev_button, play_button, quit_button
       ); 
       prev_button = active_button;
     }
 
     //Render play button
-    gPlayShadow.render(
-      rp,
-      (SCREEN_WIDTH - gPlayShadow.get_width()) / 2 + 4,
-      (SCREEN_HEIGHT - gPlayShadow.get_height()) / 2 - 40 + 4
-    );
-    gPlayTextTexture.render(
-      rp,
-      (SCREEN_WIDTH - gPlayTextTexture.get_width()) / 2,
-      (SCREEN_HEIGHT - gPlayTextTexture.get_height()) / 2 - 40
-    ); 
+    play_button.render(rp);
 
     //Render quit button
-    gQuitShadow.render(
-      rp,
-      (SCREEN_WIDTH - gQuitShadow.get_width()) / 2 + 4,
-      (SCREEN_HEIGHT - gQuitShadow.get_height()) / 2 + 40 + 4
-    );
-
-    gQuitTextTexture.render(
-      rp,
-      (SCREEN_WIDTH - gQuitTextTexture.get_width()) / 2,
-      (SCREEN_HEIGHT - gQuitTextTexture.get_height()) / 2 + 40
-    );
+    quit_button.render(rp);
 
     //FINAL RENDER
     SDL_RenderPresent(rp.get_renderer());
@@ -113,11 +90,6 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
       SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
     }
   }
-
-  gPlayTextTexture.free();
-  gPlayShadow.free();
-  gQuitTextTexture.free();
-  gQuitShadow.free();
 
   return state;
 }
@@ -160,53 +132,47 @@ GAME_STATES get_state(int active_button) {
   }
 }
 
-void swap_buttons_colors(
+void change_active_button(
   Render_pipe& rp, 
   int active_button, 
   int prev_button,
-  LTexture& play, 
-  LTexture& play_shadow,
-  LTexture& quit,
-  LTexture& quit_shadow
+  Button& play_button,
+  Button& quit_button
 ) {
-  /*
-  static const SDL_Color color_white = { 0xFF, 0xFF, 0xFF, 0xFF };
-  static const SDL_Color color_black = { 0x00, 0x00, 0x00, 0xFF };
-  */
   static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
   static const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
   static const SDL_Color color_main_act = { 163, 234, 255, 0xFF };
   static const SDL_Color color_shadow_act = { 0, 75, 187, 0xFF };
-  //BAD
-  if (active_button == 0) {
-    if (!play.loadFromRenderedText(rp, "PLAY", color_main_act)) {
-      std::cout << "Error: Unable to render PLAY button.\n"; 
-    }
-    if (!play_shadow.loadFromRenderedText(rp, "PLAY", color_shadow_act)) {
-      std::cout << "Error: Unable to render PLAY button.\n"; 
-    }
-    if (!quit.loadFromRenderedText(rp, "QUIT", color_main_pass)) {
-      std::cout << "Error: Unable to render PLAY button.\n"; 
-    }
-    if (!quit_shadow.loadFromRenderedText(rp, "QUIT", color_shadow_pass)) {
-      std::cout << "Error: Unable to render PLAY button.\n"; 
-    }
-  } else if (active_button == 1) {
-    if (!play.loadFromRenderedText(rp, "PLAY", color_main_pass)) {
-      std::cout << "Error: Unable to render PLAY button.\n"; 
-    }
-    if (!play_shadow.loadFromRenderedText(rp, "PLAY", color_shadow_pass)) {
-      std::cout << "Error: Unable to render PLAY button.\n"; 
-    }
-    if (!quit.loadFromRenderedText(rp, "QUIT", color_main_act)) {
-      std::cout << "Error: Unable to render PLAY button.\n"; 
-    }
-    if (!quit_shadow.loadFromRenderedText(rp, "QUIT", color_shadow_act)) {
-      std::cout << "Error: Unable to render PLAY button.\n"; 
-    }
+
+  //Change color of active button
+  switch (active_button) {
+    case 0:
+      play_button.update_text(rp, "PLAY", color_main_act, color_shadow_act);
+      break;
+    case 1:
+     quit_button.update_text(rp, "QUIT", color_main_act, color_shadow_act);
+      break;
+    default:
+      std::cout << "There is no such button id: " << active_button << '\n';
+      exit(EXIT_FAILURE);
+  }
+
+  //Change color of passive button
+  switch (prev_button) {
+    case 0: 
+      play_button.update_text(rp, "PLAY", color_main_pass, color_shadow_pass);
+      break;
+    case -1:
+    case 1:
+      quit_button.update_text(rp, "QUIT", color_main_pass, color_shadow_pass);
+      break;
+    default:
+      std::cout << "There is no such button id: " << prev_button << '\n';
+      exit(EXIT_FAILURE);
   }
 }
 
+//==GAME========================================================================
 GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
   SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(rp.get_renderer());

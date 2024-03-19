@@ -30,7 +30,7 @@ static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 //DELETE
 //static const int RAND_SPAWN = 600;
 //static const int RAND_SPAWN_FIRST = 600;
-static const int RAND_SPAWN = 900;
+static const int RAND_SPAWN = 700;
 static const int RAND_SPAWN_FIRST = 800;
 static const int KILLS_TO_WIN = 300;
 
@@ -72,7 +72,7 @@ static const char* FILE_PATH_HEALTH_MODULE[NUM_HEALTH_MODULE_TEXTURES] = {
   "res/pics/healthModuleBack.png"
 };
 static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
-  "res/pics/planet1Big.png",
+  "res/pics/planet1DarkBig.png",
   "res/pics/menuBack.png"
 };
 
