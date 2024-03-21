@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
+#include "util.h"
+
 static const int SCREEN_WIDTH = 1920;
 static const int SCREEN_HEIGHT = 1080;
 static const int NUM_SHIP_TEXTURES = 6;
@@ -33,6 +35,11 @@ static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 static const int RAND_SPAWN = 700;
 static const int RAND_SPAWN_FIRST = 800;
 static const int KILLS_TO_WIN = 300;
+
+static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
+static const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
+static const SDL_Color color_main_act = { 163, 234, 255, 0xFF };
+static const SDL_Color color_shadow_act = { 0, 75, 187, 0xFF };
 
 //Enemy movements
 static const int ENEMY_SPEED_LEVELS = 100;
@@ -72,7 +79,7 @@ static const char* FILE_PATH_HEALTH_MODULE[NUM_HEALTH_MODULE_TEXTURES] = {
   "res/pics/healthModuleBack.png"
 };
 static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
-  "res/pics/planet1DarkBig.png",
+  "res/pics/planet1Big.png",
   "res/pics/menuBack.png"
 };
 

@@ -27,6 +27,7 @@
 enum GAME_STATES {
   MENU,
   PLAY,
+  HELP,
   QUIT
 };
 
@@ -46,6 +47,11 @@ GAME_STATES process_menu(
   UI&
 );
 
+GAME_STATES process_help(
+  Render_pipe&,
+  UI&
+);
+
 void process_key(
   SDL_Event&, 
   Ship&, 
@@ -59,10 +65,17 @@ void process_menu_key(
   int& active_button
 );
 
+void process_help_key(
+  SDL_Event&,
+  GAME_STATES&,
+  int& active_button
+);
+
 void change_active_button(
   Render_pipe&, 
   int active_button, 
   int prev_button,
+  Text_box&,
   Text_box&,
   Text_box&
 );
