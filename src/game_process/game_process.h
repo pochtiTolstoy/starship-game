@@ -22,7 +22,7 @@
 #include "../entity/obj_orbit.h"
 #include "../entity/obj_health.h"
 #include "../entity/ui_killbar.h"
-#include "../entity/button.h"
+#include "../entity/text_box.h"
 
 enum GAME_STATES {
   MENU,
@@ -63,8 +63,8 @@ void change_active_button(
   Render_pipe&, 
   int active_button, 
   int prev_button,
-  Button&,
-  Button&
+  Text_box&,
+  Text_box&
 );
 
 GAME_STATES get_state(int active_button);

@@ -26,7 +26,7 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
   const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
   const int offset = 40;
 
-  Button play_button(
+  Text_box play_button(
     rp, "PLAY", color_main_pass, color_shadow_pass
   );
   play_button.set_position(
@@ -34,7 +34,7 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
     (SCREEN_HEIGHT - play_button.get_height()) / 2 - offset
   );
 
-  Button quit_button(
+  Text_box quit_button(
     rp, "QUIT", color_main_pass, color_shadow_pass
   );
   quit_button.set_position(
@@ -136,8 +136,8 @@ void change_active_button(
   Render_pipe& rp, 
   int active_button, 
   int prev_button,
-  Button& play_button,
-  Button& quit_button
+  Text_box& play_button,
+  Text_box& quit_button
 ) {
   static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
   static const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };

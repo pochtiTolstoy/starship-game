@@ -1,21 +1,21 @@
-#ifndef BUTTON_H_
-#define BUTTON_H_
+#ifndef TEXT_BOX_H_
+#define TEXT_BOX_H_
 
 #include "../util/util.h"
 #include "../util/render_pipe.h"
 #include "../texture/LTexture.h"
 
-class Button {
+class Text_box {
 public:
-  Button() = delete; 
-  Button(
+  Text_box() = delete; 
+  Text_box(
     Render_pipe&,
     const std::string&,
     const SDL_Color&,
     const SDL_Color&,
     int offset = 4
   );
-  ~Button();
+  ~Text_box();
   void update_text(
     Render_pipe& rp, 
     const std::string& text, 
@@ -39,4 +39,4 @@ private:
   int offset_;
 };
 
-#endif /* BUTTON_H_ */
+#endif /* TEXT_BOX */

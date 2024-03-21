@@ -1,6 +1,6 @@
-#include "button.h"
+#include "text_box.h"
 
-Button::Button(
+Text_box::Text_box(
   Render_pipe& rp,
   const std::string& text,
   const SDL_Color& c1,
@@ -19,17 +19,17 @@ Button::Button(
   update_text(rp, text, color_front_, color_shadow_);
 }
 
-Button::~Button() {
+Text_box::~Text_box() {
   front_text_.free();
   shadow_.free();
 }
 
-void Button::set_position(int x_pos, int y_pos) {
+void Text_box::set_position(int x_pos, int y_pos) {
   x_pos_ = x_pos;
   y_pos_ = y_pos;
 }
 
-void Button::update_text(
+void Text_box::update_text(
   Render_pipe& rp,
   const std::string& text,
   const SDL_Color& c1,
@@ -45,7 +45,7 @@ void Button::update_text(
   }
 }
 
-void Button::render(Render_pipe& rp) const {
+void Text_box::render(Render_pipe& rp) const {
   if (x_pos_ == -1 || y_pos_ == -1) {
     std::cout << "Warning: set position for your buttons.\n";
     return;
@@ -57,10 +57,10 @@ void Button::render(Render_pipe& rp) const {
   front_text_.render(rp, x_pos_, y_pos_); 
 }
 
-int Button::get_width() const {
+int Text_box::get_width() const {
   return front_text_.get_width();
 }
 
-int Button::get_height() const {
+int Text_box::get_height() const {
   return front_text_.get_height();
 }
