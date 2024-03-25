@@ -42,7 +42,7 @@ bool LTexture::loadFromFile(
 
 bool LTexture::loadFromRenderedText(
   Render_pipe& rp,
-  std::string texture_text, 
+  const std::string& texture_text, 
   SDL_Color text_color
 ) {
   free();
@@ -62,6 +62,34 @@ bool LTexture::loadFromRenderedText(
     std::cout << "Unable to create texture from "
       "rendered text! SDL Error: " << SDL_GetError() << '\n';
     SDL_FreeSurface(text_surface);
+    return false;
+  }
+  width_ = text_surface->w;
+  height_ = text_surface->h;
+  SDL_FreeSurface(text_surface);
+  return texture_ != nullptr;
+}
+
+bool LTexture::loadFromRenderedLongText(
+  Render_pipe& rp,
+  const std::string& texture_text,
+  const SDL_Color& text_color
+) {
+  free();
+  SDL_Surface* text_surface = TTF_RenderUTF8_Blended_Wrapped(
+    rp.get_font(1), texture_text.c_str(), text_color, 600
+  );
+  if (nullptr == text_surface) {
+    std::cout << "Unable to render long text surface! "
+      "SDL_ttf Error: " << TTF_GetError() << '\n';
+    return false;
+  }
+  texture_ = SDL_CreateTextureFromSurface(
+    rp.get_renderer(), text_surface
+  );
+  if (nullptr == texture_) {
+    std::cout << "Unable to creatae texture from "
+      "rendered text! SDL Error: " << SDL_GetError() << '\n';
     return false;
   }
   width_ = text_surface->w;

@@ -457,8 +457,9 @@ GAME_STATES process_help(Render_pipe& rp, UI& ui) {
   const int offset = 60;
 
   Text_box help_text(
-    rp, "HELLO I WILL HELP YOU", color_main_pass, color_shadow_pass
+    rp, HELP_TEXT, color_main_pass, color_shadow_pass, 2
   );
+
   help_text.set_position(
     (SCREEN_WIDTH - help_text.get_width()) / 2,
     (SCREEN_HEIGHT - help_text.get_height()) / 2
@@ -467,6 +468,7 @@ GAME_STATES process_help(Render_pipe& rp, UI& ui) {
   Text_box quit_button(
     rp, "QUIT", color_main_pass, color_shadow_pass
   );
+
   quit_button.set_position(
     (SCREEN_WIDTH - quit_button.get_width()) / 2,
     (SCREEN_HEIGHT - quit_button.get_height()) - offset

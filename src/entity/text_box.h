@@ -22,6 +22,12 @@ public:
     const SDL_Color&,
     const SDL_Color&
   );
+  void update_long_text(
+    Render_pipe& rp,
+    const std::string& text,
+    const SDL_Color&,
+    const SDL_Color&
+  );
   int get_width() const;
   int get_height() const;
   void render(Render_pipe&) const;

@@ -12,7 +12,12 @@ public:
   ~LTexture();
   int get_width() const;
   int get_height() const;
-  bool loadFromRenderedText(Render_pipe&, std::string text, SDL_Color);
+  bool loadFromRenderedText(Render_pipe&, const std::string& text, SDL_Color);
+  bool loadFromRenderedLongText(
+    Render_pipe&,
+    const std::string&,
+    const SDL_Color&
+  );
   bool loadFromFile(
     Render_pipe&,
     std::string path, 

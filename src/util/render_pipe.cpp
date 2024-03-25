@@ -1,10 +1,17 @@
 #include "render_pipe.h"
 
 Render_pipe::Render_pipe()
-  :gWindow_(nullptr), gRenderer_(nullptr), gFont_(nullptr) {}
+  :gWindow_(nullptr), gRenderer_(nullptr) 
+{
+  for (int i = 0; i < NUM_FONTS; ++i) {
+    gFonts_[i] = nullptr;
+  }
+}
 
 Render_pipe::~Render_pipe() {
-  TTF_CloseFont(gFont_);
+  for (int i = 0; i < NUM_FONTS; ++i) {
+    TTF_CloseFont(gFonts_[i]);
+  }
   SDL_DestroyRenderer(gRenderer_);
   SDL_DestroyWindow(gWindow_);
   TTF_Quit();
@@ -57,9 +64,15 @@ bool Render_pipe::init() {
       << TTF_GetError() << '\n';
     return false;
   }
-  gFont_ = TTF_OpenFont(FILE_PATH_FONT, 21);
-  if (nullptr == gFont_) {
+  gFonts_[0] = TTF_OpenFont(FILE_PATH_FONT, 21);
+  if (nullptr == gFonts_[0]) {
     std::cout << "Failed to load font! SDL_ttf Error: "
+      << TTF_GetError() << '\n';
+    return false;
+  }
+  gFonts_[1] = TTF_OpenFont(FILE_PATH_FONT, 16);
+  if (nullptr == gFonts_[1]) {
+    std::cout << "Failed to load small font! SDL_ttf Error: "
       << TTF_GetError() << '\n';
     return false;
   }
@@ -75,6 +88,6 @@ SDL_Renderer* Render_pipe::get_renderer() const {
   return gRenderer_;
 }
 
-TTF_Font* Render_pipe::get_font() const {
-  return gFont_;
+TTF_Font* Render_pipe::get_font(int ind) const {
+  return (ind < NUM_FONTS) ? gFonts_[ind] : nullptr;
 }
