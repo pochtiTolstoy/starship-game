@@ -35,7 +35,7 @@ static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 //static const int RAND_SPAWN_FIRST = 600;
 static const int RAND_SPAWN = 700;
 static const int RAND_SPAWN_FIRST = 800;
-static const int KILLS_TO_WIN = 2;
+static const int KILLS_TO_WIN = 100;
 
 static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
 static const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
@@ -80,7 +80,7 @@ static const char* FILE_PATH_HEALTH_MODULE[NUM_HEALTH_MODULE_TEXTURES] = {
   "res/pics/healthModuleBack.png"
 };
 static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
-  "res/pics/planet1Big.png",
+  "res/pics/planet1DarkBig.png",
   "res/pics/menuBack.png"
 };
 
