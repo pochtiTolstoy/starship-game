@@ -9,6 +9,7 @@ GAME_STATES game_function(
     case GAME_STATES::PLAY: state = process_gameplay(rp, ui); break;
     case GAME_STATES::HELP: state = process_help(rp, ui); break;
     case GAME_STATES::MENU: state = process_menu(rp, ui); break;
+    case GAME_STATES::WIN:  state = win_page(rp, ui); break;
     default:
       std::cout << "Warning: there is no such game state as: " << state << '\n';
   }
@@ -27,15 +28,16 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
 
   //Play button
   Text_box play_button(
-    rp, "PLAY", color_main_pass, color_shadow_pass
+    rp, "PLAY", color_main_pass, color_shadow_pass, 4, false, 1
   );
   play_button.set_position(
     (SCREEN_WIDTH - play_button.get_width()) / 2,
     (SCREEN_HEIGHT - play_button.get_height()) / 2 - offset
   );
 
+  //Help button
   Text_box help_button(
-    rp, "HELP", color_main_pass, color_shadow_pass
+    rp, "HELP", color_main_pass, color_shadow_pass, 4, false, 1
   );
   help_button.set_position(
     (SCREEN_WIDTH - help_button.get_width()) / 2,
@@ -44,7 +46,7 @@ GAME_STATES process_menu(Render_pipe& rp, UI& ui) {
 
   //Quit button
   Text_box quit_button(
-    rp, "QUIT", color_main_pass, color_shadow_pass
+    rp, "QUIT", color_main_pass, color_shadow_pass, 4, false, 1
   );
   quit_button.set_position(
     (SCREEN_WIDTH - quit_button.get_width()) / 2,
@@ -311,15 +313,6 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
     //Render text
     uk.render(rp, sd);
 
-    //avg FPS render
-    /*
-    gFPSTextTexture.render(
-      rp,
-      (SCREEN_WIDTH - gFPSTextTexture.get_width()) / 2,
-      0
-    );
-    */
-
     //PROCESS FINAL RENDER
     SDL_RenderPresent(rp.get_renderer());
     
@@ -345,6 +338,7 @@ GAME_STATES process_gameplay(Render_pipe& rp, UI& ui) {
       SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
     }
   }
+  if (sd.kills_ >= KILLS_TO_WIN) return GAME_STATES::WIN;
   return GAME_STATES::MENU;
 }
 
@@ -457,7 +451,7 @@ GAME_STATES process_help(Render_pipe& rp, UI& ui) {
   const int offset = 60;
 
   Text_box help_text(
-    rp, HELP_TEXT, color_main_pass, color_shadow_pass, 2
+    rp, HELP_TEXT, color_main_pass, color_shadow_pass, 2, true, 0
   );
 
   help_text.set_position(
@@ -466,7 +460,7 @@ GAME_STATES process_help(Render_pipe& rp, UI& ui) {
   );
 
   Text_box quit_button(
-    rp, "QUIT", color_main_pass, color_shadow_pass
+    rp, "QUIT", color_main_pass, color_shadow_pass, 4, false, 1
   );
 
   quit_button.set_position(
@@ -561,4 +555,107 @@ void process_help_key(
         state = get_state_help(active_button);
     }
   }
+}
+
+//==WIN=PAGE=================================================================
+GAME_STATES win_page(Render_pipe& rp, UI& ui) {
+  //Clear screen
+  SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+  SDL_RenderClear(rp.get_renderer());
+  //
+  ui.reset_image_background(UI::BACKGROUND::MENU_BACK);
+
+  const int offset = 70;
+  
+  Text_box win_text(
+    rp, "YOU WON!", 
+    color_main_pass, color_shadow_pass, 4, true, 2
+  );
+  win_text.set_position(
+    (SCREEN_WIDTH - win_text.get_width()) / 2,
+    (SCREEN_HEIGHT - win_text.get_height()) / 2 - offset
+  );
+
+  Text_box congr_text(
+    rp, "CONGRATULATIONS!",
+    color_main_pass, color_shadow_pass, 4, true, 2
+  );
+  congr_text.set_position(
+    (SCREEN_WIDTH - congr_text.get_width()) / 2,
+    (SCREEN_HEIGHT - congr_text.get_height()) / 2
+  );
+
+  //Quit button
+  Text_box quit_button(
+    rp, "QUIT", color_main_pass, color_shadow_pass, 4, false, 1
+  );
+  quit_button.set_position(
+    (SCREEN_WIDTH - quit_button.get_width()) / 2,
+    (SCREEN_HEIGHT - quit_button.get_height()) / 2 + offset
+  );
+
+  SDL_Event e;
+  int prev_button = -1;
+  int active_button = -1;
+  GAME_STATES state = GAME_STATES::WIN;
+
+  //For frame capping
+  LTimer capTimer;
+  int frameTicks = 0;
+
+
+  while (state == GAME_STATES::WIN) {
+    capTimer.start();
+    while (SDL_PollEvent(&e) != 0) {
+      if (e.type == SDL_QUIT) state = GAME_STATES::QUIT;
+      else process_help_key(e, state, active_button);
+    }
+    //Clear screen
+    SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderClear(rp.get_renderer());
+
+    //Render menu background
+    ui.render_background(rp);
+
+    //BAD
+    if (prev_button != active_button) {
+      switch (active_button) {
+        case 0:
+          quit_button.update_text(rp, "QUIT", color_main_act, color_shadow_act);
+          break;
+        default:
+          std::cout << "There is no such button id: " << active_button << '\n';
+          exit(EXIT_FAILURE);
+      }
+      switch (prev_button) {
+        case -1: break;
+        case 0:
+          quit_button.update_text(rp, "QUIT", color_main_pass, color_shadow_pass);
+          break;
+        default:
+          std::cout << "There is no such button id: " << active_button << '\n';
+          exit(EXIT_FAILURE);
+      }
+      prev_button = active_button;
+    }
+
+    //Render help text
+    win_text.render(rp);
+
+    //Render congratulation text
+    congr_text.render(rp);
+
+    //Render quit button
+    quit_button.render(rp);
+
+    //FINAL RENDER
+    SDL_RenderPresent(rp.get_renderer());
+
+    //Wait
+    frameTicks = capTimer.getTicks();
+    if (frameTicks < SCREEN_TICK_PER_FRAME) {
+      SDL_Delay(SCREEN_TICK_PER_FRAME - frameTicks);
+    }
+  }
+  return state;
 }

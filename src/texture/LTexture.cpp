@@ -43,11 +43,12 @@ bool LTexture::loadFromFile(
 bool LTexture::loadFromRenderedText(
   Render_pipe& rp,
   const std::string& texture_text, 
-  SDL_Color text_color
+  SDL_Color text_color,
+  int ind
 ) {
   free();
   SDL_Surface* text_surface = TTF_RenderText_Solid(
-    rp.get_font(), texture_text.c_str(), text_color
+    rp.get_font(ind), texture_text.c_str(), text_color
   );
   if (nullptr == text_surface) {
     std::cout << "Unable to render text surface! "
@@ -73,11 +74,12 @@ bool LTexture::loadFromRenderedText(
 bool LTexture::loadFromRenderedLongText(
   Render_pipe& rp,
   const std::string& texture_text,
-  const SDL_Color& text_color
+  const SDL_Color& text_color,
+  int ind
 ) {
   free();
   SDL_Surface* text_surface = TTF_RenderUTF8_Blended_Wrapped(
-    rp.get_font(1), texture_text.c_str(), text_color, 600
+    rp.get_font(ind), texture_text.c_str(), text_color, 600
   );
   if (nullptr == text_surface) {
     std::cout << "Unable to render long text surface! "

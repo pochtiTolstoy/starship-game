@@ -13,7 +13,9 @@ public:
     const std::string&,
     const SDL_Color&,
     const SDL_Color&,
-    int offset = 4
+    int offset = 4,
+    bool long_text = false,
+    int ind = 0
   );
   ~Text_box();
   void update_text(
@@ -43,6 +45,7 @@ private:
   int x_pos_;
   int y_pos_;
   int offset_;
+  int ind_;
 };
 
 #endif /* TEXT_BOX */

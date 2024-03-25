@@ -13,7 +13,7 @@ static const int NUM_ORBIT_TEXTURES = 2;
 static const int NUM_HEALTH_MODULE_TEXTURES = 2;
 static const int NUM_OBJ_HEALTH_ON_MAP = 2;
 static const int NUM_BACKGROUNDS = 2;
-static const int NUM_FONTS = 2;
+static const int NUM_FONTS = 3;
 static const int COORDS_SYNC = 90;
 static const int SPAWN_ENEMY_X = -400;
 static const int DEGREES_IN_CIRCLE = 360;
@@ -35,7 +35,7 @@ static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 //static const int RAND_SPAWN_FIRST = 600;
 static const int RAND_SPAWN = 700;
 static const int RAND_SPAWN_FIRST = 800;
-static const int KILLS_TO_WIN = 300;
+static const int KILLS_TO_WIN = 2;
 
 static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
 static const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
@@ -90,11 +90,11 @@ static const char* FILE_PATH_MINE = "res/pics/mine.png";
 static const char* FILE_PATH_FONT = "res/starship_font.ttf";
 
 /* === Text === */
-static const char* HELP_TEXT = "USE W, A, S, D TO MOVE YOUR SHIP.\n\n"
-                               "USE SPACE TO SHOOT\n\n"
+static const char* HELP_TEXT = "USE W, A, S, D TO MOVE YOUR SHIP,\n\n"
+                               "USE SPACE TO SHOOT,\n\n"
                                "USE E TO TURN 180 DEGREES.\n\n"
-                               "SOMETIMES YOU CAN TAKE AN ORBITAL PROBE.\n\n"
-                               "PRESS M TO ACCELERATE ORBITAL PROBE\n\n"
-                               "PRESS ESC TO OPEN MENU";
+                               "SOMETIMES YOU CAN TAKE AN ORBITAL PROBE,\n\n"
+                               "PRESS M TO ACCELERATE ORBITAL PROBE.\n\n"
+                               "PRESS ESC TO OPEN MENU.";
 
 #endif /* CONSTANTS_H_ */

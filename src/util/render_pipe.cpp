@@ -64,17 +64,15 @@ bool Render_pipe::init() {
       << TTF_GetError() << '\n';
     return false;
   }
-  gFonts_[0] = TTF_OpenFont(FILE_PATH_FONT, 21);
-  if (nullptr == gFonts_[0]) {
-    std::cout << "Failed to load font! SDL_ttf Error: "
-      << TTF_GetError() << '\n';
-    return false;
-  }
-  gFonts_[1] = TTF_OpenFont(FILE_PATH_FONT, 16);
-  if (nullptr == gFonts_[1]) {
-    std::cout << "Failed to load small font! SDL_ttf Error: "
-      << TTF_GetError() << '\n';
-    return false;
+  gFonts_[0] = TTF_OpenFont(FILE_PATH_FONT, 16);
+  gFonts_[1] = TTF_OpenFont(FILE_PATH_FONT, 21);
+  gFonts_[2] = TTF_OpenFont(FILE_PATH_FONT, 24);
+  for (int i = 0; i < NUM_FONTS; ++i) {
+    if (nullptr == gFonts_[i]) {
+      std::cout << "Failed to load font! SDL_ttf Error: "
+        << TTF_GetError() << '\n';
+      return false;
+    }
   }
   return true;
 }
