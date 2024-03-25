@@ -29,6 +29,7 @@ enum GAME_STATES {
   PLAY,
   HELP,
   WIN,
+  LOSE,
   QUIT
 };
 
@@ -54,6 +55,8 @@ GAME_STATES process_help(
 );
 
 GAME_STATES win_page(Render_pipe& rp, UI& ui);
+
+GAME_STATES lose_page(Render_pipe& rp, UI& ui);
 
 void process_key(
   SDL_Event&, 
