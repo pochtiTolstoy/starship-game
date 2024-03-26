@@ -79,8 +79,16 @@ static const char* FILE_PATH_HEALTH_MODULE[NUM_HEALTH_MODULE_TEXTURES] = {
   "res/pics/healthModule.png",
   "res/pics/healthModuleBack.png"
 };
+
+/*
 static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
   "res/pics/planet1DarkBig.png",
+  "res/pics/menuBack.png"
+};
+*/
+
+static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
+  "res/pics/eva_space.png",
   "res/pics/menuBack.png"
 };
 
