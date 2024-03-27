@@ -25,15 +25,8 @@
 #include "../entity/text_box.h"
 #include "../entity/level_images.h"
 
-enum GAME_STATES {
-  MENU,
-  PLAY_MENU,
-  PLAY,
-  HELP,
-  WIN,
-  LOSE,
-  QUIT
-};
+//GAME PAGES HEADERS
+#include "game_levels.h"
 
 void process_level_menu_key(
   SDL_Event& e,
@@ -50,6 +43,8 @@ void change_active_button_level_menu(
   Text_box&
 );
 
+GAME_STATES get_state_level_menu(int active_button);
+
 GAME_STATES level_menu(Render_pipe& rp, UI& ui);
 
 GAME_STATES game_function(
@@ -58,10 +53,6 @@ GAME_STATES game_function(
   UI&
 );
 
-GAME_STATES process_gameplay(
-  Render_pipe&, 
-  UI&
-);
 
 GAME_STATES process_menu(
   Render_pipe&, 

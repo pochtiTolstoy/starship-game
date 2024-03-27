@@ -12,7 +12,7 @@ static const int NUM_UI_TEXTURES = 6;
 static const int NUM_ORBIT_TEXTURES = 2;
 static const int NUM_HEALTH_MODULE_TEXTURES = 2;
 static const int NUM_OBJ_HEALTH_ON_MAP = 2;
-static const int NUM_BACKGROUNDS = 2;
+static const int NUM_BACKGROUNDS = 3;
 static const int NUM_LEVEL_IMAGES = 2;
 static const int NUM_FONTS = 3;
 static const int COORDS_SYNC = 90;
@@ -29,13 +29,15 @@ static const int MOVE_LEN = 30;
 static const int SCREEN_FPS = 60;
 static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 
+enum GAME_STATES { MENU, PLAY_MENU, LVL1, LVL2, HELP, WIN, LOSE, QUIT };
+
 /* === Safe to change === */
 
 //DELETE
 //static const int RAND_SPAWN = 600;
 //static const int RAND_SPAWN_FIRST = 600;
 static const int RAND_SPAWN = 1300;
-static const int RAND_SPAWN_FIRST = 1300;
+static const int RAND_SPAWN_FIRST = 1000;
 static const int KILLS_TO_WIN = 300;
 
 static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
@@ -89,8 +91,9 @@ static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
 */
 
 static const char* FILE_PATH_BACKGROUND[NUM_BACKGROUNDS] = {
-  "res/pics/eva_space.png",
-  "res/pics/menuBack.png"
+  "res/pics/planet1Big.png",
+  "res/pics/menuBack.png",
+  "res/pics/eva_space.png"
 };
 
 static const char* FILE_PATH_MINE = "res/pics/mine.png";

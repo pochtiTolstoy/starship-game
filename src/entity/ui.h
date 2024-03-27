@@ -22,7 +22,8 @@ public:
   enum ENEMY { METEOR };
   enum BACKGROUND {
     GAME_BACK1,
-    MENU_BACK
+    MENU_BACK,
+    GAME_BACK2
   };
 public:
   UI() = delete;
