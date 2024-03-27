@@ -13,6 +13,7 @@ static const int NUM_ORBIT_TEXTURES = 2;
 static const int NUM_HEALTH_MODULE_TEXTURES = 2;
 static const int NUM_OBJ_HEALTH_ON_MAP = 2;
 static const int NUM_BACKGROUNDS = 2;
+static const int NUM_LEVEL_IMAGES = 2;
 static const int NUM_FONTS = 3;
 static const int COORDS_SYNC = 90;
 static const int SPAWN_ENEMY_X = -400;
@@ -33,9 +34,9 @@ static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 //DELETE
 //static const int RAND_SPAWN = 600;
 //static const int RAND_SPAWN_FIRST = 600;
-static const int RAND_SPAWN = 700;
-static const int RAND_SPAWN_FIRST = 800;
-static const int KILLS_TO_WIN = 100;
+static const int RAND_SPAWN = 1300;
+static const int RAND_SPAWN_FIRST = 1300;
+static const int KILLS_TO_WIN = 300;
 
 static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
 static const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
@@ -96,6 +97,11 @@ static const char* FILE_PATH_MINE = "res/pics/mine.png";
 
 //static const char* FILE_PATH_FONT = "res/Mx437_Acer710_Mono.ttf";
 static const char* FILE_PATH_FONT = "res/starship_font.ttf";
+
+static const char* FILE_PATHS_LEVEL_IMAGES[NUM_LEVEL_IMAGES] = {
+  "res/pics/lvl1.png",
+  "res/pics/lvl2.png"
+};
 
 /* === Text === */
 static const char* HELP_TEXT = "USE W, A, S, D TO MOVE YOUR SHIP,\n\n"

@@ -23,15 +23,34 @@
 #include "../entity/obj_health.h"
 #include "../entity/ui_killbar.h"
 #include "../entity/text_box.h"
+#include "../entity/level_images.h"
 
 enum GAME_STATES {
   MENU,
+  PLAY_MENU,
   PLAY,
   HELP,
   WIN,
   LOSE,
   QUIT
 };
+
+void process_level_menu_key(
+  SDL_Event& e,
+  GAME_STATES& state,
+  int& active_button
+);
+
+void change_active_button_level_menu(
+  Render_pipe&, 
+  int active_button, 
+  int prev_button,
+  Text_box&,
+  Text_box&,
+  Text_box&
+);
+
+GAME_STATES level_menu(Render_pipe& rp, UI& ui);
 
 GAME_STATES game_function(
   GAME_STATES state, 
@@ -87,6 +106,8 @@ void change_active_button(
 );
 
 GAME_STATES get_state(int active_button);
+
+GAME_STATES get_state_help(int active_button);
 
 void add_life(
   Planet& pl, 
