@@ -1,69 +1,57 @@
-#include "game_process.h"
+#include "lose_page.h"
 
-GAME_STATES game_function(
-  GAME_STATES state, 
-  Render_pipe& rp,
-  UI& ui
-) {
-  switch (state) {
-    //case GAME_STATES::PLAY: state = process_gameplay(rp, ui); break;
-    case GAME_STATES::PLAY_MENU: state = level_menu(rp, ui); break;
-    case GAME_STATES::HELP: state = process_help(rp, ui); break;
-    case GAME_STATES::MENU: state = process_menu(rp, ui); break;
-    case GAME_STATES::WIN:  state = win_page(rp, ui); break;
-    case GAME_STATES::LOSE: state = lose_page(rp, ui); break;
-    case GAME_STATES::LVL1: state = process_gameplay1(rp, ui); break;
-    case GAME_STATES::LVL2: state = process_gameplay2(rp, ui); break;
-    default:
-      std::cout << "Warning: there is no such game state as: " << state << '\n';
-  }
-  return state; //CODE FOR QUIT
-}
-
-
-//==HELP========================================================
-GAME_STATES process_help(Render_pipe& rp, UI& ui) {
+//==LOSE=PAGE===============================================================
+GAME_STATES lose_page(Render_pipe& rp, UI& ui) {
+  //Clear screen
   SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(rp.get_renderer());
   //
   ui.reset_image_background(UI::BACKGROUND::MENU_BACK);
 
-  const int offset = 60;
-
-  Text_box help_text(
-    rp, HELP_TEXT, color_main_pass, color_shadow_pass, 2, true, 0
+  const int offset = 70;
+  
+  Text_box lose_text(
+    rp, "YOU LOSE...", 
+    color_main_pass, color_shadow_pass, 4, true, 2
+  );
+  lose_text.set_position(
+    (SCREEN_WIDTH - lose_text.get_width()) / 2,
+    (SCREEN_HEIGHT - lose_text.get_height()) / 2 - offset
   );
 
-  help_text.set_position(
-    (SCREEN_WIDTH - help_text.get_width()) / 2,
-    (SCREEN_HEIGHT - help_text.get_height()) / 2
+  Text_box try_text(
+    rp, "TRY AGAIN!",
+    color_main_pass, color_shadow_pass, 4, true, 2
+  );
+  try_text.set_position(
+    (SCREEN_WIDTH - try_text.get_width()) / 2,
+    (SCREEN_HEIGHT - try_text.get_height()) / 2
   );
 
+  //Quit button
   Text_box quit_button(
     rp, "QUIT", color_main_pass, color_shadow_pass, 4, false, 1
   );
-
   quit_button.set_position(
     (SCREEN_WIDTH - quit_button.get_width()) / 2,
-    (SCREEN_HEIGHT - quit_button.get_height()) - offset
+    (SCREEN_HEIGHT - quit_button.get_height()) / 2 + offset
   );
-
-  GAME_STATES state = GAME_STATES::HELP;
 
   SDL_Event e;
   int prev_button = -1;
   int active_button = -1;
+  GAME_STATES state = GAME_STATES::WIN;
 
   //For frame capping
   LTimer capTimer;
   int frameTicks = 0;
 
 
-  while (state == GAME_STATES::HELP) {
+  while (state == GAME_STATES::WIN) {
     capTimer.start();
     while (SDL_PollEvent(&e) != 0) {
       if (e.type == SDL_QUIT) state = GAME_STATES::QUIT;
-      else process_help_key(e, state, active_button);
+      else process_lose_key(e, state, active_button);
     }
     //Clear screen
     SDL_SetRenderDrawColor(rp.get_renderer(), 0xFF, 0xFF, 0xFF, 0xFF);
@@ -94,8 +82,10 @@ GAME_STATES process_help(Render_pipe& rp, UI& ui) {
       prev_button = active_button;
     }
 
-    //Render help text
-    help_text.render(rp);
+    lose_text.render(rp);
+
+    //Render congratulation text
+    try_text.render(rp);
 
     //Render quit button
     quit_button.render(rp);
@@ -112,7 +102,7 @@ GAME_STATES process_help(Render_pipe& rp, UI& ui) {
   return state;
 }
 
-void process_help_key(
+void process_lose_key(
   SDL_Event& e,
   GAME_STATES& state,
   int& active_button
@@ -132,12 +122,12 @@ void process_help_key(
         active_button = (active_button == 0) ? 0 : ++active_button;
         break;
       case SDLK_RETURN:
-        state = get_state_help(active_button);
+        state = get_state_lose(active_button);
     }
   }
 }
 
-GAME_STATES get_state_help(int active_button) {
+GAME_STATES get_state_lose(int active_button) {
   switch (active_button) {
     case 0: return GAME_STATES::MENU;
     default:

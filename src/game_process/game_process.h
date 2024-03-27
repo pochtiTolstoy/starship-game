@@ -27,34 +27,13 @@
 
 //GAME PAGES HEADERS
 #include "game_levels.h"
-
-void process_level_menu_key(
-  SDL_Event& e,
-  GAME_STATES& state,
-  int& active_button
-);
-
-void change_active_button_level_menu(
-  Render_pipe&, 
-  int active_button, 
-  int prev_button,
-  Text_box&,
-  Text_box&,
-  Text_box&
-);
-
-GAME_STATES get_state_level_menu(int active_button);
-
-GAME_STATES level_menu(Render_pipe& rp, UI& ui);
+#include "level_menu.h"
+#include "menu.h"
+#include "win_page.h"
+#include "lose_page.h"
 
 GAME_STATES game_function(
   GAME_STATES state, 
-  Render_pipe&, 
-  UI&
-);
-
-
-GAME_STATES process_menu(
   Render_pipe&, 
   UI&
 );
@@ -68,46 +47,12 @@ GAME_STATES win_page(Render_pipe& rp, UI& ui);
 
 GAME_STATES lose_page(Render_pipe& rp, UI& ui);
 
-void process_key(
-  SDL_Event&, 
-  Ship&, 
-  Enemy* enemy_arr, 
-  Orbit& orb
-);
-
-void process_menu_key(
-  SDL_Event&,
-  GAME_STATES&,
-  int& active_button
-);
-
 void process_help_key(
   SDL_Event&,
   GAME_STATES&,
   int& active_button
 );
 
-void change_active_button(
-  Render_pipe&, 
-  int active_button, 
-  int prev_button,
-  Text_box&,
-  Text_box&,
-  Text_box&
-);
-
-GAME_STATES get_state(int active_button);
-
 GAME_STATES get_state_help(int active_button);
-
-void add_life(
-  Planet& pl, 
-  Ship& sd
-);
-
-bool game_is_running(
-  const Ship&, 
-  const Planet&
-);
 
 #endif /* GAME_PROCESS_H_ */

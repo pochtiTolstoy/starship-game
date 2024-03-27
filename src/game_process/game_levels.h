@@ -34,6 +34,8 @@ GAME_STATES process_gameplay2(
 );
 
 void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb);
+void process_help_key(SDL_Event& e, GAME_STATES& state, int& active_button);
+GAME_STATES get_state_help(int active_button);
 void add_life(Planet& pl, Ship& sd);
 bool game_is_running(const Ship& sd, const Planet& pl);
 
