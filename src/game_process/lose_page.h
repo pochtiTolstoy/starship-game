@@ -10,7 +10,7 @@
 #include "../entity/text_box.h"
 #include "../entity/level_images.h"
 
-GAME_STATES lose_page(Render_pipe& rp, UI& ui);
+GAME_STATES lose_page(Render_pipe& rp, UI& ui, GAME_STATES curr_lvl);
 void process_lose_key(
   SDL_Event& e,
   GAME_STATES& state,

@@ -29,7 +29,7 @@ static const int MOVE_LEN = 30;
 static const int SCREEN_FPS = 60;
 static const int SCREEN_TICK_PER_FRAME = 1000 / SCREEN_FPS;
 
-enum GAME_STATES { MENU, PLAY_MENU, LVL1, LVL2, HELP, WIN, LOSE, QUIT };
+enum GAME_STATES { MENU, PLAY_MENU, LVL1, LVL2, LVL1_LOSE, LVL2_LOSE, HELP, WIN, LOSE, QUIT, RETRY };
 
 /* === Safe to change === */
 

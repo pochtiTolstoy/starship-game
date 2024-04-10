@@ -127,7 +127,7 @@ GAME_STATES process_gameplay1(Render_pipe& rp, UI& ui) {
     }
   }
   if (sd.kills_ >= KILLS_TO_WIN) return GAME_STATES::WIN;
-  else return GAME_STATES::LOSE;
+  else return GAME_STATES::LVL1_LOSE;
 }
 
 //==LVL2========================================================================
@@ -257,7 +257,7 @@ GAME_STATES process_gameplay2(Render_pipe& rp, UI& ui) {
     }
   }
   if (sd.kills_ >= KILLS_TO_WIN) return GAME_STATES::WIN;
-  else return GAME_STATES::LOSE;
+  else return GAME_STATES::LVL2_LOSE;
 }
 
 void process_key(SDL_Event& e, Ship& sd, Enemy* enemy_arr, Orbit& orb) {
