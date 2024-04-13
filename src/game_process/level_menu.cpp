@@ -22,7 +22,7 @@ GAME_STATES level_menu(Render_pipe& rp, UI& ui) {
   );
   lvl_button1.set_position(
     (SCREEN_WIDTH - lvl_button1.get_width()) / 2,
-    level_images_bar.get_bottom_y(0) + 10
+    level_images_bar.get_bottom_y(0) + 15
   );
 
   //Lvl button 2
@@ -31,7 +31,7 @@ GAME_STATES level_menu(Render_pipe& rp, UI& ui) {
   );
   lvl_button2.set_position(
     (SCREEN_WIDTH - lvl_button2.get_width()) / 2,
-    level_images_bar.get_bottom_y(1) + 10
+    level_images_bar.get_bottom_y(1) + 15
   );
 
   //Quit button
