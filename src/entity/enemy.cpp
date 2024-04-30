@@ -11,7 +11,9 @@ Enemy::Enemy()
     render_({
       .angle = 0,
       .center = {0, 0},
-      .flip = SDL_FLIP_NONE
+      // DELETE
+      //.flip = SDL_FLIP_NONE
+      .flip = SDL_FLIP_VERTICAL
     }),
     draw_(false),
     first_spawn_(true)

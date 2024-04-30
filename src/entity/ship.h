@@ -83,8 +83,6 @@ public:
   int image_;
   int gun_state_;
   LTexture gShipTextures_[NUM_SHIP_TEXTURES];
-
-//public:
 };
 
 #endif /* SHIP_H_ */

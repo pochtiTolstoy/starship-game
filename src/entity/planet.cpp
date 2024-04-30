@@ -7,7 +7,7 @@ Planet::~Planet() {}
 
 void Planet::inc_lifes() { ++curr_lifes_; }
 
-void Planet::dec_lifes() { --curr_lifes_; }
+void Planet::dec_lifes() { /*--curr_lifes_;*/ }
 
 //Getters
 int Planet::get_max_lifes() const { return max_lifes_; }
