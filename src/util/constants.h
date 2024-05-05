@@ -33,16 +33,16 @@ enum GAME_STATES { MENU, PLAY_MENU, LVL1, LVL2, LVL1_LOSE, LVL2_LOSE, HELP, WIN,
 
 /* === Safe to change === */
 
-//DELETE
-//static const int RAND_SPAWN = 600;
-//static const int RAND_SPAWN_FIRST = 600;
-//static const int RAND_SPAWN = 1300;
-//static const int RAND_SPAWN_FIRST = 1000;
+static const int RAND_SPAWN = 600;
+static const int RAND_SPAWN_FIRST = 600;
+static const int KILLS_TO_WIN = 300;
 
 // EASY
+/*
 static const int RAND_SPAWN_FIRST = 3000;
 static const int RAND_SPAWN = 3000;
 static const int KILLS_TO_WIN = 50;
+*/
 
 static const SDL_Color color_main_pass = { 0, 192, 248, 0xFF };
 static const SDL_Color color_shadow_pass = { 7, 63, 147, 0xFF };
@@ -65,8 +65,8 @@ static const char* FILE_PATHS_SHIP[NUM_SHIP_TEXTURES] = {
 };
 
 static const char* FILE_PATHS_ENEMY[NUM_ENEMY_TEXTURES] = {
-	/*"res/pics/meteor1Big.png"*/
-  "res/pics/eva_ship.png"
+	"res/pics/meteor1Big.png"
+  /*"res/pics/eva_ship.png"*/
 };
 
 static const char* FILE_PATHS_UI[NUM_UI_TEXTURES] = {
