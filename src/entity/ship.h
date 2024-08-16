@@ -23,7 +23,7 @@ class Ship {
 public:
   Ship() = delete;
   Ship(
-    Render_pipe& rp, 
+    Render_pipe& rp, int ship_type,
     int max_lifes = 2, int max_bullets = 6, int cooldown = 1500
   );
   ~Ship();
@@ -40,7 +40,7 @@ private:
   //Helper methods
   void render_image(Render_pipe&) const;
   void render_high_image(Render_pipe&) const;
-  void init_images(Render_pipe&);
+  void init_images(Render_pipe&, int ship_type);
   const SDL_Color& get_cut_color(int image) const;
   r_data calc_rotation_high() const;
   int calc_high_y() const;
@@ -81,8 +81,9 @@ public:
 
   //Visuals
   int image_;
+  int num_textures_;
   int gun_state_;
-  LTexture gShipTextures_[NUM_SHIP_TEXTURES];
+  LTexture* gShipTextures_;
 };
 
 #endif /* SHIP_H_ */

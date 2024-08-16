@@ -6,7 +6,7 @@ GAME_STATES process_gameplay1(Render_pipe& rp, UI& ui) {
   SDL_RenderClear(rp.get_renderer());
 
   ui.reset_image_background(UI::BACKGROUND::GAME_BACK1);
-  Ship sd(rp);
+  Ship sd(rp, 0);
   Orbit orb(rp);
   orb.set_mines_texture(ui.get_mine_texture());
   Health_module hp_module(rp); 
@@ -136,7 +136,7 @@ GAME_STATES process_gameplay2(Render_pipe& rp, UI& ui) {
   SDL_RenderClear(rp.get_renderer());
 
   ui.reset_image_background(UI::BACKGROUND::GAME_BACK2);
-  Ship sd(rp);
+  Ship sd(rp, 1);
   Orbit orb(rp);
   orb.set_mines_texture(ui.get_mine_texture());
   Health_module hp_module(rp); 

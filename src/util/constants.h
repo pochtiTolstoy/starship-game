@@ -5,7 +5,10 @@
 
 static const int SCREEN_WIDTH = 1920;
 static const int SCREEN_HEIGHT = 1080;
-static const int NUM_SHIP_TEXTURES = 6;
+
+static const int NUM_SHIP_TEXTURES_1 = 6;
+static const int NUM_SHIP_TEXTURES_2 = 6;
+
 static const int NUM_ENEMY_TEXTURES = 1;
 static const int NUM_ENEMY_ON_MAP = 24;
 static const int NUM_UI_TEXTURES = 6;
@@ -33,9 +36,9 @@ enum GAME_STATES { MENU, PLAY_MENU, LVL1, LVL2, LVL1_LOSE, LVL2_LOSE, HELP, WIN,
 
 /* === Safe to change === */
 
-static const int RAND_SPAWN = 600;
-static const int RAND_SPAWN_FIRST = 600;
-static const int KILLS_TO_WIN = 300;
+static const int RAND_SPAWN = 1200;
+static const int RAND_SPAWN_FIRST = 1200;
+static const int KILLS_TO_WIN = 200;
 
 // EASY
 /*
@@ -55,13 +58,22 @@ static const int ENEMY_FRAMERATE_LEVELS = 1;
 
 /* === File paths === */
 
-static const char* FILE_PATHS_SHIP[NUM_SHIP_TEXTURES] = {
+static const char* FILE_PATHS_SHIP_1[NUM_SHIP_TEXTURES_1] = {
 	"res/pics/ship1Big.png",
 	"res/pics/ship1moveBig.png",
 	"res/pics/ship_shoot1Big.png",
 	"res/pics/ship_back1Big.png",
 	"res/pics/ship_reloadBig.png",
   "res/pics/triple_shoot_test.png"
+};
+
+static const char* FILE_PATHS_SHIP_2[NUM_SHIP_TEXTURES_2] = {
+  "res/pics/eva_ship_main.png",
+  "res/pics/eva_ship_main.png",
+  "res/pics/eva_ship_main.png",
+  "res/pics/eva_ship_main.png",
+  "res/pics/eva_ship_main.png",
+  "res/pics/eva_ship_main.png"
 };
 
 static const char* FILE_PATHS_ENEMY[NUM_ENEMY_TEXTURES] = {

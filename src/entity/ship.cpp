@@ -2,7 +2,7 @@
 
 
 //Default constructor
-Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown): 
+Ship::Ship(Render_pipe& rp, int ship_type, int max_lifes, int max_bullets, int cooldown): 
   vel_r_(0),
   vel_ang_(0),
   moving_r_(false),
@@ -18,7 +18,18 @@ Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown):
   image_(STATES::DEFAULT),
   gun_state_(GUN_STATES::DEFAULT)
 {
-  init_images(rp);
+  switch (ship_type) {
+    case 0:
+      num_textures_ = NUM_SHIP_TEXTURES_1;
+      break;
+    case 1:
+      num_textures_ = NUM_SHIP_TEXTURES_2;
+      break;
+    default:
+      std::cerr << "Error. Wrong ship type via initializing ship class.\n";
+      exit(EXIT_FAILURE);
+  }
+  init_images(rp, ship_type);
   width_  = get_image_width(STATES::DEFAULT);
   height_ = get_image_height(STATES::DEFAULT);
   x_pos_  = (SCREEN_WIDTH  - width_ ) / 2;
@@ -30,9 +41,10 @@ Ship::Ship(Render_pipe& rp, int max_lifes, int max_bullets, int cooldown):
 
 //Destructor
 Ship::~Ship() {
-  for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
+  for (int i = 0; i < num_textures_; ++i) {
     gShipTextures_[i].free();
   }
+  delete[] gShipTextures_;
 }
 
 //Public methods
@@ -192,11 +204,27 @@ void Ship::render_high_image(Render_pipe& rp) const {
   );
 }
 
-void Ship::init_images(Render_pipe& rp) {
+void Ship::init_images(Render_pipe& rp, int ship_type) {
   SDL_Color cut_color;
-  for (int i = 0; i < NUM_SHIP_TEXTURES; ++i) {
+  const char** img_file_paths;
+  int elems;
+  switch (ship_type) {
+    case 0:
+      img_file_paths = FILE_PATHS_SHIP_1;
+      elems = NUM_SHIP_TEXTURES_1;
+      break;
+    case 1:
+      img_file_paths = FILE_PATHS_SHIP_2;
+      elems = NUM_SHIP_TEXTURES_2;
+      break;
+    default:
+      std::cerr << "Error type of ship via initialization.\n";
+      exit(EXIT_FAILURE);
+  }
+  gShipTextures_ = new LTexture[elems];
+  for (int i = 0; i < elems; ++i) {
     cut_color = get_cut_color(i);
-    if (!gShipTextures_[i].loadFromFile(rp, FILE_PATHS_SHIP[i], cut_color)) {
+    if (!gShipTextures_[i].loadFromFile(rp, img_file_paths[i], cut_color)) {
       std::cerr << "Failed to load ship texture!\n"; 
       exit(EXIT_FAILURE);
     }

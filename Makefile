@@ -17,7 +17,7 @@ CC := g++
 
 LINKER_FLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf
 
-DEBUG_FLAGS := -g
+DEBUG_FLAGS :=
 
 all: $(OBJS)
 	$(CC) $(SRCS) $(LINKER_FLAGS) -o $(OBJ_NAME)
