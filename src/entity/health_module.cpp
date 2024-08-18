@@ -24,9 +24,6 @@ bool Health_module::render(
   if (!get_heart_) move_to_heart(delta_time, oh_arr[ind_target_]);
   else success = move_to_planet(delta_time);
   render_image(rp);
-  if (success) {
-    std::cout << "WE BRING HEART TO PLANET!\n";
-  }
   return success;
 }
 
