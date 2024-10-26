@@ -1,21 +1,10 @@
 #include "orbit.h"
 
-Orbit::Orbit(Render_pipe& rp)
-  : x_pos_(0),
-    y_pos_(0),
-    alive_(false),
-    curr_lifes_(0),
-    max_lifes_(4),
-    curr_mine_(0),
-    mine_throwed_(0),
-    render_({
-      .angle = 0,
-      .center = {0, 0},
-      .flip = SDL_FLIP_NONE
-    }),
-    speed_(20),
-    image_(STATES::DEFAULT)
-{
+Orbit::Orbit(Render_pipe &rp)
+    : x_pos_(0), y_pos_(0), alive_(false), curr_lifes_(0), max_lifes_(4),
+      curr_mine_(0), mine_throwed_(0),
+      render_({.angle = 0, .center = {0, 0}, .flip = SDL_FLIP_NONE}),
+      speed_(20), image_(STATES::DEFAULT) {
   init_images(rp);
   width_ = get_image_width(image_);
   height_ = get_image_height(image_);
@@ -28,28 +17,27 @@ Orbit::~Orbit() {
   std::cout << '\n';
 }
 
-void Orbit::render(Render_pipe& rp) {
-  if (!alive_) return;
-  gOrbitTextures_[image_].render(
-    rp,
-    x_pos_, y_pos_, nullptr, render_
-  );
+void Orbit::render(Render_pipe &rp) {
+  if (!alive_)
+    return;
+  gOrbitTextures_[image_].render(rp, x_pos_, y_pos_, nullptr, render_);
 }
 
-void Orbit::set_mines_texture(const LTexture& t) {
-  for (int i = 0; i < NUM_MINES; ++i) { 
+void Orbit::set_mines_texture(const LTexture &t) {
+  for (int i = 0; i < NUM_MINES; ++i) {
     mine_arr_[i].set_texture(t);
   }
 }
 
-void Orbit::render_mines(Render_pipe& rp) {
+void Orbit::render_mines(Render_pipe &rp) {
   for (int i = 0; i < NUM_MINES; ++i) {
     mine_arr_[i].render(rp);
   }
 }
 
 void Orbit::calc_drop_mine() {
-  if (!ready_to_drop_mine()) return;
+  if (!ready_to_drop_mine())
+    return;
   for (int i = 0; i < NUM_MINES; ++i) {
     if (!mine_arr_[curr_mine_].is_alive()) {
       mine_arr_[curr_mine_].drop(y_pos_, render_.angle);
@@ -65,8 +53,8 @@ bool Orbit::ready_to_drop_mine() const {
   return alive_ && mine_throwed_ < NUM_MINES && rand() % 300 == 0;
 }
 
-void Orbit::reinit(int y_pos, const r_data& ang_data) {
-  image_ = STATES::DEFAULT; 
+void Orbit::reinit(int y_pos, const r_data &ang_data) {
+  image_ = STATES::DEFAULT;
   speed_ = 20;
   x_pos_ = (SCREEN_WIDTH - width_) / 2;
   y_pos_ = y_pos;
@@ -77,12 +65,13 @@ void Orbit::reinit(int y_pos, const r_data& ang_data) {
 }
 
 void Orbit::move(double delta_time) {
-  if (!alive_) return;
-  render_.angle -= (speed_ * delta_time); 
+  if (!alive_)
+    return;
+  render_.angle -= (speed_ * delta_time);
 }
 
-void Orbit::init_images(Render_pipe& rp) {
-  SDL_Color cut_color = { 0xFF, 0xFF, 0xFF, 0xFF };
+void Orbit::init_images(Render_pipe &rp) {
+  SDL_Color cut_color = {0xFF, 0xFF, 0xFF, 0xFF};
   for (int i = 0; i < NUM_ORBIT_TEXTURES; ++i) {
     if (!gOrbitTextures_[i].loadFromFile(rp, FILE_PATHS_ORBIT[i], cut_color)) {
       std::cerr << "Failed to load orbit textures!\n";
@@ -91,10 +80,11 @@ void Orbit::init_images(Render_pipe& rp) {
   }
 }
 
-void Orbit::detect_collision(Enemy* e_arr) {
-  if (!alive_) return;
-  //int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
-  //double angle_sync = render_.angle + COORDS_SYNC;
+void Orbit::detect_collision(Enemy *e_arr) {
+  if (!alive_)
+    return;
+  // int coords_sync = (SCREEN_WIDTH - SCREEN_HEIGHT) / 2;
+  // double angle_sync = render_.angle + COORDS_SYNC;
   double fix_angle = render_.angle;
 
   /*
@@ -102,38 +92,39 @@ void Orbit::detect_collision(Enemy* e_arr) {
     angle_sync += (-1) * (static_cast<int>(angle_sync) / 360) * 360 + 360;
   }
   */
-  //Positive angle from 0 to 360
+  // Positive angle from 0 to 360
   if (fix_angle < 0) {
     fix_angle += (-1) * (static_cast<int>(fix_angle) / 360) * 360 + 360;
   }
 
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    if (!e_arr[i].is_alive()) continue;
+    if (!e_arr[i].is_alive())
+      continue;
     if (check_angle(fix_angle, e_arr[i].get_angle())) {
-      int diff = y_pos_ + (get_image_height(image_) / 2) - 
-        (e_arr[i].get_y() + e_arr[i].get_height() / 2);
+      int diff = y_pos_ + (get_image_height(image_) / 2) -
+                 (e_arr[i].get_y() + e_arr[i].get_height() / 2);
       if (std::abs(diff) <= 90) {
         e_arr[i].reinit();
         --curr_lifes_;
       }
     }
   }
-  if (curr_lifes_ <= 0) death();
+  if (curr_lifes_ <= 0)
+    death();
 }
 
-void Orbit::process_mines_collision(Enemy* e) {
+void Orbit::process_mines_collision(Enemy *e) {
   for (int i = 0; i < NUM_MINES; ++i) {
     mine_arr_[i].detect_collision(e);
   }
 }
 
-void Orbit::death() {
-  alive_ = false;
-}
+void Orbit::death() { alive_ = false; }
 
-void Orbit::change_speed(double velocity) { //ANGULAR SPEED
-  if (!alive_) return;
-  speed_ += velocity; 
+void Orbit::change_speed(double velocity) { // ANGULAR SPEED
+  if (!alive_)
+    return;
+  speed_ += velocity;
   change_animation_move(velocity);
 }
 
@@ -156,6 +147,4 @@ int Orbit::get_image_width(int image) const {
   return gOrbitTextures_[image].get_width();
 }
 
-bool Orbit::is_alive() const {
-  return alive_;
-}
+bool Orbit::is_alive() const { return alive_; }

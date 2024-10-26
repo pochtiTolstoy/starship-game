@@ -1,10 +1,10 @@
 #ifndef OBJ_ORBIT_H_
 #define OBJ_ORBIT_H_
 
-#include "../util/util.h"
 #include "../texture/LTexture.h"
-#include "ship.h"
+#include "../util/util.h"
 #include "orbit.h"
+#include "ship.h"
 
 using r_data = render_rotation_data;
 class Orbit;
@@ -12,25 +12,26 @@ class Orbit;
 class Obj_orbit {
 public:
   Obj_orbit() = delete;
-  Obj_orbit(const LTexture&);
+  Obj_orbit(const LTexture &);
   ~Obj_orbit();
-  void render(Render_pipe&);
-  void calc_spawn(const Ship&, const Orbit&);
+  void render(Render_pipe &);
+  void calc_spawn(const Ship &, const Orbit &);
 
-  bool detect_collision(const Ship&);
+  bool detect_collision(const Ship &);
 
-  //Getters:
+  // Getters:
   int get_y() const;
-  const r_data& get_r_data() const;
+  const r_data &get_r_data() const;
+
 private:
   bool check_angle() const;
   bool check_kills(int kills) const;
-  const LTexture& gObjTexture_;
+  const LTexture &gObjTexture_;
   int width_;
   int height_;
   int x_pos_;
   int y_pos_;
-  r_data render_; 
+  r_data render_;
   bool draw_;
 };
 

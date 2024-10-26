@@ -40,20 +40,20 @@ void LTimer::unpause() {
 Uint32 LTimer::getTicks() {
   Uint32 time = 0;
   if (mStarted) {
-    if (mPaused) time = mPausedTicks;
-    else time = SDL_GetTicks() - mStartTicks;
+    if (mPaused)
+      time = mPausedTicks;
+    else
+      time = SDL_GetTicks() - mStartTicks;
   }
   return time;
 }
 
-bool LTimer::isStarted()
-{
-	//Timer is running and paused or unpaused
-    return mStarted;
+bool LTimer::isStarted() {
+  // Timer is running and paused or unpaused
+  return mStarted;
 }
 
-bool LTimer::isPaused()
-{
-	//Timer is running and paused
-    return mPaused && mStarted;
+bool LTimer::isPaused() {
+  // Timer is running and paused
+  return mPaused && mStarted;
 }

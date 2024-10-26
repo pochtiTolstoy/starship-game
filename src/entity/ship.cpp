@@ -1,45 +1,35 @@
 #include "ship.h"
 
-
-//Default constructor
-Ship::Ship(Render_pipe& rp, int ship_type, int max_lifes, int max_bullets, int cooldown): 
-  vel_r_(0),
-  vel_ang_(0),
-  moving_r_(false),
-  moving_ang_(false),
-  curr_lifes_(max_lifes),
-  max_lifes_(max_lifes),
-  max_bullets_(max_bullets),
-  curr_bullets_(max_bullets),
-  cooldown_(cooldown),
-  cooldown_timer_(),
-  kill_streak_(0),
-  kills_(0), 
-  image_(STATES::DEFAULT),
-  gun_state_(GUN_STATES::DEFAULT)
-{
+// Default constructor
+Ship::Ship(Render_pipe &rp, int ship_type, int max_lifes, int max_bullets,
+           int cooldown)
+    : vel_r_(0), vel_ang_(0), moving_r_(false), moving_ang_(false),
+      curr_lifes_(max_lifes), max_lifes_(max_lifes), max_bullets_(max_bullets),
+      curr_bullets_(max_bullets), cooldown_(cooldown), cooldown_timer_(),
+      kill_streak_(0), kills_(0), image_(STATES::DEFAULT),
+      gun_state_(GUN_STATES::DEFAULT) {
   switch (ship_type) {
-    case 0:
-      num_textures_ = NUM_SHIP_TEXTURES_1;
-      break;
-    case 1:
-      num_textures_ = NUM_SHIP_TEXTURES_2;
-      break;
-    default:
-      std::cerr << "Error. Wrong ship type via initializing ship class.\n";
-      exit(EXIT_FAILURE);
+  case 0:
+    num_textures_ = NUM_SHIP_TEXTURES_1;
+    break;
+  case 1:
+    num_textures_ = NUM_SHIP_TEXTURES_2;
+    break;
+  default:
+    std::cerr << "Error. Wrong ship type via initializing ship class.\n";
+    exit(EXIT_FAILURE);
   }
   init_images(rp, ship_type);
-  width_  = get_image_width(STATES::DEFAULT);
+  width_ = get_image_width(STATES::DEFAULT);
   height_ = get_image_height(STATES::DEFAULT);
-  x_pos_  = (SCREEN_WIDTH  - width_ ) / 2;
-  y_pos_  = (SCREEN_HEIGHT - height_) / 2;
-  render_.angle  = 0;
-  render_.center = { width_ / 2, height_ / 2 };
-  render_.flip   = SDL_FLIP_NONE;
+  x_pos_ = (SCREEN_WIDTH - width_) / 2;
+  y_pos_ = (SCREEN_HEIGHT - height_) / 2;
+  render_.angle = 0;
+  render_.center = {width_ / 2, height_ / 2};
+  render_.flip = SDL_FLIP_NONE;
 }
 
-//Destructor
+// Destructor
 Ship::~Ship() {
   for (int i = 0; i < num_textures_; ++i) {
     gShipTextures_[i].free();
@@ -47,21 +37,25 @@ Ship::~Ship() {
   delete[] gShipTextures_;
 }
 
-//Public methods
-void Ship::render(Render_pipe& rp) {
-  if (is_reloaded()) image_ = STATES::DEFAULT;
-  if (is_image_high()) render_high_image(rp);
-  else render_image(rp);
+// Public methods
+void Ship::render(Render_pipe &rp) {
+  if (is_reloaded())
+    image_ = STATES::DEFAULT;
+  if (is_image_high())
+    render_high_image(rp);
+  else
+    render_image(rp);
 }
 
 void Ship::move(double delta_time) {
   int distance_to_center = std::abs(y_pos_ + 128 - SCREEN_HEIGHT / 2);
   if (moving_ang_) {
     if (vel_ang_ < 0) {
-      render_.angle -= std::abs((-0.20 * distance_to_center + 200) * delta_time);
-    }
-    else {
-      render_.angle += std::abs((-0.20 * distance_to_center + 200) * delta_time);
+      render_.angle -=
+          std::abs((-0.20 * distance_to_center + 200) * delta_time);
+    } else {
+      render_.angle +=
+          std::abs((-0.20 * distance_to_center + 200) * delta_time);
     }
   }
   if (moving_r_) {
@@ -75,11 +69,11 @@ void Ship::move(double delta_time) {
   }
 }
 
-void Ship::process_shooting(Enemy* enemy_arr) {
-  if (curr_bullets_ <= 0) return;
-  if (gun_state_ == GUN_STATES::DEFAULT &&
-      kill_streak_ && kill_streak_ % kill_streak_triple_ == 0
-  ) {
+void Ship::process_shooting(Enemy *enemy_arr) {
+  if (curr_bullets_ <= 0)
+    return;
+  if (gun_state_ == GUN_STATES::DEFAULT && kill_streak_ &&
+      kill_streak_ % kill_streak_triple_ == 0) {
     gun_state_ = GUN_STATES::TRIPLE;
     max_bullets_ = 4;
     curr_bullets_ = max_bullets_;
@@ -87,7 +81,7 @@ void Ship::process_shooting(Enemy* enemy_arr) {
   shoot(enemy_arr);
 }
 
-void Ship::shoot(Enemy* enemy_arr) {
+void Ship::shoot(Enemy *enemy_arr) {
   --curr_bullets_;
   if (gun_state_ == GUN_STATES::TRIPLE) {
     triple_shoot(enemy_arr);
@@ -101,18 +95,18 @@ void Ship::change_shoot_animation() {
     image_ = STATES::RELOAD;
   } else if (gun_state_ == GUN_STATES::TRIPLE) {
     image_ = STATES::TRIPLE;
-  } else if (gun_state_ == GUN_STATES::DEFAULT &&
-             kill_streak_ && kill_streak_ % kill_streak_triple_ == 0
-  ) {
+  } else if (gun_state_ == GUN_STATES::DEFAULT && kill_streak_ &&
+             kill_streak_ % kill_streak_triple_ == 0) {
     image_ = STATES::TRIPLE;
   } else if (gun_state_ == GUN_STATES::DEFAULT) {
     image_ = STATES::SHOOT;
   }
-  //image_ = (curr_bullets_ <= 0) ? STATES::RELOAD : STATES::SHOOT;
+  // image_ = (curr_bullets_ <= 0) ? STATES::RELOAD : STATES::SHOOT;
 }
 
 void Ship::calc_cooldown() {
-  if (curr_bullets_ > 0) return;
+  if (curr_bullets_ > 0)
+    return;
   if (gun_state_ != GUN_STATES::DEFAULT) {
     gun_state_ = GUN_STATES::DEFAULT;
     max_bullets_ = 6;
@@ -120,7 +114,7 @@ void Ship::calc_cooldown() {
     return;
   } else if (kill_streak_ && kill_streak_ % kill_streak_triple_ == 0) {
     gun_state_ = GUN_STATES::TRIPLE;
-    max_bullets_ = 4; 
+    max_bullets_ = 4;
     curr_bullets_ = max_bullets_;
     return;
   }
@@ -133,12 +127,13 @@ void Ship::calc_cooldown() {
   }
 }
 
-void Ship::detect_collision(Enemy* e) {
+void Ship::detect_collision(Enemy *e) {
   int mid_ship_y = y_pos_ + height_ / 2 - 40;
   int reflection_y = -y_pos_ - height_ / 2 + SCREEN_HEIGHT;
   int mid_enemy_y = 0;
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
-    if (!e[i].is_alive()) continue;
+    if (!e[i].is_alive())
+      continue;
     mid_enemy_y = e[i].get_y() + e[i].get_height() / 2;
     if (y_pos_ <= SCREEN_HEIGHT / 2) {
       if (eu_mod(render_.angle, 360) == eu_mod(e[i].get_angle(), 360)) {
@@ -159,18 +154,17 @@ void Ship::detect_collision(Enemy* e) {
   }
 }
 
-
-bool Ship::is_fighting() const {
-  return curr_lifes_ && kills_ < KILLS_TO_WIN;
-}
+bool Ship::is_fighting() const { return curr_lifes_ && kills_ < KILLS_TO_WIN; }
 
 //======================Helper methods===========================
-const SDL_Color& Ship::get_cut_color(int image) const {
-  static const SDL_Color white = { 0xFF, 0xFF, 0xFF };
-  static const SDL_Color black = { 0x00, 0x00, 0x00 };
-  switch (image)  {
-    case STATES::RELOAD: return black;
-    default:             return white;
+const SDL_Color &Ship::get_cut_color(int image) const {
+  static const SDL_Color white = {0xFF, 0xFF, 0xFF};
+  static const SDL_Color black = {0x00, 0x00, 0x00};
+  switch (image) {
+  case STATES::RELOAD:
+    return black;
+  default:
+    return white;
   }
 }
 
@@ -179,53 +173,48 @@ bool Ship::is_reloaded() const {
 }
 
 /**
- * Answers if current image of ship 
+ * Answers if current image of ship
  * is higher than DEFAULT image height parameter
  */
 bool Ship::is_image_high() const {
   return get_image_height(STATES::DEFAULT) < get_image_height(image_);
 }
 
-void Ship::render_image(Render_pipe& rp) const {
-  gShipTextures_[image_].render(
-    rp,
-    x_pos_, y_pos_, nullptr, render_
-  );
+void Ship::render_image(Render_pipe &rp) const {
+  gShipTextures_[image_].render(rp, x_pos_, y_pos_, nullptr, render_);
 }
 
-void Ship::render_high_image(Render_pipe& rp) const {
+void Ship::render_high_image(Render_pipe &rp) const {
   r_data temp_render = calc_rotation_high();
   temp_render.center.x = get_image_width(image_) / 2;
   int temp_width = (SCREEN_WIDTH - get_image_width(image_)) / 2;
 
-  gShipTextures_[image_].render(
-    rp,
-    temp_width, calc_high_y(), nullptr, temp_render
-  );
+  gShipTextures_[image_].render(rp, temp_width, calc_high_y(), nullptr,
+                                temp_render);
 }
 
-void Ship::init_images(Render_pipe& rp, int ship_type) {
+void Ship::init_images(Render_pipe &rp, int ship_type) {
   SDL_Color cut_color;
-  const char** img_file_paths;
+  const char **img_file_paths;
   int elems;
   switch (ship_type) {
-    case 0:
-      img_file_paths = FILE_PATHS_SHIP_1;
-      elems = NUM_SHIP_TEXTURES_1;
-      break;
-    case 1:
-      img_file_paths = FILE_PATHS_SHIP_2;
-      elems = NUM_SHIP_TEXTURES_2;
-      break;
-    default:
-      std::cerr << "Error type of ship via initialization.\n";
-      exit(EXIT_FAILURE);
+  case 0:
+    img_file_paths = FILE_PATHS_SHIP_1;
+    elems = NUM_SHIP_TEXTURES_1;
+    break;
+  case 1:
+    img_file_paths = FILE_PATHS_SHIP_2;
+    elems = NUM_SHIP_TEXTURES_2;
+    break;
+  default:
+    std::cerr << "Error type of ship via initialization.\n";
+    exit(EXIT_FAILURE);
   }
   gShipTextures_ = new LTexture[elems];
   for (int i = 0; i < elems; ++i) {
     cut_color = get_cut_color(i);
     if (!gShipTextures_[i].loadFromFile(rp, img_file_paths[i], cut_color)) {
-      std::cerr << "Failed to load ship texture!\n"; 
+      std::cerr << "Failed to load ship texture!\n";
       exit(EXIT_FAILURE);
     }
   }
@@ -249,11 +238,11 @@ int Ship::get_image_width(int image) const {
   return gShipTextures_[image].get_width();
 }
 
-bool Ship::is_angle_sync(double angle, const Enemy& enemy) {
+bool Ship::is_angle_sync(double angle, const Enemy &enemy) {
   return enemy.is_alive() && eu_mod(angle, 360) == enemy.get_angle();
 }
 
-void Ship::default_shoot(Enemy* enemy_arr) {
+void Ship::default_shoot(Enemy *enemy_arr) {
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     if (is_angle_sync(render_.angle, enemy_arr[i])) {
       enemy_arr[i].reinit();
@@ -265,15 +254,15 @@ void Ship::default_shoot(Enemy* enemy_arr) {
   kill_streak_ = 0;
 }
 
-void Ship::triple_shoot(Enemy* enemy_arr) {
-  //BAD
+void Ship::triple_shoot(Enemy *enemy_arr) {
+  // BAD
   int old_kills = kills_;
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     for (int mov_ang = -15; mov_ang <= 15; mov_ang += 15) {
       if (is_angle_sync(render_.angle + mov_ang, enemy_arr[i])) {
         enemy_arr[i].reinit();
         ++kills_;
-      } 
+      }
     }
   }
   kill_streak_ = (kills_ != old_kills) ? (kill_streak_ + 1) : 0;

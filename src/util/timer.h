@@ -13,6 +13,7 @@ public:
   Uint32 getTicks();
   bool isStarted();
   bool isPaused();
+
 private:
   Uint32 mStartTicks;
   Uint32 mPausedTicks;

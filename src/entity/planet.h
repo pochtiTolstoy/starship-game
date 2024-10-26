@@ -8,9 +8,10 @@ public:
   void inc_lifes();
   void dec_lifes();
 
-  //Getters
+  // Getters
   int get_max_lifes() const;
   int get_curr_lifes() const;
+
 private:
   int max_lifes_;
   int curr_lifes_;
