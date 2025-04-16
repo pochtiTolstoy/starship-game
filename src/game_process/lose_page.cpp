@@ -63,7 +63,6 @@ GAME_STATES lose_page(Render_pipe &rp, UI &ui, GAME_STATES curr_lvl) {
     // Render menu background
     ui.render_background(rp);
 
-    // BAD
     if (prev_button != active_button) {
       switch (active_button) {
       case 0:

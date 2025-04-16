@@ -117,7 +117,7 @@ bool Health_module::detect_collision_planet() const {
 void Health_module::move_to_heart(double delta_time, Obj_health &oh) {
   // Don't change center for render data
   if (!oh.is_alive())
-    reinit(); // If heart was takes by ship
+    reinit();
   if (detect_collision_heart(oh)) {
     oh.kill();         // Kill heart
     get_heart_ = true; // Means that now we will go to planet

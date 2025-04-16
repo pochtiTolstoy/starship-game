@@ -48,7 +48,6 @@ private:
   void triple_shoot(Enemy *);
   void default_shoot(Enemy *);
 
-  // CHANGE TO PRIVATE LATER
 public:
   // Render linear data
   int width_;
