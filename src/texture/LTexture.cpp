@@ -16,7 +16,6 @@ bool LTexture::loadFromFile(Render_pipe &rp, std::string path,
   }
   SDL_SetColorKey(loadedSurface, SDL_TRUE,
                   SDL_MapRGB(loadedSurface->format, c.r, c.g, c.b));
-  //!!
   newTexture = SDL_CreateTextureFromSurface(rp.get_renderer(), loadedSurface);
   if (nullptr == newTexture) {
     std::cout << "Unable to create texture from " << path
@@ -43,7 +42,6 @@ bool LTexture::loadFromRenderedText(Render_pipe &rp,
               << TTF_GetError() << '\n';
     return false;
   }
-  //!!
   texture_ = SDL_CreateTextureFromSurface(rp.get_renderer(), text_surface);
   if (nullptr == texture_) {
     std::cout << "Unable to create texture from "
@@ -112,7 +110,6 @@ void LTexture::render(Render_pipe &rp, int x, int y, SDL_Rect *clip,
     renderQuad.w = clip->w;
     renderQuad.h = clip->h;
   }
-  //!!
   SDL_RenderCopyEx(rp.get_renderer(), texture_, clip, &renderQuad, rd.angle,
                    &rd.center, rd.flip);
 }

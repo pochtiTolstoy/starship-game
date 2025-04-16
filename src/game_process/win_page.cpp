@@ -51,7 +51,6 @@ GAME_STATES win_page(Render_pipe &rp, UI &ui) {
     // Render menu background
     ui.render_background(rp);
 
-    // BAD
     if (prev_button != active_button) {
       switch (active_button) {
       case 0:

@@ -46,7 +46,6 @@ GAME_STATES process_help(Render_pipe &rp, UI &ui) {
     // Render menu background
     ui.render_background(rp);
 
-    // BAD
     if (prev_button != active_button) {
       switch (active_button) {
       case 0:

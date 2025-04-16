@@ -255,7 +255,6 @@ void Ship::default_shoot(Enemy *enemy_arr) {
 }
 
 void Ship::triple_shoot(Enemy *enemy_arr) {
-  // BAD
   int old_kills = kills_;
   for (int i = 0; i < NUM_ENEMY_ON_MAP; ++i) {
     for (int mov_ang = -15; mov_ang <= 15; mov_ang += 15) {

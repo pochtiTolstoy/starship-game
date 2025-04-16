@@ -57,7 +57,6 @@ GAME_STATES level_menu(Render_pipe &rp, UI &ui) {
 
     level_images_bar.render(rp);
 
-    // BAD
     if (prev_button != active_button) {
       change_active_button_level_menu(rp, active_button, prev_button,
                                       lvl_button1, lvl_button2, quit_button);

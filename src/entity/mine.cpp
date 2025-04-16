@@ -63,7 +63,6 @@ void Mine::detect_collision(Enemy *e) {
 }
 
 bool Mine::check_angle(double angle1, double angle2) const {
-  // BAD
   angle1 = (angle2 == 0 && angle1 > 345) ? angle1 - 360 : angle1;
   if (angle1 <= angle2 + 8 && angle1 >= angle2 - 8) {
     return true;
